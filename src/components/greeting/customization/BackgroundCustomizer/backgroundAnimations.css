@@ -1,0 +1,44 @@
+/* src/components/background/backgroundAnimations.css */
+.bg-anim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  --bg-speed: 6s;
+  --bg-intensity: 0.8;
+}
+
+/* Keyframes */
+@keyframes bg-rise { 0% { background-position: 0 100%, 0 200%; } 100% { background-position: 0 -200px, 0 -400px; } }
+@keyframes aurora-shift { 0% { transform: translate(-10%, 0) rotate(0deg); } 50% { transform: translate(10%, -2%) rotate(2deg);} 100% { transform: translate(-10%, 0) rotate(0deg);} }
+
+/* Bubbles */
+.bg-anim-bubbles {
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.4) 6px, transparent 7px),
+    radial-gradient(circle, rgba(255,255,255,.25) 4px, transparent 5px);
+  background-size: 40px 80px, 50px 100px;
+  background-position: 0 100%, 0 100%;
+  animation: bg-rise var(--bg-speed) linear infinite;
+  opacity: var(--bg-intensity);
+}
+
+/* Aurora */
+.bg-anim-aurora {
+  position: relative;
+  opacity: calc(var(--bg-intensity) * 0.85);
+}
+.bg-anim-aurora::before,
+.bg-anim-aurora::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(60% 40% at 20% 60%, rgba(0, 255, 200, .35), transparent 70%),
+    radial-gradient(60% 40% at 70% 30%, rgba(180, 0, 255, .35), transparent 70%),
+    radial-gradient(60% 40% at 40% 20%, rgba(255, 180, 0, .25), transparent 70%);
+  filter: blur(40px) saturate(120%);
+  animation: aurora-shift var(--bg-speed) ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+/* Keep other CSS animations here if you have them; removed .bg-anim-meteors & .bg-anim-confetti as requested */

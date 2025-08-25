@@ -1,0 +1,345 @@
+/* Base Styles */
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Animation Keyframes */
+@keyframes logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+}
+
+@keyframes float-x {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(20px); }
+}
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  0%, 100% { border-color: transparent; }
+  50% { border-color: currentColor; }
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  100% { left: 150%; }
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1); 
+    opacity: 0.3; 
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); 
+  }
+  50% { 
+    transform: scale(1.3); 
+    opacity: 0.7; 
+    box-shadow: 0 0 0 15px rgba(99, 102, 241, 0); 
+  }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-30px); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@keyframes tada-slow {
+  0% { transform: scale(1); }
+  10%, 20% { transform: scale(0.9) rotate(-3deg); }
+  30%, 50%, 70%, 90% { transform: scale(1.1) rotate(3deg); }
+  40%, 60%, 80% { transform: scale(1.1) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes color-shift {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Animation Classes */
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.animate-gradient-shift {
+  animation: gradient-shift 8s ease infinite;
+}
+
+.animate-shine {
+  animation: shine 1.5s ease 1;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.animate-float-x {
+  animation: float-x 6s ease-in-out infinite;
+}
+
+.animate-float-y {
+  animation: float-y 4s ease-in-out infinite;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.5s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.5s ease-out forwards;
+}
+
+.animate-typing {
+  animation: 
+    typing 3.5s steps(40, end) 0.5s 1 normal both, 
+    blink 0.7s step-end infinite;
+  overflow: hidden;
+  border-right: 4px solid currentColor;
+}
+
+.animate-float {
+  animation: float 15s linear infinite;
+}
+
+.animate-rotate {
+  animation: rotate 8s linear infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 4s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 10s linear infinite;
+}
+
+.animate-twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.animate-tada-slow {
+  animation: tada-slow 2s ease-in-out infinite;
+}
+
+.animate-color-shift {
+  animation: color-shift 10s linear infinite;
+}
+
+/* Utility Classes */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.hover\:rotate-y-6:hover {
+  transform: rotateY(6deg);
+}
+
+.hover\:rotate-x-2:hover {
+  transform: rotateX(2deg);
+}
+
+.shadow-glow { 
+  box-shadow: 0 0 20px #6366f1; 
+}
+
+/* Responsive Typing Animation */
+@media (min-width: 768px) {
+  .animate-typing {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 767px) {
+  .animate-typing {
+    white-space: normal;
+    display: inline-block;
+  }
+}
+
+/* html2canvas Fixes */
+.html2canvas-container * {
+  animation-play-state: paused !important;
+  overflow: visible !important;
+  height: auto !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.html2canvas-container > div {
+  position: relative !important;
+}
+
+.no-capture {
+  display: none !important;
+}
+
+
+/* Add these new keyframes and classes to your existing app.css */
+
+/* New Keyframes for Spark Animation */
+@keyframes spark-rotate {
+  0% {
+    transform: rotate(0deg) translateX(40px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(40px) rotate(-360deg);
+  }
+}
+
+@keyframes spark-pulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: scale(1.5);
+    opacity: 1;
+  }
+}
+
+/* Spark Container Styles */
+.spark-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.spark-rotator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  animation: spark-rotate 8s linear infinite;
+}
+
+.spark-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: spark-pulse 1.5s ease-in-out infinite;
+}
+
+/* Update your existing spin-slow animation to ensure it works */
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+  transform-origin: center;
+}
+
+/* Ensure the button container has proper positioning */
+.floating-button-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Add these to your existing button styles */
+.gradient-button {
+  position: relative;
+  overflow: visible;
+  z-index: 10;
+}
+
+/* Add shine effect styles */
+.button-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  animation: shine 3s ease infinite;
+}
+
+/* Update your existing pulse animation */
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
