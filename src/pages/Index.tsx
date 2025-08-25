@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { GreetingFormData, EventType } from '@/types/greeting';
@@ -11,8 +11,8 @@ import TypingText from '../components/reusableTypingText/TypingText'
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 import LandingPage from '@/components/landingPage/LandingPage'
 import Preview from '@/components/preview/Preview';
-import { FloatingButton } from '@/components/share/CustomizeAndShare'; // Adjust import path
-
+import { FloatingButton } from '@/components/share/CustomizeAndShare';
+import { useFirebaseGreetings } from '@/hooks/useFirebaseGreetings';
 
 const Index = () => {
   const location = useLocation();
@@ -22,10 +22,12 @@ const Index = () => {
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const greetingRef = useRef<HTMLDivElement>(null);
   const { translate } = useLanguageTranslation();
+  const { loadGreeting } = useFirebaseGreetings();
 
 useEffect(() => {
   const params = new URLSearchParams(location.search);
 
+  // Only process URL parameters if they exist (maintaining backward compatibility)
   if (!params.toString()) return;
 
   // Safe parse helper
@@ -50,7 +52,7 @@ useEffect(() => {
     videoPosition: safeJsonParse(params.get('videoPosition')) || { width: 400, height: 300 },
     animationStyle: params.get('animationStyle') || 'fade',
     layout: (params.get('layout') as any) || 'grid',
-    frameStyle: (params.get('frameStyle') as any) || 'classic',   
+    frameStyle: (params.get('frameStyle') as any) || 'classic',
     theme: params.get('theme') || '',
     backgroundSettings: safeJsonParse(params.get('backgroundSettings')) || {
       color: '#ffffff',
@@ -72,9 +74,9 @@ useEffect(() => {
   };
 
   // If a customEventName is present but eventType is empty, mark eventType as custom
-if ((!data.eventType || data.eventType === '') && data.customEventName) {
-  data.eventType = 'custom';
-}
+  if ((!data.eventType || data.eventType === '') && data.customEventName) {
+    data.eventType = 'custom';
+  }
 
   setGreetingData(data);
 

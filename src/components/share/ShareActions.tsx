@@ -34,46 +34,21 @@ const ShareActions = ({ greetingData, greetingRef, selectedEvent }: ShareActions
     };
   };
 
+  // Generate Firebase-based slug URL
+  const generateFirebaseSlugURL = (greetingData: any) => {
+    const eventName = greetingData?.eventType === 'custom' 
+      ? (greetingData?.customEventName || greetingData?.customEvent?.label || selectedEvent?.label || 'custom')
+      : greetingData?.eventType;
+
+    const sanitize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const slug = `${sanitize(greetingData?.senderName || 'someone')}-wishes-${sanitize(greetingData?.receiverName || 'you')}-${sanitize(eventName || 'greeting')}`;
+    
+    return `${window.location.origin}/${slug}`;
+  };
+
   // Robust URL builder: include custom event name/emoji from either form data OR selectedEvent fallback
   const generateShareableURL = () => {
-    const payload = buildPayloadForSharing(greetingData || {});
-    const params = new URLSearchParams();
-
-    // Put everything (arrays/objects JSON-stringified)
-    Object.entries(payload).forEach(([k, v]) => {
-      if (v === undefined || v === null) return;
-      if (Array.isArray(v) || typeof v === 'object') {
-        params.set(k, JSON.stringify(v));
-      } else {
-        params.set(k, String(v));
-      }
-    });
-
-    // Fallback sources for custom event name & emoji:
-    // priority: greetingData.customEventName -> greetingData.customEvent?.label -> selectedEvent.label
-    const customName =
-      greetingData?.customEventName ||
-      (greetingData?.customEvent && greetingData.customEvent.label) ||
-      (selectedEvent && selectedEvent.category === 'custom' && selectedEvent.label) ||
-      '';
-
-    const customEmoji =
-      greetingData?.customEventEmoji ||
-      (greetingData?.customEvent && greetingData.customEvent.emoji) ||
-      (selectedEvent && selectedEvent.category === 'custom' && selectedEvent.emoji) ||
-      '';
-
-    if (customName) {
-      params.set('customEventName', String(customName));
-      if (customEmoji) params.set('customEventEmoji', String(customEmoji));
-    }
-
-    // If eventType is missing but we can infer custom, set eventType=custom
-    if (!params.has('eventType') && customName) {
-      params.set('eventType', 'custom');
-    }
-
-    return `${window.location.origin}/?${params.toString()}`;
+    return generateFirebaseSlugURL(greetingData || {});
   };
 
   // ... (rest of component: copyShareLink, shareToSocialMedia etc. - unchanged)

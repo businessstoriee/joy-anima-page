@@ -3,7 +3,7 @@ import { Upload, Image, Video, FileImage } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface EmptyMediaStateProps {
-  addMedia: (type: "image" | "video" | "gif") => void;
+  addMedia: (type: "image" | "video") => void;
   openGifPicker: () => void;
 }
 

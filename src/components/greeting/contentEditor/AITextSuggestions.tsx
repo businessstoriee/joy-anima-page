@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Sparkles, Plus, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSupabaseGreetings } from '@/hooks/useSupabaseGreetings';
+import { useFirebaseGreetings } from '@/hooks/useFirebaseGreetings';
 import { TextContent } from '@/types/greeting';
 
 interface Props {
@@ -16,7 +16,7 @@ interface Props {
 const AITextSuggestions: React.FC<Props> = ({ eventType, onTextSelect, currentTexts }) => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
-  const { getAITextSuggestions, isLoading } = useSupabaseGreetings();
+  const { getAITextSuggestions, isLoading } = useFirebaseGreetings();
 
   useEffect(() => {
     if (eventType) {

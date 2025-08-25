@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
-import { Save, Copy, Check, ExternalLink } from 'lucide-react';
+import { Save, Copy, Check, ExternalLink, Share2 } from 'lucide-react';
 import { useFirebaseGreetings } from '@/hooks/useFirebaseGreetings';
 import { GreetingFormData } from '@/types/greeting';
 import { useToast } from '@/hooks/use-toast';
@@ -16,7 +16,7 @@ interface Props {
   size?: "default" | "sm" | "lg" | "icon";
 }
 
-const SaveGreetingButton: React.FC<Props> = ({ 
+const SaveAndShareButton: React.FC<Props> = ({ 
   greetingData, 
   variant = "default",
   size = "default" 
@@ -27,6 +27,15 @@ const SaveGreetingButton: React.FC<Props> = ({
   const [isCopied, setIsCopied] = useState(false);
   const { saveGreeting, isLoading } = useFirebaseGreetings();
   const { toast } = useToast();
+
+  const generatePreviewSlug = () => {
+    const eventName = greetingData?.eventType === 'custom' 
+      ? (greetingData?.customEventName || 'custom')
+      : greetingData?.eventType || 'greeting';
+
+    const sanitize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    return `${sanitize(greetingData?.senderName || 'someone')}-wishes-${sanitize(greetingData?.receiverName || 'you')}-${sanitize(eventName)}`;
+  };
 
   const handleSave = async () => {
     const slug = await saveGreeting(greetingData, title || undefined);
@@ -76,7 +85,7 @@ const SaveGreetingButton: React.FC<Props> = ({
           disabled={!isFormValid}
           className="gap-2"
         >
-          <Save className="h-4 w-4" />
+          <Share2 className="h-4 w-4" />
           Save & Share
         </Button>
       </DialogTrigger>
@@ -84,7 +93,7 @@ const SaveGreetingButton: React.FC<Props> = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Save className="h-5 w-5 text-blue-600" />
+            <Save className="h-5 w-5 text-primary" />
             Save Your Greeting
           </DialogTitle>
         </DialogHeader>
@@ -101,18 +110,14 @@ const SaveGreetingButton: React.FC<Props> = ({
               />
             </div>
             
-            <Card className="border-blue-200 bg-blue-50">
+            <Card className="border-primary/20 bg-primary/5">
               <CardContent className="p-4">
                 <div className="space-y-2">
-                  <h4 className="font-medium text-blue-900">
+                  <h4 className="font-medium text-primary">
                     Your shareable link will be:
                   </h4>
-                  <p className="text-sm text-blue-700 bg-white px-3 py-2 rounded border font-mono">
-                    {window.location.origin}/{
-                      greetingData.senderName && greetingData.receiverName && greetingData.eventType
-                        ? `${greetingData.senderName.toLowerCase()}-wishes-${greetingData.receiverName.toLowerCase()}-${greetingData.eventType}`
-                        : 'your-custom-link'
-                    }
+                  <p className="text-sm text-muted-foreground bg-background px-3 py-2 rounded border font-mono">
+                    {window.location.origin}/{generatePreviewSlug()}
                   </p>
                 </div>
               </CardContent>
@@ -133,18 +138,18 @@ const SaveGreetingButton: React.FC<Props> = ({
             className="space-y-4"
           >
             <div className="text-center py-4">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Check className="h-8 w-8 text-green-600" />
               </div>
-              <h3 className="text-lg font-semibold text-green-800">
+              <h3 className="text-lg font-semibold text-green-800 dark:text-green-400">
                 Greeting Saved Successfully! 🎉
               </h3>
             </div>
             
-            <Card className="border-green-200 bg-green-50">
+            <Card className="border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20">
               <CardContent className="p-4">
                 <div className="space-y-3">
-                  <Label className="text-green-900">Your Shareable Link:</Label>
+                  <Label className="text-green-900 dark:text-green-300">Your Shareable Link:</Label>
                   <div className="flex items-center gap-2">
                     <Input 
                       value={`${window.location.origin}/${savedSlug}`}
@@ -191,4 +196,4 @@ const SaveGreetingButton: React.FC<Props> = ({
   );
 };
 
-export default SaveGreetingButton;
+export default SaveAndShareButton;

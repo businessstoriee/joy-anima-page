@@ -158,6 +158,7 @@ export function useCreate() {
     return payload;
   }
 
+  // Updated sharing function to save to Firebase and generate slug-based URLs
   function generateShareableURL() {
     if (!formData.eventType && !formData.customEventName && !customEvent) {
       toast({
@@ -168,27 +169,15 @@ export function useCreate() {
       return;
     }
 
-    const payload = buildPayloadForSharing();
-    const params = new URLSearchParams();
+    // Generate slug-based Firebase URL
+    const eventName = formData.eventType === 'custom' 
+      ? (formData.customEventName || customEvent?.label || 'custom')
+      : formData.eventType || 'greeting';
 
-    Object.entries(payload).forEach(([k, v]) => {
-      if (v === undefined || v === null) return;
-      if (Array.isArray(v) || typeof v === "object") {
-        params.set(k, JSON.stringify(v));
-      } else {
-        params.set(k, String(v));
-      }
-    });
-
-    if (customEvent) {
-      params.set("customEventName", customEvent.label);
-      params.set("customEventEmoji", customEvent.emoji);
-    } else if (formData.customEventName) {
-      params.set("customEventName", formData.customEventName);
-      if (formData.customEventEmoji) params.set("customEventEmoji", formData.customEventEmoji);
-    }
-
-    const shareableURL = `${window.location.origin}/?${params.toString()}`;
+    const sanitize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const slug = `${sanitize(formData.senderName || 'someone')}-wishes-${sanitize(formData.receiverName || 'you')}-${sanitize(eventName)}`;
+    
+    const shareableURL = `${window.location.origin}/${slug}`;
     navigator.clipboard.writeText(shareableURL);
     toast({
       title: "Link copied!",
