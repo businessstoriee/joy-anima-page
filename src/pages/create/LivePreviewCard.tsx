@@ -50,7 +50,7 @@ export default function LivePreviewCard({ formData, selectedEvent, onOpenPreview
           <Preview 
             greetingData={formData} 
             selectedEvent={selectedEvent} 
-            //onDataChange={onDataChange}
+            onDataChange={onDataChange}
           />
 
           <ActionsForm greetingData={formData} onGenerateLink={onGenerateLink} selectedEvent={selectedEvent}/>

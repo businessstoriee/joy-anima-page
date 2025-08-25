@@ -63,7 +63,7 @@ const BasicDetailsForm = ({
       </div>
 
 
-            {/* <Separator />
+            <Separator />
 
 
             <div className="space-y-2 p-6 border border-red-300 rounded-xl shadow-lg">
@@ -73,7 +73,7 @@ const BasicDetailsForm = ({
         onChange={setUrl}   // updates local state directly
         autoPlay
       />
-            </div> */}
+            </div>
             
     </>
   );

@@ -276,7 +276,7 @@ const EnhancedMediaGallery: React.FC<Props> = ({
 
       {/* ✅ Layout selector UI */}
 
-<div className="flex justify-end mb-4">
+{/* <div className="flex justify-end mb-4">
   <Select
     value={layout}
     onValueChange={(val) => {
@@ -295,7 +295,7 @@ const EnhancedMediaGallery: React.FC<Props> = ({
       ))}
     </SelectContent>
   </Select>
-</div>
+</div> */}
 
 
       {/* Gallery */}

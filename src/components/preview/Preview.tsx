@@ -42,7 +42,7 @@ const Preview = ({ greetingData, selectedEvent, frameStyle, mediaAnimation, clas
         />
       </div>
     );
-  }
+  } 
 
   return (
     <BackgroundWrapper greetingData={greetingData} className={className}>
