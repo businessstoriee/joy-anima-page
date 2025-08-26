@@ -138,6 +138,11 @@ const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({ settings, class
     if (settings.gradient?.enabled) {
       const [c1, c2] = settings.gradient.colors ?? ["#000000", "#111111"];
       s.background = `linear-gradient(${settings.gradient.direction || "to bottom"}, ${c1}, ${c2})`;
+    } else if (settings.image) {
+      s.background = `url(${settings.image})`;
+      s.backgroundSize = 'cover';
+      s.backgroundPosition = 'center';
+      s.backgroundRepeat = 'no-repeat';
     } else if (settings.color) {
       s.background = settings.color;
     }

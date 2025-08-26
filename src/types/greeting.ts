@@ -14,6 +14,7 @@ export interface TextContent {
   id: string;
   content: string;
   position?: { x: number; y: number };
+  size?: { width: number; height: number };
   style: {
     fontSize: string;
     fontWeight: string;
@@ -63,7 +64,7 @@ export interface GreetingFormData {
   receiverName: string;
   texts: TextContent[];
   media: MediaItem[];
-  audioUrl?: '',
+  audioUrl?: string;
   videoUrl: string;
   videoPosition: {
     width: number;
@@ -76,6 +77,7 @@ export interface GreetingFormData {
   theme: string;
   backgroundSettings: {
     color: string;
+    image?: string;
     gradient: {
       enabled: boolean;
       colors: [string, string];
