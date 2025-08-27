@@ -1,353 +1,423 @@
-import { useState, useEffect, useRef } from "react";
+// src/components/greeting/AudioPlayerInput.tsx
+import React, { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Play, Pause, AlertCircle, Music2, Loader2, Plus, Upload, Youtube } from "lucide-react";
+import { Play, Pause, AlertCircle, Upload, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import YouTubeBackground from "./YouTubeBackground";
 
-interface AudioPlayerInputProps {
+interface Props {
   value: string;
   onChange: (value: string) => void;
   autoPlay?: boolean;
 }
 
-interface Track {
-  id: string | number;
-  previewURL: string;
-  fullURL: string;
-  tags: string;
-  duration?: number;
-  source: "pixabay" | "freesound";
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
 }
 
-const PIXABAY_KEY = "YOUR_PIXABAY_API_KEY";      // 🔧 replace in prod
-const FREESOUND_KEY = "";                         // 🔧 optional. If empty, we show a helpful message.
-
-export default function AudioPlayerInput({
-  value,
-  onChange,
-  autoPlay = false,
-}: AudioPlayerInputProps) {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const previewRef = useRef<HTMLAudioElement | null>(null); // for previews
+export default function AudioPlayerInput({ value, onChange, autoPlay = false }: Props) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const youtubeIframeRef = useRef<HTMLIFrameElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
-  const [isSupportedUrl, setIsSupportedUrl] = useState(true);
-  const [showPicker, setShowPicker] = useState(false);
-
-  const [activeTab, setActiveTab] = useState<"pixabay" | "freesound" | "youtube" | "upload">("pixabay");
-  const [searchTerm, setSearchTerm] = useState("happy");
-  const [tracks, setTracks] = useState<Track[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [small, setSmall] = useState(false);
+  const [supported, setSupported] = useState(true);
+  const [loadedSuccessfully, setLoadedSuccessfully] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
+  const [youtubePlayer, setYoutubePlayer] = useState<any>(null);
+  const [isYoutubePlaying, setIsYoutubePlaying] = useState(false);
 
   // responsive
   useEffect(() => {
-    const checkScreenSize = () => setIsSmallScreen(window.innerWidth < 768);
-    checkScreenSize();
-    window.addEventListener("resize", checkScreenSize);
-    return () => window.removeEventListener("resize", checkScreenSize);
+    const check = () => setSmall(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
-  // validate + autoplay (for non-YouTube sources)
-  useEffect(() => {
-    const isYT = isYouTubeUrl(value);
-    if (isYT) {
-      // YouTube is handled by YouTubeBackground component
-      setIsSupportedUrl(true);
-      setIsPlaying(autoPlay); // we "assume" it tries to play; actual state inside YT
-      return;
+  // helpers
+  const isYouTube = (u?: string) => {
+    if (!u) return false;
+    try {
+      const url = new URL(u);
+      return /youtube\.com|youtu\.be|music\.youtube\.com/.test(url.hostname);
+    } catch {
+      return false;
     }
+  };
 
-    if (value) {
-      const supported = checkSupportedUrl(value);
-      setIsSupportedUrl(supported);
-
-      if (supported && audioRef.current) {
-        audioRef.current.src = value;
-        audioRef.current.load();
-
-        if (autoPlay) {
-          const playPromise = audioRef.current.play();
-          if (playPromise !== undefined) {
-            playPromise
-              .then(() => setIsPlaying(true))
-              .catch(() => {
-                setIsPlaying(false);
-                toast({
-                  title: "Tap to play music 🎵",
-                  description: "Your browser blocked autoplay. Please tap Play.",
-                });
-              });
-          }
-        }
-      }
-    } else {
-      setIsPlaying(false);
-      setIsSupportedUrl(true);
-    }
-  }, [value, autoPlay]);
-
-  const isYouTubeUrl = (url: string): boolean => {
-    if (!url) return false;
+  const extractVideoId = (url: string): string | null => {
     try {
       const u = new URL(url);
-      return /youtube\.com|youtu\.be/.test(u.hostname);
+      
+      if (u.hostname.includes("youtu.be")) {
+        return u.pathname.replace("/", "").split('?')[0];
+      }
+      
+      if (u.hostname.includes("youtube.com")) {
+        return u.searchParams.get("v");
+      }
+      
+      return null;
     } catch {
-      return false;
+      return null;
     }
   };
 
-  const checkSupportedUrl = (url: string): boolean => {
-    try {
-      new URL(url);
-      const unsupportedDomains = [
-        "jiosaavn.com",
-        "gaana.com",
-        "spotify.com",
-        "soundcloud.com", // most are not direct MP3
-      ];
-      // (We DO support pixabay direct .mp3 now, earlier you excluded it.)
-      // YouTube is handled via iframe; don't block it here.
-      if (isYouTubeUrl(url)) return true;
-      return !unsupportedDomains.some((domain) => url.includes(domain));
-    } catch {
-      return false;
-    }
-  };
+  // Load YouTube API
+  useEffect(() => {
+    if (!showVideo) return;
 
-  const togglePlayPause = () => {
-    if (isYouTubeUrl(value)) {
-      // For YouTube, just instruct user if it didn't auto play; no direct control here.
-      toast({
-        title: "YouTube playing in background",
-        description: "If you can't hear it, unmute system volume or try another track.",
-      });
+    // Check if API is already loaded
+    if (window.YT) {
+      initializeYouTubePlayer();
       return;
     }
 
-    if (!audioRef.current || !isSupportedUrl) return;
-    if (isPlaying) {
-      audioRef.current.pause();
+    // Load YouTube IFrame API
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    if (firstScriptTag && firstScriptTag.parentNode) {
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    }
+
+    window.onYouTubeIframeAPIReady = () => {
+      initializeYouTubePlayer();
+    };
+
+    return () => {
+      if (youtubePlayer) {
+        try {
+          youtubePlayer.destroy();
+        } catch (e) {
+          console.warn("Error destroying YouTube player:", e);
+        }
+      }
+    };
+  }, [showVideo]);
+
+  const initializeYouTubePlayer = () => {
+    const videoId = extractVideoId(value);
+    if (!videoId || !window.YT) return;
+
+    try {
+      const player = new window.YT.Player('youtube-player', {
+        height: '200',
+        width: '100%',
+        videoId: videoId,
+        playerVars: {
+          'playsinline': 1,
+          'modestbranding': 1,
+          'rel': 0,
+          'controls': 1,
+          'enablejsapi': 1
+        },
+        events: {
+          'onReady': (event: any) => {
+            setYoutubePlayer(event.target);
+            if (autoPlay) {
+              event.target.playVideo();
+              setIsYoutubePlaying(true);
+            }
+          },
+          'onStateChange': (event: any) => {
+            // YouTube player states: -1=unstarted, 0=ended, 1=playing, 2=paused, 3=buffering, 5=video cued
+            if (event.data === 1) {
+              setIsYoutubePlaying(true);
+            } else if (event.data === 2 || event.data === 0) {
+              setIsYoutubePlaying(false);
+            }
+          },
+          'onError': (event: any) => {
+            toast({
+              title: "YouTube playback error",
+              description: "Failed to play the video. Please try another video.",
+              variant: "destructive"
+            });
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Failed to initialize YouTube player:", error);
+    }
+  };
+
+  const toggleYouTubePlayback = () => {
+    if (!youtubePlayer) return;
+
+    try {
+      if (isYoutubePlaying) {
+        youtubePlayer.pauseVideo();
+      } else {
+        youtubePlayer.playVideo();
+      }
+    } catch (error) {
+      console.error("Error controlling YouTube playback:", error);
+    }
+  };
+
+  const isLikelyDirectAudio = (u?: string) => {
+    if (!u) return false;
+    try {
+      const url = new URL(u);
+      return /\.(mp3|wav|ogg|m4a|flac)(\?.*)?$/i.test(url.pathname) || url.hostname.includes("archive.org");
+    } catch {
+      return false;
+    }
+  };
+
+  const checkSupportedUrl = (u?: string) => {
+    if (!u) return true;
+    if (isYouTube(u)) return true;
+    try {
+      const hostname = new URL(u).hostname;
+      const blocked = [
+        "spotify.com",
+        "soundcloud.com",
+        "apple.com",
+        "music.apple.com",
+        "deezer.com",
+        "tidal.com",
+      ];
+      if (blocked.some((d) => hostname.includes(d))) return false;
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // load/play direct audio when value changes
+  useEffect(() => {
+    const supportedUrl = checkSupportedUrl(value);
+    setSupported(supportedUrl);
+    setLoadedSuccessfully(false);
+
+    if (!audioRef.current) return;
+
+    if (!value) {
+      audioRef.current.removeAttribute("src");
+      audioRef.current.load();
       setIsPlaying(false);
-    } else {
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise
+      setShowVideo(false);
+      return;
+    }
+
+    if (isYouTube(value)) {
+      setShowVideo(true);
+      audioRef.current.pause();
+      audioRef.current.removeAttribute("src");
+      setIsPlaying(false);
+      return;
+    }
+
+    // For direct audio files
+    setShowVideo(false);
+    try {
+      audioRef.current.src = value;
+      audioRef.current.load();
+
+      if (autoPlay) {
+        audioRef.current.play()
           .then(() => setIsPlaying(true))
-          .catch(() => {
+          .catch((err) => {
             setIsPlaying(false);
             toast({
-              title: "Playback failed",
-              description: "Please use a direct audio file (.mp3, .wav) or pick from the library.",
-              variant: "destructive",
+              title: "Autoplay prevented",
+              description: "Click Play to start audio (browser blocked autoplay).",
             });
           });
       }
-    }
-  };
-
-  /** ---------------- Fetchers ---------------- */
-
-  const fetchPixabay = async (query: string) => {
-    setLoading(true);
-    try {
-      if (!PIXABAY_KEY || PIXABAY_KEY.startsWith("YOUR_")) {
-        toast({
-          title: "Pixabay key missing",
-          description: "Set PIXABAY_KEY in AudioPlayerInput.tsx.",
-        });
-        setTracks([]);
-        return;
-      }
-      const res = await fetch(
-        `https://pixabay.com/api/music/?key=${PIXABAY_KEY}&q=${encodeURIComponent(
-          query
-        )}&per_page=12`
-      );
-      const data = await res.json();
-      const mapped: Track[] = (data.hits || []).map((t: any) => ({
-        id: t.id,
-        previewURL: t.audio,         // mp3 preview
-        fullURL: t.audio,            // use same as background (royalty-free)
-        tags: t.tags || t.title || "Track",
-        duration: t.duration,
-        source: "pixabay",
-      }));
-      setTracks(mapped);
     } catch (err) {
+      console.error("Failed to set audio src:", err);
+      toast({ title: "Invalid audio", description: "Could not use this URL as audio." });
+      setIsPlaying(false);
+    }
+  }, [value, autoPlay]);
+
+  // handle audio events
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a) return;
+    const onEnded = () => setIsPlaying(false);
+    const onPause = () => setIsPlaying(false);
+    const onCanPlay = () => setLoadedSuccessfully(true);
+    const onError = () => {
+      setIsPlaying(false);
+      setLoadedSuccessfully(false);
       toast({
-        title: "Error fetching music (Pixabay)",
-        description: "Try again later.",
+        title: "Audio load error",
+        description: "The audio failed to load/play.",
         variant: "destructive",
       });
-      setTracks([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  const fetchFreesound = async (query: string) => {
-    setLoading(true);
-    try {
-      if (!FREESOUND_KEY) {
-        toast({
-          title: "Freesound key missing",
-          description: "Add FREESOUND_KEY in AudioPlayerInput.tsx to enable this tab.",
-        });
-        setTracks([]);
-        return;
-      }
-      // Basic text search -> get previews (mp3)
-      const res = await fetch(
-        `https://freesound.org/apiv2/search/text/?query=${encodeURIComponent(
-          query
-        )}&fields=id,name,previews,tags,duration&token=${FREESOUND_KEY}`
-      );
-      const data = await res.json();
-      const mapped: Track[] = (data.results || []).map((t: any) => ({
-        id: t.id,
-        previewURL: t.previews?.["preview-hq-mp3"] || t.previews?.["preview-lq-mp3"],
-        fullURL: t.previews?.["preview-hq-mp3"] || t.previews?.["preview-lq-mp3"], // previews are mp3 CDN, fine for BG
-        tags: (t.tags || []).join(", ") || t.name,
-        duration: t.duration,
-        source: "freesound",
-      })).filter((x: Track) => !!x.previewURL);
-      setTracks(mapped);
-    } catch (err) {
-      toast({
-        title: "Error fetching music (Freesound)",
-        description: "Try again later.",
-        variant: "destructive",
-      });
-      setTracks([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    a.addEventListener("ended", onEnded);
+    a.addEventListener("pause", onPause);
+    a.addEventListener("canplay", onCanPlay);
+    a.addEventListener("error", onError);
 
-  /** ---------------- Select / Preview ---------------- */
+    return () => {
+      a.removeEventListener("ended", onEnded);
+      a.removeEventListener("pause", onPause);
+      a.removeEventListener("canplay", onCanPlay);
+      a.removeEventListener("error", onError);
+    };
+  }, []);
 
-  const stopPreview = () => {
-    if (previewRef.current) {
-      try { previewRef.current.pause(); } catch {}
-      previewRef.current = null;
-    }
-  };
-
-  const previewTrack = (track: Track) => {
-    stopPreview();
-    const a = new Audio(track.previewURL);
-    previewRef.current = a;
-    a.play().catch(() => {
-      toast({
-        title: "Preview failed",
-        description: "Could not play preview.",
-        variant: "destructive",
-      });
-    });
-  };
-
-  const handleSelectTrack = (track: Track) => {
-    stopPreview();
-    onChange(track.fullURL);     // triggers autoplay via useEffect
-    setShowPicker(false);
-    toast({ title: "Background music set", description: track.tags });
-  };
-
-  const handleSelectYouTube = (ytUrl: string) => {
-    if (!isYouTubeUrl(ytUrl)) {
-      toast({ title: "Invalid YouTube link", description: "Paste a valid YouTube URL.", variant: "destructive" });
+  const togglePlay = async () => {
+    if (isYouTube(value)) {
+      toggleYouTubePlayback();
       return;
     }
-    onChange(ytUrl); // handled by YouTubeBackground
-    setShowPicker(false);
-    toast({ title: "YouTube background enabled", description: "Playing in the background." });
+
+    if (!audioRef.current) return;
+
+    if (!value) {
+      toast({ title: "No audio URL", description: "Paste a direct audio URL or upload a file first." });
+      return;
+    }
+
+    try {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      }
+    } catch (err) {
+      setIsPlaying(false);
+      console.error("Play failed", err);
+      toast({
+        title: "Playback failed",
+        description: "Playback failed. Try uploading a local file or use a direct .mp3 URL.",
+        variant: "destructive",
+      });
+    }
   };
 
-  /** ---------------- UI ---------------- */
+  // open file dialog programmatically
+  const openFilePicker = () => {
+    if (!fileInputRef.current) return;
+    fileInputRef.current.value = "";
+    fileInputRef.current.click();
+  };
 
-  const SearchBar = (
-    <div className="flex gap-2">
-      <Input
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search music..."
-      />
-      <Button
-        onClick={() => {
-          if (activeTab === "pixabay") fetchPixabay(searchTerm);
-          if (activeTab === "freesound") fetchFreesound(searchTerm);
-        }}
-        disabled={loading}
-        variant="secondary"
-      >
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
-      </Button>
-    </div>
-  );
+  // handle file selection
+  const onFileSelected = (file?: File | null) => {
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    onChange(url);
+    toast({ title: "Local audio selected", description: file.name });
+    setTimeout(() => {
+      if (!audioRef.current) return;
+      audioRef.current.src = url;
+      audioRef.current.load();
+      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {
+        setIsPlaying(false);
+      });
+    }, 50);
+  };
+
+  const pasteHelperText = () => {
+    if (!value) return "Paste direct MP3/WAV URL, YouTube link, or upload a local file";
+    if (isYouTube(value)) return "YouTube link detected - use the video controls to play";
+    if (!supported) return "This platform may not provide direct audio streams.";
+    if (!isLikelyDirectAudio(value))
+      return "This URL may not be a direct audio file. Try a direct .mp3/.wav or use YouTube / local upload.";
+    return "Direct audio URL detected - click Play to start.";
+  };
 
   return (
     <div className="flex flex-col gap-3 w-full">
-      {/* Hidden native audio for non-YouTube */}
-      <audio
-        ref={audioRef}
-        onEnded={() => setIsPlaying(false)}
-        onPause={() => setIsPlaying(false)}
+      {/* hidden audio element */}
+      <audio ref={(el) => (audioRef.current = el)} className="hidden" />
+
+      {/* hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="audio/*"
         className="hidden"
+        onChange={(e) => onFileSelected(e.target.files?.[0] ?? null)}
       />
 
-      {/* Hidden YT player if value is YouTube */}
-      {isYouTubeUrl(value) && (
-        <YouTubeBackground
-          url={value}
-          autoPlay={autoPlay}
-          muted={true}
-          onError={() =>
-            toast({
-              title: "YouTube playback blocked",
-              description: "Autoplay might be blocked. Try tapping play or choose an MP3.",
-            })
-          }
-        />
+      {/* YouTube video preview */}
+      {/* {showVideo && (
+        <div className="relative">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium">YouTube Preview</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowVideo(false)}
+              className="h-6 w-6 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="relative bg-black rounded-lg overflow-hidden">
+            <div id="youtube-player" className="w-full aspect-video"></div>
+          </div>
+        </div>
+      )} */}
+
+       {/* Show video toggle button for YouTube URLs */}
+      {isYouTube(value) && !showVideo && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowVideo(true)}
+          className="self-start"
+        >
+          Show YouTube Video
+        </Button>
       )}
 
-      {/* Control row */}
-      <div className="flex items-center gap-2 w-full">
+      {/* control row */}
+      <div className="flex items-center gap-2">
         <div className="relative flex-1">
           <Input
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="Paste direct audio URL or YouTube link, or pick below"
+            placeholder="Paste direct MP3/WAV URL or YouTube link, or upload a file"
             type="url"
-            className={!isSupportedUrl && value ? "border-destructive" : ""}
+            className={!supported && value ? "border-destructive" : ""}
           />
-          {!isSupportedUrl && value && !isYouTubeUrl(value) && (
+          {!supported && value && (
             <div className="absolute right-2 top-2 text-destructive">
               <AlertCircle className="h-5 w-5" />
             </div>
           )}
         </div>
 
+  {/* YouTube video preview */}
+  {showVideo && (
+      <div className="relative bg-black rounded-lg overflow-hidden" style={{ width: '150px', height: '40px' }}>
+        <div id="youtube-player" className="w-full h-full"></div>
+      </div>
+  )}
         <Button
           type="button"
           variant="outline"
-          size={isSmallScreen ? "icon" : "default"}
-          onClick={togglePlayPause}
+          size={small ? "icon" : "default"}
+          onClick={togglePlay}
           disabled={!value}
-          className="shrink-0"
         >
-          {isSmallScreen ? (
-            isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />
-          ) : isPlaying ? (
-            <>
-              <Pause className="h-4 w-4 mr-2" /> Pause
-            </>
+          {small ? (
+            isYouTube(value) ? (
+              isYoutubePlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />
+            ) : (
+              isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />
+            )
+          ) : isYouTube(value) ? (
+            isYoutubePlaying ? (<><Pause className="h-4 w-4" /> Pause</>) : (<><Play className="h-4 w-4" /> Play</>)
           ) : (
-            <>
-              <Play className="h-4 w-4 mr-2" /> Play
-            </>
+            isPlaying ? (<><Pause className="h-4 w-4 " /> Pause</>) : (<><Play className="h-4 w-4 " /> Play</>)
           )}
         </Button>
 
@@ -355,158 +425,15 @@ export default function AudioPlayerInput({
           type="button"
           variant="outline"
           size="icon"
-          onClick={() => {
-            const newShow = !showPicker;
-            setShowPicker(newShow);
-            if (newShow) {
-              setActiveTab("pixabay");
-              fetchPixabay(searchTerm);
-            } else {
-              stopPreview();
-            }
-          }}
-          title="Open Music Picker"
+          onClick={openFilePicker}
+          title="Upload audio file"
         >
-          <Music2 className="h-5 w-5" />
+          <Upload className="h-5 w-5" />
         </Button>
       </div>
 
-      {/* Picker Panel */}
-      {showPicker && (
-        <Card className="border rounded-xl shadow-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Choose Background Music</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v as any); stopPreview(); }} className="w-full">
-              <TabsList className="grid grid-cols-4 gap-2 mb-3">
-                <TabsTrigger value="pixabay">Pixabay</TabsTrigger>
-                <TabsTrigger value="freesound">Freesound</TabsTrigger>
-                <TabsTrigger value="youtube" className="flex gap-1"><Youtube className="h-4 w-4" />YouTube</TabsTrigger>
-                <TabsTrigger value="upload" className="flex gap-1"><Upload className="h-4 w-4" />Upload</TabsTrigger>
-              </TabsList>
+      <div className="text-xs text-muted-foreground">{pasteHelperText()}</div>
 
-              {/* Pixabay */}
-              <TabsContent value="pixabay" className="space-y-3">
-                {SearchBar}
-                <div className="grid gap-2 max-h-60 overflow-y-auto">
-                  {tracks.map((t) => (
-                    <div
-                      key={`${t.source}-${t.id}`}
-                      className="flex items-center justify-between p-2 rounded-md hover:bg-muted cursor-pointer transition"
-                    >
-                      <div className="min-w-0">
-                        <div className="text-sm font-medium truncate">{t.tags}</div>
-                        {t.duration ? (
-                          <div className="text-xs text-muted-foreground">{Math.round(t.duration)}s • Pixabay</div>
-                        ) : (
-                          <div className="text-xs text-muted-foreground">Pixabay</div>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button size="icon" variant="outline" onClick={() => previewTrack(t)}>
-                          <Play className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" onClick={() => handleSelectTrack(t)}>
-                          <Plus className="h-4 w-4 mr-1" /> Use
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  {!loading && tracks.length === 0 && (
-                    <div className="text-sm text-muted-foreground px-1">No tracks yet. Try a different search.</div>
-                  )}
-                </div>
-              </TabsContent>
-
-              {/* Freesound */}
-              <TabsContent value="freesound" className="space-y-3">
-                {SearchBar}
-                {!FREESOUND_KEY && (
-                  <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-md p-2">
-                    Add your Freesound API key in <code>AudioPlayerInput.tsx</code> to enable this tab.
-                  </div>
-                )}
-                <div className="grid gap-2 max-h-60 overflow-y-auto">
-                  {tracks.map((t) => (
-                    <div
-                      key={`${t.source}-${t.id}`}
-                      className="flex items-center justify-between p-2 rounded-md hover:bg-muted cursor-pointer transition"
-                    >
-                      <div className="min-w-0">
-                        <div className="text-sm font-medium truncate">{t.tags}</div>
-                        {t.duration ? (
-                          <div className="text-xs text-muted-foreground">{Math.round(t.duration)}s • Freesound</div>
-                        ) : (
-                          <div className="text-xs text-muted-foreground">Freesound</div>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button size="icon" variant="outline" onClick={() => previewTrack(t)}>
-                          <Play className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" onClick={() => handleSelectTrack(t)}>
-                          <Plus className="h-4 w-4 mr-1" /> Use
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  {!loading && tracks.length === 0 && (
-                    <div className="text-sm text-muted-foreground px-1">No tracks yet. Try a different search.</div>
-                  )}
-                </div>
-              </TabsContent>
-
-              {/* YouTube */}
-              <TabsContent value="youtube" className="space-y-3">
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Paste YouTube link (e.g., https://youtube.com/watch?v=...)"
-                    onKeyDown={(e) => {
-                      const val = (e.target as HTMLInputElement).value;
-                      if (e.key === "Enter") handleSelectYouTube(val);
-                    }}
-                  />
-                  <Button
-                    onClick={() => {
-                      const el = document.querySelector<HTMLInputElement>('[data-yt-input]');
-                      const val = el?.value?.trim() ?? "";
-                      handleSelectYouTube(val);
-                    }}
-                    variant="secondary"
-                  >
-                    Use
-                  </Button>
-                </div>
-                <Input data-yt-input placeholder="(Optional) Paste link here and click Use" />
-                <div className="text-xs text-muted-foreground">
-                  Tip: Video is hidden/minimized; audio plays as background. Autoplay may start muted due to browser policy.
-                </div>
-              </TabsContent>
-
-              {/* Upload */}
-              <TabsContent value="upload" className="space-y-3">
-                <Input
-                  type="file"
-                  accept="audio/*"
-                  onChange={(e) => {
-                    if (e.target.files?.[0]) {
-                      stopPreview();
-                      const url = URL.createObjectURL(e.target.files[0]);
-                      onChange(url);
-                      setShowPicker(false);
-                      toast({ title: "Background music set (local file)" });
-                    }
-                  }}
-                />
-                <div className="text-xs text-muted-foreground">
-                  Your file will play locally in the browser as background music.
-                </div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

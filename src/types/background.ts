@@ -3,6 +3,7 @@ export interface BackgroundSettings {
   enabled?: boolean;
   color: string;
   image?: string;
+  imageOpacity?: number;
   gradient: {
     enabled: boolean;
     colors: [string, string];

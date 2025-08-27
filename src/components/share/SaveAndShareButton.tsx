@@ -38,7 +38,11 @@ const SaveAndShareButton: React.FC<Props> = ({
   };
 
   const handleSave = async () => {
+    console.log('🎯 Save button clicked!');
+    console.log('📊 Current greetingData:', JSON.stringify(greetingData, null, 2));
+    console.log('📝 Title:', title);
     const slug = await saveGreeting(greetingData, title || undefined);
+    console.log('🎯 Save completed, received slug:', slug);
     
     if (slug) {
       setSavedSlug(slug);

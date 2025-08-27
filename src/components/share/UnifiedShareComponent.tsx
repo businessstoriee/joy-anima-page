@@ -55,7 +55,7 @@ const UnifiedShareComponent: React.FC<UnifiedShareComponentProps> = ({
 
     setIsSaving(true);
     try {
-      const slug = await saveGreeting(greetingData, selectedEvent || undefined);
+      const slug = await saveGreeting(greetingData, selectedEvent?.label || undefined);
       setSavedSlug(slug);
     } catch (error) {
       console.error('Failed to save greeting:', error);

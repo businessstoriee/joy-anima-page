@@ -37,8 +37,6 @@ const CustomizationForm = ({
 
 }: CustomizationFormProps) => {
 
-   const [audioUrl, setAudioUrl] = useState("");
-
   return (
     <>
 
@@ -75,7 +73,6 @@ const CustomizationForm = ({
         onAnimationChange={onAnimationChange}
         onFrameStyleChange={onFrameStyleChange}
       />
-      
       
     </>
   );

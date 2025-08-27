@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import ActionsForm from '@/components/share/ActionsForm';
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 
-
 type Props = {
   formData: any;
   selectedEvent: any;
@@ -51,6 +50,7 @@ export default function LivePreviewCard({ formData, selectedEvent, onOpenPreview
             greetingData={formData} 
             selectedEvent={selectedEvent} 
             onDataChange={onDataChange}
+             isEditable={true}
           />
 
           <ActionsForm greetingData={formData} onGenerateLink={onGenerateLink} selectedEvent={selectedEvent}/>

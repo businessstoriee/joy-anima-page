@@ -1,4 +1,3 @@
-// src/components/background/BackgroundRenderer.tsx
 import React, { useEffect, useMemo, useRef } from "react";
 import "./backgroundAnimations.css";
 import { BackgroundSettings } from "@/types/background";
@@ -34,12 +33,11 @@ export const BG_PATTERN_OPTIONS = [
 ] as const;
 
 export const BG_ANIMATION_OPTIONS = [
-  { value: "bubbles", label: "🫧 Rising Bubbles" }, // CSS
-  { value: "aurora", label: "🌌 Aurora" }, // CSS
+  { value: "bubbles", label: "🫧 Rising Bubbles" },
+  { value: "aurora", label: "🌌 Aurora" },
   { value: "threejs", label: "🪐 Galaxy" },
   { value: "tsparticles", label: "🔵 Particles" },
   { value: "fireworks-js", label: "🎆 Fireworks" },
-  
 ] as const;
 
 declare global {
@@ -86,7 +84,6 @@ const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({ settings, class
     if (!settings?.animation?.enabled || !animContainerRef.current) return;
     const container = animContainerRef.current;
 
-    // destroy previous and wipe container
     const reset = async () => {
       try {
         if (engineInstance.current?.destroy) await engineInstance.current.destroy();
@@ -97,7 +94,6 @@ const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({ settings, class
 
     (async () => {
       await reset();
-
       const type = settings.animation.type;
       try {
         if (type === "tsparticles") {
@@ -105,13 +101,12 @@ const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({ settings, class
         } else if (type === "fireworks-js") {
           engineInstance.current = await initFireworksEngine(container, settings);
         } else if (type === "threejs") {
-          // threeEngine will internally run the galaxy preset only
           engineInstance.current = await initThreeEngine(container, settings);
         } else {
-          // noop (CSS handled elsewhere)
+          // CSS handled for other animations
         }
       } catch (err) {
-        // swallow — dev console will show errors
+        // swallow
       }
     })();
 
@@ -135,17 +130,15 @@ const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({ settings, class
       ["--pattern-opacity" as any]: (settings.pattern?.opacity ?? 20) / 100,
       color: "rgba(255,255,255,0.35)",
     };
+
+    // Gradient takes precedence in base style
     if (settings.gradient?.enabled) {
       const [c1, c2] = settings.gradient.colors ?? ["#000000", "#111111"];
       s.background = `linear-gradient(${settings.gradient.direction || "to bottom"}, ${c1}, ${c2})`;
-    } else if (settings.image) {
-      s.background = `url(${settings.image})`;
-      s.backgroundSize = 'cover';
-      s.backgroundPosition = 'center';
-      s.backgroundRepeat = 'no-repeat';
     } else if (settings.color) {
       s.background = settings.color;
     }
+    // don't set image here; image is rendered as a dedicated layer so opacity works.
     return s;
   }, [enabled, settings]);
 
@@ -154,7 +147,23 @@ const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({ settings, class
 
   return (
     <div className={cn("relative overflow-hidden", className)} style={baseStyle}>
-      {/* Pattern overlay */}
+      {/* Image layer (separate so opacity works) */}
+      {settings?.image && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage: `url(${settings.image})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            opacity: (settings.imageOpacity ?? 100) / 100,
+            zIndex: 0,
+          }}
+        />
+      )}
+
+      {/* Pattern overlay (on top of base/image) */}
       {enabled && pattern && (
         <div
           aria-hidden="true"
@@ -174,7 +183,8 @@ const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({ settings, class
                 ? "12px 12px, 12px 12px"
                 : "24px 24px",
             opacity: (settings?.pattern?.opacity ?? 20) / 100,
-            mixBlendMode: "overlay"
+            mixBlendMode: "overlay",
+            zIndex: 5,
           }}
         />
       )}
@@ -187,16 +197,22 @@ const BackgroundRenderer: React.FC<BackgroundRendererProps> = ({ settings, class
           style={{
             ["--bg-speed" as any]: `${settings?.animation?.speed ?? 6}s`,
             ["--bg-intensity" as any]: (settings?.animation?.intensity ?? 80) / 100,
+            zIndex: 6,
           }}
         />
       )}
 
       {/* JS animation container */}
       {enabled && anim && ["tsparticles", "fireworks-js", "threejs"].includes(anim) && (
-        <div ref={animContainerRef} aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ opacity: (settings?.animation?.intensity ?? 80) / 100 }} />
+        <div
+          ref={animContainerRef}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{ opacity: (settings?.animation?.intensity ?? 80) / 100, zIndex: 6 }}
+        />
       )}
 
-      {/* Content */}
+      {/* Children (content) */}
       <div className="relative z-10">{children}</div>
     </div>
   );

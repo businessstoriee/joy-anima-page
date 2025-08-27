@@ -20,6 +20,7 @@ export interface TextContent {
     fontWeight: string;
     color: string;
     textAlign: 'left' | 'center' | 'right';
+    fontFamily?: string;
   };
   animation: string;
 }
@@ -43,6 +44,7 @@ export interface MediaItem {
   id: string;
   url: string;
   type: 'image' | 'video' | 'gif';
+  alt?: string;
   position: {
     width: number;
     height: number;
@@ -53,6 +55,10 @@ export interface MediaItem {
   priority: number;
   fileType?: string; 
   textOverlays?: TextOverlay[];
+  effects?: {
+    filter?: string;
+    rotation?: number;
+  };
 }
 
 export interface GreetingFormData {
@@ -78,6 +84,7 @@ export interface GreetingFormData {
   backgroundSettings: {
     color: string;
     image?: string;
+    imageOpacity?: number;
     gradient: {
       enabled: boolean;
       colors: [string, string];
