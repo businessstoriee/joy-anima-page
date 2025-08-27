@@ -1,20 +1,24 @@
-// src/pages/create/LivePreviewCard.tsx
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Preview from "@/components/preview/Preview";
-import { Button } from "@/components/ui/button";
-import ActionsForm from '@/components/share/ActionsForm';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GreetingFormData, EventType } from '@/types/greeting';
+import Preview from '@/components/preview/Preview';
+import FirebaseShareButton from '@/components/share/GenerateShareLink';
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 
-type Props = {
-  formData: any;
-  selectedEvent: any;
+interface LivePreviewCardProps {
+  formData: GreetingFormData;
+  selectedEvent: EventType | null;
   onOpenPreview: () => void;
-  onGenerateLink: () => void;
-  onDataChange?: (data: any) => void;
-};
+  onDataChange: (data: GreetingFormData) => void;
+}
 
-export default function LivePreviewCard({ formData, selectedEvent, onOpenPreview, onGenerateLink, onDataChange }: Props) {
+const LivePreviewCard: React.FC<LivePreviewCardProps> = ({
+  formData,
+  selectedEvent,
+  onOpenPreview,
+  onDataChange,
+}) => {
+
   const { translate } = useLanguageTranslation();
 
   return (
@@ -39,22 +43,26 @@ export default function LivePreviewCard({ formData, selectedEvent, onOpenPreview
         ))}
 
         <CardTitle onClick={onOpenPreview} className="cursor-pointer flex items-center gap-2 relative z-10">
-          <span className="inline-block group-hover:animate-bounce">👀 {translate('Live Preview')} (Click to Expand)</span>
+          <span className="inline-block group-hover:animate-bounce">👀 {translate('Live Preview')}  (Click to Expand)</span>
         </CardTitle>
       </CardHeader>
 
       <CardContent>
         {formData.eventType ? ( 
-          <div>
-          <Preview 
-            greetingData={formData} 
-            selectedEvent={selectedEvent} 
-            onDataChange={onDataChange}
-             isEditable={true}
-          />
+          <div className="space-y-4">
+            <Preview 
+              greetingData={formData} 
+              selectedEvent={selectedEvent} 
+              onDataChange={onDataChange}
+              isEditable={true}
+            />
 
-          <ActionsForm greetingData={formData} onGenerateLink={onGenerateLink} selectedEvent={selectedEvent}/>
-
+            <div className="flex justify-center">
+              <FirebaseShareButton
+                greetingData={formData}
+                selectedEvent={selectedEvent}
+              />
+            </div>
           </div>
         ) : (
           <div className="text-center text-muted-foreground py-12">
@@ -65,4 +73,6 @@ export default function LivePreviewCard({ formData, selectedEvent, onOpenPreview
       </CardContent>
     </Card>
   );
-}
+};
+
+export default LivePreviewCard;

@@ -9,6 +9,7 @@ import ContentForm from './ContentForm';
 import AdvancedMediaUploader from '../contentEditor/mediaUploader/AdvancedMediaUploader';
 import EmojiSelector from '@/components/greeting/contentEditor/EmojiSelector/EmojiSelector';
 import CustomizationForm from './CustomizationForm';
+import FirebaseDebugger from '@/components/debug/FirebaseDebugger';
 
 interface CompactFormColumnProps {
   formData: GreetingFormData;
@@ -25,7 +26,6 @@ interface CompactFormColumnProps {
   onAnimationChange: (animation: string) => void;
   onFrameStyleChange:(frame:string) => void;
   onCustomEventCreate: (event: EventType) => void;
-  onGenerateLink: () => void;
 }
 
 const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
@@ -43,7 +43,6 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
   onAnimationChange,
   onFrameStyleChange,
   onCustomEventCreate,
-  onGenerateLink
 }) => {
   const getTabBadgeCount = (tab: string) => {
     switch (tab) {
@@ -183,6 +182,7 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
         <ContentForm
           texts={formData.texts}
           media={formData.media}
+          eventType={formData.eventType}
           onTextChange={onTextChange}
           onMediaChange={onMediaChange}
         />
@@ -212,6 +212,11 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
             onAnimationChange={onAnimationChange}
             onFrameStyleChange={onFrameStyleChange}
           />
+          
+          {/* Debug Panel */}
+          {/* <div className="border-t pt-4">
+            <FirebaseDebugger greetingData={formData} />
+          </div> */}
         </div>
       </TabsContent>
     </div>

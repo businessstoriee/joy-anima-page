@@ -1,4 +1,5 @@
-import { useState } from 'react';
+// hooks/useFirebaseGreetings.ts
+import { useState, useCallback } from 'react';
 import { collection, doc, setDoc, getDoc, serverTimestamp, updateDoc, increment } from 'firebase/firestore';
 import { db } from '@/utils/firebase/firebase';
 import { GreetingFormData } from '@/types/greeting';
@@ -17,39 +18,37 @@ export interface SavedGreeting {
 }
 
 export function useFirebaseGreetings() {
+  const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [savedGreetings, setSavedGreetings] = useState<SavedGreeting[]>([]);
 
-  // Generate slug for Firebase document
+  // helper: slug generator (deterministic)
   const generateSlug = (senderName: string, receiverName: string, eventName: string): string => {
-    const sanitize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    return `${sanitize(senderName || 'someone')}-wishes-${sanitize(receiverName || 'you')}-${sanitize(eventName)}`;
+    const sanitize = (str: string) =>
+      (str || '')
+        .toString()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    return `${sanitize(senderName || 'someone')}-wishes-${sanitize(receiverName || 'you')}-${sanitize(eventName || 'event')}`;
   };
 
-  // Save greeting to Firebase
-  const saveGreeting = async (greetingData: GreetingFormData, title?: string): Promise<string | null> => {
-    setIsLoading(true);
+  // Save greeting (stable reference)
+  const saveGreeting = useCallback(async (greetingData: GreetingFormData, title?: string): Promise<string | null> => {
+    console.log('🔥 useFirebaseGreetings.saveGreeting: starting');
+    setIsSaving(true);
     try {
-      // Determine event name for slug generation
-      const eventName = greetingData.eventType === 'custom' 
-        ? (greetingData.customEventName || 'custom') 
-        : greetingData.eventType;
-
-      // Generate slug
-      const slug = generateSlug(
-        greetingData.senderName || 'someone',
-        greetingData.receiverName || 'you',
-        eventName
-      );
+      const eventName = greetingData.eventType === 'custom' ? (greetingData.customEventName || 'custom') : (greetingData.eventType || 'event');
+      const slug = generateSlug(greetingData.senderName || 'someone', greetingData.receiverName || 'you', eventName);
 
       const greetingPayload = {
         id: slug,
-        userId: null, // You can add Firebase Auth later
+        userId: null,
         title: title || `${greetingData.senderName || 'Someone'} wishes ${greetingData.receiverName || 'You'}`,
         slug,
         eventType: greetingData.eventType,
-        eventName: eventName,
-        eventEmoji: greetingData.eventType === 'custom' ? greetingData.customEventEmoji || '🎉' : '🎉',
+        eventName,
+        eventEmoji: greetingData.eventType === 'custom' ? (greetingData.customEventEmoji || '🎉') : '🎉',
         senderName: greetingData.senderName || '',
         receiverName: greetingData.receiverName || '',
         audioUrl: greetingData.audioUrl || '',
@@ -68,38 +67,44 @@ export function useFirebaseGreetings() {
         updatedAt: serverTimestamp(),
       };
 
-      // Use slug as document ID
       const greetingRef = doc(collection(db, 'greetings'), slug);
+      console.log('💾 useFirebaseGreetings.saveGreeting: saving slug=', slug);
       await setDoc(greetingRef, greetingPayload);
-      
+      console.log('✅ useFirebaseGreetings.saveGreeting: saved');
+      // Optionally update local savedGreetings
+      setSavedGreetings(prev => [{ id: slug, title: greetingPayload.title, slug, eventType: greetingPayload.eventType, eventName, eventEmoji: greetingPayload.eventEmoji, senderName: greetingPayload.senderName, receiverName: greetingPayload.receiverName, createdAt: greetingPayload.createdAt, viewCount: 0 }, ...prev]);
       return slug;
-    } catch (error) {
-      console.error('Error saving greeting:', error);
+    } catch (err) {
+      console.error('❌ useFirebaseGreetings.saveGreeting error:', err);
       return null;
     } finally {
-      setIsLoading(false);
+      setIsSaving(false);
     }
-  };
+  }, []);
 
-  // Load greeting by slug
-  const loadGreeting = async (slug: string): Promise<GreetingFormData | null> => {
+  // Load greeting (stable reference). increments viewCount in background (non-blocking)
+  const loadGreeting = useCallback(async (slug: string): Promise<GreetingFormData | null> => {
+    if (!slug) {
+      console.warn('useFirebaseGreetings.loadGreeting: no slug provided');
+      return null;
+    }
+
+    console.log('🔄 useFirebaseGreetings.loadGreeting: loading slug=', slug);
     setIsLoading(true);
     try {
       const greetingRef = doc(db, 'greetings', slug);
       const docSnap = await getDoc(greetingRef);
 
       if (!docSnap.exists()) {
+        console.warn('❌ useFirebaseGreetings.loadGreeting: document not found for slug=', slug);
         return null;
       }
 
-      const data = docSnap.data();
+      const data: any = docSnap.data();
+      console.log('✅ Successfully loaded data from Firebase:', JSON.stringify(data, null, 2));
 
-      // Increment view count
-      await updateDoc(greetingRef, {
-        viewCount: increment(1)
-      });
-
-      return {
+      // Build processed payload for frontend
+      const processed: GreetingFormData = {
         eventType: data.eventType,
         customEventName: data.eventName,
         customEventEmoji: data.eventEmoji,
@@ -116,19 +121,33 @@ export function useFirebaseGreetings() {
         borderSettings: data.borderSettings || {},
         audioUrl: data.audioUrl || '',
         videoUrl: '',
-        videoPosition: { width: 400, height: 300 }
+        videoPosition: { width: 400, height: 300 },
       };
-    } catch (error) {
-      console.error('Error loading greeting:', error);
+
+      console.log('✅ useFirebaseGreetings.loadGreeting: processed data ready');
+
+      // Increment viewCount asynchronously (don't block UI)
+      // We intentionally do not await this to avoid delaying the returned data.
+      (async () => {
+        try {
+          await updateDoc(greetingRef, { viewCount: increment(1) });
+          console.log('📈 useFirebaseGreetings.loadGreeting: viewCount incremented');
+        } catch (err) {
+          console.warn('⚠️ useFirebaseGreetings.loadGreeting: failed to increment viewCount', err);
+        }
+      })();
+
+      console.log('🎯 Processed data for frontend:', JSON.stringify(processed, null, 2));
+      return processed;
+    } catch (err) {
+      console.error('❌ useFirebaseGreetings.loadGreeting error:', err);
       return null;
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  // Get AI text suggestions (placeholder - you can implement AI integration later)
-  const getAITextSuggestions = async (eventType: string): Promise<string[]> => {
-    // Fallback suggestions based on event type
+  const getAITextSuggestions = useCallback(async (eventType: string): Promise<string[]> => {
     const suggestions: Record<string, string[]> = {
       birthday: [
         "Wishing you joy and happiness on your special day! 🎂",
@@ -151,12 +170,12 @@ export function useFirebaseGreetings() {
         "Celebrating you and all the joy you bring to others!"
       ]
     };
-
     return suggestions[eventType] || suggestions.default;
-  };
+  }, []);
 
   return {
     isLoading,
+    isSaving,
     savedGreetings,
     saveGreeting,
     loadGreeting,

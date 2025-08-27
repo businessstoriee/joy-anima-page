@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+// pages/ViewGreeting.tsx
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useFirebaseGreetings } from '@/hooks/useFirebaseGreetings';
 import { GreetingFormData } from '@/types/greeting';
@@ -7,48 +8,72 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ShareActions from '@/components/share/ShareActions';
+import { FloatingButton } from '@/components/share/CustomizeAndShare';
+import SEOManager from '@/components/seo/SEOManager';
+
 
 const ViewGreeting: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { loadGreeting, isLoading } = useFirebaseGreetings();
+  const { loadGreeting, isLoading: hookLoading } = useFirebaseGreetings();
   const [greetingData, setGreetingData] = useState<GreetingFormData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
+  const mountedRef = useRef(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchGreeting = async () => {
-      if (!slug) {
-        setError('No greeting slug provided');
-        return;
-      }
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
 
+  useEffect(() => {
+    // Guard: need slug
+    if (!slug) {
+      console.warn('ViewGreeting: no slug found in params');
+      setError('No greeting slug provided');
+      setInitialLoading(false);
+      return;
+    }
+
+    // Only run initial fetch once (per mount)
+    let cancelled = false;
+    const fetch = async () => {
       try {
+        console.log('🚀 ViewGreeting: fetching slug=', slug);
+        setInitialLoading(true);
         const data = await loadGreeting(slug);
+        if (cancelled || !mountedRef.current) return;
+
+        console.log('📋 ViewGreeting: loadGreeting returned', data);
         if (data) {
           setGreetingData(data);
+          setError(null);
+          console.log('✅ ViewGreeting: greetingData set');
         } else {
+          setGreetingData(null);
           setError('Greeting not found');
+          console.warn('❌ ViewGreeting: greeting not found for slug=', slug);
         }
       } catch (err) {
-        console.error('Error loading greeting:', err);
-        setError('Failed to load greeting');
+        console.error('❌ ViewGreeting: error fetching greeting', err);
+        if (!cancelled && mountedRef.current) setError('Failed to load greeting');
+      } finally {
+        if (!cancelled && mountedRef.current) {
+          setInitialLoading(false);
+        }
       }
     };
 
-    fetchGreeting();
+    fetch();
+
+    return () => { cancelled = true; };
   }, [slug, loadGreeting]);
 
-  const handleShareGreeting = () => {
-    const shareableURL = `${window.location.origin}/${slug}`;
-    navigator.clipboard.writeText(shareableURL);
-    toast({
-      title: "Link copied!",
-      description: "Greeting link has been copied to your clipboard.",
-    });
-  };
-
-  if (isLoading) {
+  // Loader UI: show only while initial load is happening.
+  // If hookLoading toggles later (e.g. viewCount increment), don't re-show the big loader.
+  if (initialLoading && !greetingData) {
+    console.log('⏳ ViewGreeting: initial loading...');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/20">
         <div className="text-center">
@@ -59,7 +84,9 @@ const ViewGreeting: React.FC = () => {
     );
   }
 
+  // Error or not found
   if (error || !greetingData) {
+    console.log('❌ ViewGreeting: error state or empty data', { error, hasData: !!greetingData });
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/20">
         <div className="text-center max-w-md mx-auto p-6">
@@ -77,46 +104,55 @@ const ViewGreeting: React.FC = () => {
     );
   }
 
+  // Render the greeting (stable view). We intentionally do NOT re-show a full-page loader
+  // if hookLoading is true later (that would cause flashing).
+  console.log('🎯 ViewGreeting: rendering greeting', greetingData);
+  const handleShareGreeting = () => {
+    const shareableURL = `${window.location.origin}/${slug}`;
+    navigator.clipboard.writeText(shareableURL);
+    toast({
+      title: "Link copied!",
+      description: "Greeting link has been copied to your clipboard.",
+    });
+  };
+
   return (
+     <>
+    <SEOManager 
+        title={`${greetingData.eventType || 'Greeting'} for ${greetingData.receiverName || 'You'}`}
+        description={greetingData.texts?.[0]?.content || greetingData.customEventText || ' '}
+        customEventName = {greetingData.customEventName}
+      />
+
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/20">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/')}
-            className="gap-2"
-          >
+          <Button variant="ghost" onClick={() => navigate('/')} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Back to Home
           </Button>
-          
-          <Button 
-            onClick={handleShareGreeting}
-            className="gap-2"
-          >
-            <Share2 className="h-4 w-4" />
-            Share
-          </Button>
+
+          <div className="flex items-center gap-2">
+            <Button onClick={handleShareGreeting} className="gap-2">
+              <Share2 className="h-4 w-4" />
+              Share
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Greeting Preview */}
       <div className="max-w-4xl mx-auto p-4">
-        <Preview 
-          greetingData={greetingData}
-          selectedEvent={null}
-        />
-        
-        {/* Share Actions */}
-        <div className="mt-6">
-          <ShareActions 
-            greetingData={greetingData}
-            selectedEvent={null}
-          />
+        <Preview greetingData={greetingData} selectedEvent={null} />
+        <div className="mt-6 mx-4 mb-6">
+          <ShareActions greetingData={greetingData} selectedEvent={null} />
         </div>
+         <FloatingButton />
       </div>
     </div>
+
+    </>
   );
 };
 

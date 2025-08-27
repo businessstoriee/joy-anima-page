@@ -19,8 +19,6 @@ const Index = () => {
   const navigate = useNavigate();
   const [greetingData, setGreetingData] = useState<GreetingFormData | null>(null);
   const [currentEvent, setCurrentEvent] = useState<EventType | null>(null);
-  const [currentLanguage, setCurrentLanguage] = useState('en');
-  const greetingRef = useRef<HTMLDivElement>(null);
   const { translate } = useLanguageTranslation();
   const { loadGreeting } = useFirebaseGreetings();
 
@@ -97,42 +95,6 @@ useEffect(() => {
     setCurrentEvent(event || null);
   }
 }, [location.search]);
-
-  // Generate background classes based on settings
-  const getBackgroundClasses = () => {
-    if (!greetingData?.backgroundSettings) return 'bg-gradient-to-br from-primary/10 via-background to-secondary/20';
-    
-    const { backgroundSettings } = greetingData;
-    let classes = '';
-    
-    if (backgroundSettings.animation.enabled) {
-      switch (backgroundSettings.animation.type) {
-        case 'stars': classes += 'bg-stars '; break;
-        case 'sparkles': classes += 'bg-sparkles '; break;
-        case 'particles': classes += 'bg-particles '; break;
-        case 'hearts': classes += 'bg-falling-hearts '; break;
-        case 'bubbles': classes += 'bg-floating-bubbles '; break;
-        case 'dots': classes += 'bg-glowing-dots '; break;
-        case 'rings': classes += 'bg-pulsing-rings '; break;
-        case 'snow': classes += 'bg-snow '; break;
-      }
-    }
-    
-    return classes;
-  };
-
-  const getBackgroundStyle = () => {
-    if (!greetingData?.backgroundSettings) return {};
-    const { backgroundSettings } = greetingData;
-    let style: React.CSSProperties = {};
-    if (backgroundSettings.gradient.enabled) {
-      const [color1, color2] = backgroundSettings.gradient.colors;
-      style.background = `linear-gradient(${backgroundSettings.gradient.direction}, ${color1}, ${color2})`;
-    } else {
-      style.backgroundColor = backgroundSettings.color;
-    }
-    return style;
-  };
 
   // Show greeting if data exists
  // new — render if we have either eventType or customEventName

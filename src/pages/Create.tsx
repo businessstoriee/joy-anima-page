@@ -65,7 +65,6 @@ const CreatePage: React.FC = () => {
             onAnimationChange={(anim) => handleInputChange("animationStyle", anim)}
             onFrameStyleChange={(frame) => handleInputChange("framenStyle", frame)}
             onCustomEventCreate={onCustomEventCreate}
-            onGenerateLink={generateShareableURL}
           />
 
           <div className={cn("space-y-6")}>
@@ -73,19 +72,6 @@ const CreatePage: React.FC = () => {
               formData={formData} 
               selectedEvent={selectedEvent} 
               onOpenPreview={handlePreviewClick} 
-            onGenerateLink={() => {
-              // Use Firebase-based sharing instead of URL parameters
-              const eventName = formData.eventType === 'custom' 
-                ? (formData.customEventName || customEvent?.label || 'custom')
-                : formData.eventType || 'greeting';
-
-              const sanitize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-              const slug = `${sanitize(formData.senderName || 'someone')}-wishes-${sanitize(formData.receiverName || 'you')}-${sanitize(eventName)}`;
-              
-              const shareableURL = `${window.location.origin}/${slug}`;
-              navigator.clipboard.writeText(shareableURL);
-              // toast would need to be imported and used here
-            }}
               onDataChange={setFormData}
             />
 

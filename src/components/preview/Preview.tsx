@@ -92,11 +92,11 @@ const Preview = ({
               mediaAnimation={mediaAnimation || greetingData.mediaAnimation}
             />
             <SenderSection greetingData={greetingData} />
-            <ShareActions
+            {/* <ShareActions
               greetingData={greetingData}
               greetingRef={greetingRef}
               selectedEvent={selectedEvent}
-            />
+            /> */}
           </div>
         </BorderContainer>
 

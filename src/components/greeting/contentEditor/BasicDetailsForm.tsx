@@ -43,7 +43,8 @@ const BasicDetailsForm = ({
       {/* Names */}
       <div className="grid md:grid-cols-2 gap-4 p-6 border border-green-300 rounded-xl shadow-lg">
         <div className="space-y-2">
-          <Label htmlFor="senderName">{translate('Your Name')} ({translate('optional')})</Label>
+          {/* ({translate('optional')}) */}
+          <Label htmlFor="senderName">{translate('Your Name')}</Label>
           <Input
             id="senderName"
             value={senderName}
@@ -52,7 +53,8 @@ const BasicDetailsForm = ({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="receiverName">{translate('Receiver\'s Name')} ({translate('optional')})</Label>
+           {/* ({translate('optional')}) */}
+          <Label htmlFor="receiverName">{translate('Receiver\'s Name')}</Label>
           <Input
             id="receiverName"
             value={receiverName}
