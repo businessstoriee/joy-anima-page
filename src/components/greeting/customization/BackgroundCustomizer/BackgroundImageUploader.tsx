@@ -158,7 +158,7 @@ const BackgroundImageUploader: React.FC<BackgroundImageUploaderProps> = ({
             <Label className="text-sm font-medium">Example Image Backgrounds</Label>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             {suggestedImages.map((image) => (
               <motion.div
                 key={image.url}

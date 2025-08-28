@@ -53,8 +53,6 @@ const LivePreviewCard: React.FC<LivePreviewCardProps> = ({
             <Preview 
               greetingData={formData} 
               selectedEvent={selectedEvent} 
-              onDataChange={onDataChange}
-              isEditable={true}
             />
 
             <div className="flex justify-center">
