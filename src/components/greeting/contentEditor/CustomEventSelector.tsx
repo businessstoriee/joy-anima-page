@@ -51,6 +51,10 @@ const CustomEventSelector = ({
     national: '🏛️ National Holidays',
     seasonal: '🌸 Seasonal Festivals',
     personal: '👥 Personal Milestones',
+    wellness: '💚 wellness',
+    professional: '📚 Professional',
+    international: '🎭 International',
+    special: '👩‍🦰 Special',
     custom: '✨ Custom Events'
   };
 

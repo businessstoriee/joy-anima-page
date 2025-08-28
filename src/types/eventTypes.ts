@@ -141,22 +141,6 @@ export const eventTypes: EventType[] = [
     theme: 'card-baisakhi',
     category: 'seasonal'
   },
-  { 
-    value: 'onam', 
-    label: 'Onam', 
-    emoji: '🌺', 
-    defaultMessage: 'May King Mahabali bless you with happiness and prosperity!', 
-    theme: 'card-onam',
-    category: 'seasonal'
-  },
-  { 
-    value: 'pongal', 
-    label: 'Pongal', 
-    emoji: '🍯', 
-    defaultMessage: 'May this harvest festival sweeten your life with joy!', 
-    theme: 'card-pongal',
-    category: 'seasonal'
-  },
   { value: 'thanksgiving', label: 'Thanksgiving', emoji: '🦃', defaultMessage: 'Wishing you a harvest of blessings, good health, and good times!', theme: 'card-thanksgiving', category: 'seasonal' },
   { value: 'chinese-new-year', label: 'Chinese New Year', emoji: '🧧', defaultMessage: 'Happy Lunar New Year! Wishing you luck, prosperity, and joy!', theme: 'card-chinese-new-year', category: 'seasonal' },
 
@@ -244,7 +228,284 @@ export const eventTypes: EventType[] = [
     defaultMessage: 'Sending you warm wishes and positive vibes!', 
     theme: 'card-custom',
     category: 'custom'
-  }
+  },
+  { 
+    value: 'ganesh-chaturthi', 
+    label: 'Ganesh Chaturthi', 
+    emoji: '🐘', 
+    defaultMessage: 'May Lord Ganesha remove all obstacles and bring wisdom and prosperity to your life!', 
+    theme: 'card-ganesh',
+    category: 'religious'
+  },
+  { 
+    value: 'janmashtami', 
+    label: 'Janmashtami', 
+    emoji: '👶', 
+    defaultMessage: 'May Lord Krishna fill your life with divine love and eternal happiness!', 
+    theme: 'card-janmashtami',
+    category: 'religious'
+  },
+  { 
+    value: 'maha-shivratri', 
+    label: 'Maha Shivratri', 
+    emoji: '☯️', 
+    defaultMessage: 'May Lord Shiva bless you with strength, peace, and spiritual enlightenment!', 
+    theme: 'card-shivratri',
+    category: 'religious'
+  },
+  { 
+    value: 'durga-puja', 
+    label: 'Durga Puja', 
+    emoji: '🕉️', 
+    defaultMessage: 'May Goddess Durga empower you with strength and destroy all evils from your life!', 
+    theme: 'card-durga-puja',
+    category: 'religious'
+  },
+  { 
+    value: 'chhath-puja', 
+    label: 'Chhath Puja', 
+    emoji: '🌅', 
+    defaultMessage: 'May the Sun God bless you with health, prosperity, and happiness!', 
+    theme: 'card-chhath',
+    category: 'religious'
+  },
+
+  // Islamic Festivals (New Additions)
+  { 
+    value: 'muharram', 
+    label: 'Muharram', 
+    emoji: '☪️', 
+    defaultMessage: 'May this sacred month bring peace, reflection, and spiritual growth to your life!', 
+    theme: 'card-muharram',
+    category: 'religious'
+  },
+  { 
+    value: 'eid-ul-adha', 
+    label: 'Eid-ul-Adha', 
+    emoji: '🐏', 
+    defaultMessage: 'Eid Mubarak! May your sacrifices be accepted and your prayers answered!', 
+    theme: 'card-eid-adha',
+    category: 'religious'
+  },
+
+  // Christian Festivals (New Additions)
+  { 
+    value: 'good-friday', 
+    label: 'Good Friday', 
+    emoji: '✝️', 
+    defaultMessage: 'May the sacrifice of Jesus Christ bring peace and redemption to your life!', 
+    theme: 'card-good-friday',
+    category: 'religious'
+  },
+  { 
+    value: 'palm-sunday', 
+    label: 'Palm Sunday', 
+    emoji: '🌴', 
+    defaultMessage: 'May this holy week bring you closer to faith and spiritual awakening!', 
+    theme: 'card-palm-sunday',
+    category: 'religious'
+  },
+
+  // Sikh Festivals (New Additions)
+  { 
+    value: 'guru-nanak-jayanti', 
+    label: 'Guru Nanak Jayanti', 
+    emoji: '📿', 
+    defaultMessage: 'May the teachings of Guru Nanak Dev Ji guide you towards truth and compassion!', 
+    theme: 'card-gurupurab',
+    category: 'religious'
+  },
+  { 
+    value: 'vaisakhi', 
+    label: 'Vaisakhi', 
+    emoji: '⚔️', 
+    defaultMessage: 'Celebrating the birth of Khalsa! May you be blessed with courage and righteousness!', 
+    theme: 'card-vaisakhi',
+    category: 'religious'
+  },
+
+  // Jain Festivals (New Additions)
+  { 
+    value: 'mahavir-jayanti', 
+    label: 'Mahavir Jayanti', 
+    emoji: '🕊️', 
+    defaultMessage: 'May Lord Mahavira teachings of non-violence and peace illuminate your path!', 
+    theme: 'card-mahavir',
+    category: 'religious'
+  },
+  { 
+    value: 'paryushan', 
+    label: 'Paryushan', 
+    emoji: '🙏', 
+    defaultMessage: 'May this festival of forgiveness bring peace and spiritual purification to your soul!', 
+    theme: 'card-paryushan',
+    category: 'religious'
+  },
+
+  // Buddhist Festivals (New Additions)
+  { 
+    value: 'buddha-purnima', 
+    label: 'Buddha Purnima', 
+    emoji: '☸️', 
+    defaultMessage: 'May the enlightenment of Buddha bring peace and wisdom to your life!', 
+    theme: 'card-buddha-purnima',
+    category: 'religious'
+  },
+
+  // Regional Indian Festivals (New Additions)
+  { 
+    value: 'pongal', 
+    label: 'Pongal', 
+    emoji: '🍯', 
+    defaultMessage: 'May this harvest festival bring abundance and sweetness to your life!', 
+    theme: 'card-pongal',
+    category: 'seasonal'
+  },
+  { 
+    value: 'onam', 
+    label: 'Onam', 
+    emoji: '🌺', 
+    defaultMessage: 'May King Mahabali blessing bring prosperity and harmony to your home!', 
+    theme: 'card-onam',
+    category: 'seasonal'
+  },
+  { 
+    value: 'bihu', 
+    label: 'Bihu', 
+    emoji: '🌾', 
+    defaultMessage: 'May this Assamese festival fill your life with joy, dance, and new beginnings!', 
+    theme: 'card-bihu',
+    category: 'seasonal'
+  },
+  { 
+    value: 'gudi-padwa', 
+    label: 'Gudi Padwa', 
+    emoji: '🎋', 
+    defaultMessage: 'Wishing you a prosperous and joyful Maharashtrian New Year!', 
+    theme: 'card-gudi-padwa',
+    category: 'seasonal'
+  },
+  { 
+    value: 'ugadi', 
+    label: 'Ugadi', 
+    emoji: '🥭', 
+    defaultMessage: 'May this Telugu New Year bring new hopes and sweet beginnings to your life!', 
+    theme: 'card-ugadi',
+    category: 'seasonal'
+  },
+
+  // International Festivals (New Additions)
+  { 
+    value: 'songkran', 
+    label: 'Songkran', 
+    emoji: '💦', 
+    defaultMessage: 'Happy Thai New Year! May water wash away all negativity from your life!', 
+    theme: 'card-songkran',
+    category: 'international'
+  },
+  { 
+    value: 'dia-de-muertos', 
+    label: 'Día de Muertos', 
+    emoji: '💀', 
+    defaultMessage: 'Honoring loved ones with beautiful memories and celebration of life!', 
+    theme: 'card-dia-de-muertos',
+    category: 'international'
+  },
+  { 
+    value: 'oktoberfest', 
+    label: 'Oktoberfest', 
+    emoji: '🍺', 
+    defaultMessage: 'Prost! Wishing you joy, laughter, and good times with loved ones!', 
+    theme: 'card-oktoberfest',
+    category: 'international'
+  },
+  { 
+    value: 'carnival', 
+    label: 'Carnival', 
+    emoji: '🎭', 
+    defaultMessage: 'May your life be as colorful and joyful as the Carnival celebrations!', 
+    theme: 'card-carnival',
+    category: 'international'
+  },
+
+  // Professional & Academic Events (New Additions)
+  { 
+    value: 'teachers-day', 
+    label: 'Teacher Day', 
+    emoji: '📚', 
+    defaultMessage: 'Thank you for lighting the path of knowledge and wisdom!', 
+    theme: 'card-teachers-day',
+    category: 'professional'
+  },
+  { 
+    value: 'doctors-day', 
+    label: 'Doctor Day', 
+    emoji: '⚕️', 
+    defaultMessage: 'Thank you for your dedication and healing touch!', 
+    theme: 'card-doctors-day',
+    category: 'professional'
+  },
+  { 
+    value: 'engineers-day', 
+    label: 'Engineer Day', 
+    emoji: '⚙️', 
+    defaultMessage: 'Celebrating innovation and the builders of our modern world!', 
+    theme: 'card-engineers-day',
+    category: 'professional'
+  },
+
+  // Personal Growth & Wellness (New Additions)
+  { 
+    value: 'yoga-day', 
+    label: 'International Yoga Day', 
+    emoji: '🧘', 
+    defaultMessage: 'May your journey of yoga bring peace, health, and harmony!', 
+    theme: 'card-yoga',
+    category: 'wellness'
+  },
+  { 
+    value: 'mental-health-day', 
+    label: 'Mental Health Day', 
+    emoji: '💚', 
+    defaultMessage: 'Your mental health matters. Take time to nurture your mind and soul!', 
+    theme: 'card-mental-health',
+    category: 'wellness'
+  },
+  { 
+    value: 'friendship-day', 
+    label: 'Friendship Day', 
+    emoji: '👯', 
+    defaultMessage: 'Celebrating the beautiful bonds that make life worth living!', 
+    theme: 'card-friendship',
+    category: 'personal'
+  },
+
+  // Seasonal & Nature Celebrations (New Additions)
+  { 
+    value: 'spring-equinox', 
+    label: 'Spring Equinox', 
+    emoji: '🌸', 
+    defaultMessage: 'May new beginnings blossom in your life like spring flowers!', 
+    theme: 'card-spring',
+    category: 'seasonal'
+  },
+  { 
+    value: 'summer-solstice', 
+    label: 'Summer Solstice', 
+    emoji: '☀️', 
+    defaultMessage: 'May your life be as bright and warm as the longest day of the year!', 
+    theme: 'card-summer',
+    category: 'seasonal'
+  },
+  { 
+    value: 'harvest-festival', 
+    label: 'Harvest Festival', 
+    emoji: '🌽', 
+    defaultMessage: 'Celebrating abundance and the fruits of hard work!', 
+    theme: 'card-harvest',
+    category: 'seasonal'
+  },
+
 ];
 
 export const animationStyles = [

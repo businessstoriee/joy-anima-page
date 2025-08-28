@@ -7,7 +7,7 @@ export interface EventType {
   defaultMessage: string;
   theme?: string;
   backgroundImage?: string;
-  category?: 'birthday' | 'religious' | 'national' | 'seasonal' | 'personal' | 'special' | 'custom';
+  category?: 'birthday' | 'religious' | 'national' | 'seasonal' | 'personal' | 'special' | 'wellness' | 'professional' | 'international' | 'custom';
 }
 
 export interface TextContent {
