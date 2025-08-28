@@ -159,7 +159,7 @@ const ViewGreeting: React.FC = () => {
               Share
             </Button>
           </div>
-        </div>
+        </div> 
       </div>
 
       {/* Greeting Preview */}

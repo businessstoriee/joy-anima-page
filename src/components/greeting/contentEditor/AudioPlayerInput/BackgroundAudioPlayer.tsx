@@ -334,7 +334,7 @@ const BackgroundAudioPlayer: React.FC<BackgroundAudioPlayerProps> = ({
   <Button
     size="sm"
     variant="outline"
-    onClick={toggleMute}
+    onClick={toggleMute} 
     disabled={!!error || urlType === "unsupported"}
     aria-label={isMuted ? "Unmute" : "Mute"}
     className="h-8 w-8 p-0 hover:bg-gray-300 rounded-md border-primary"
