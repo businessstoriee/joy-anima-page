@@ -171,6 +171,7 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
           eventType={formData.eventType}
           receiverName={formData.receiverName}
           senderName={formData.senderName}
+          audioUrl={formData.audioUrl}
           customEvent={customEvent}
           onEventChange={onEventChange}
           onInputChange={onInputChange}

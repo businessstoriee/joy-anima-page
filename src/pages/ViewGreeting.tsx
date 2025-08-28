@@ -5,11 +5,12 @@ import { useFirebaseGreetings } from '@/hooks/useFirebaseGreetings';
 import { GreetingFormData } from '@/types/greeting';
 import Preview from '@/components/preview/Preview';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Share2 } from 'lucide-react';
+import { ArrowLeft, Share2, Edit3 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ShareActions from '@/components/share/ShareActions';
 import { FloatingButton } from '@/components/share/CustomizeAndShare';
 import SEOManager from '@/components/seo/SEOManager';
+import BackgroundAudioPlayer from '@/components/greeting/contentEditor/AudioPlayerInput/BackgroundAudioPlayer';
 
 
 const ViewGreeting: React.FC = () => {
@@ -116,6 +117,11 @@ const ViewGreeting: React.FC = () => {
     });
   };
 
+  const handleCustomizeGreeting = () => {
+    // Navigate to create page with the current greeting data
+    navigate(`/create?edit=${slug}`, { state: { greetingData } });
+  };
+
   return (
      <>
     <SEOManager 
@@ -127,14 +133,28 @@ const ViewGreeting: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/20">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-4xl mr-2 sm:mx-4 px-2 sm:px-4 py-3 flex items-center justify-between">
           <Button variant="ghost" onClick={() => navigate('/')} className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Home
+            <ArrowLeft className="h-4 w-4 animate-bounce" />
+            Home
           </Button>
 
-          <div className="flex items-center gap-2">
-            <Button onClick={handleShareGreeting} className="gap-2">
+          <div className="flex items-center gap-1 sm:gap-3">
+            {/* Background Audio Player */}
+            {greetingData.audioUrl && (
+              <BackgroundAudioPlayer 
+                audioUrl={greetingData.audioUrl}
+                autoPlay={true}
+                className=""
+              />
+            )}
+            
+            <Button onClick={handleCustomizeGreeting} variant="outline" className="gap-1 md:gap-2 bg-primary/10 text-primary border-primary hover:bg-gray-300">
+              <Edit3 className="h-4 w-4" />
+              Customize
+            </Button>
+            
+            <Button onClick={handleShareGreeting} className="gap-1 md:gap-2">
               <Share2 className="h-4 w-4" />
               Share
             </Button>

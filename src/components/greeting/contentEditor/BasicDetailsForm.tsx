@@ -5,29 +5,35 @@ import { EventType } from '@/types/greeting';
 import CustomEventSelector from './CustomEventSelector';
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 import AudioPlayerInput from '@/components/greeting/contentEditor/AudioPlayerInput/AudioPlayerInput';
-import {useState} from "react";
+import { useState, useCallback } from "react";
+import { Music } from "lucide-react";
 
 interface BasicDetailsFormProps {
   eventType: string;
-  senderName: string;
   receiverName: string;
+  senderName: string;
+  audioUrl?: string;
   customEvent: EventType | null;
-  onEventChange: (eventType: string) => void;
-  onInputChange: (field: string, value: string) => void;
+  onEventChange: (value: string) => void;
+  onInputChange: (field: string, value: any) => void;
   onCustomEventCreate: (event: EventType) => void;
 }
 
-const BasicDetailsForm = ({
+const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
   eventType,
-  senderName,
   receiverName,
+  senderName,
+  audioUrl = '',
   customEvent,
   onEventChange,
   onInputChange,
-  onCustomEventCreate
-}: BasicDetailsFormProps) => {
+  onCustomEventCreate,
+}) => {
+  const handleAudioUrlChange = useCallback((newUrl: string) => {
+    onInputChange('audioUrl', newUrl);
+  }, [onInputChange]);
+
   const { translate } = useLanguageTranslation();
-  const [url, setUrl] = useState("");
   return (
     <>
       {/* Custom Event Selector */}
@@ -67,14 +73,17 @@ const BasicDetailsForm = ({
 
             <Separator />
 
-
-            <div className="space-y-2 p-6 border border-red-300 rounded-xl shadow-lg">
-              <Label htmlFor="audioUrl">Background Music URL (optional)</Label>
-                <AudioPlayerInput 
-        value={url}
-        onChange={setUrl}   // updates local state directly
-        autoPlay
-      />
+            <div className="space-y-2 p-6 border border-primary/20 rounded-xl shadow-lg bg-gradient-to-br from-background to-primary/5">
+              
+              <Label htmlFor="audioUrl" className="flex items-center gap-2 text-sm font-medium">
+                 <Music className="h-4 w-4 text-primary" />
+                Background Music URL (optional)
+              </Label>
+              <AudioPlayerInput 
+                value={audioUrl}
+                onChange={handleAudioUrlChange}
+                autoPlay={false}
+              />
             </div>
             
     </>

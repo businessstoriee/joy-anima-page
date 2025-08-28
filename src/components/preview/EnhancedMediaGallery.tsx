@@ -171,8 +171,21 @@ const EnhancedMediaGallery: React.FC<Props> = ({
             playsInline
             muted
             preload="metadata"
-            onLoadedData={() => handleLoad(m.id)}
-            onError={() => handleError(m.id)}
+            crossOrigin="anonymous"
+            onLoadedData={() => {
+              console.log('EnhancedMediaGallery: Video loaded successfully:', m.url);
+              handleLoad(m.id);
+            }}
+            onError={(e) => {
+              console.error('EnhancedMediaGallery: Video failed to load:', m.url, e);
+              console.error('Video error details:', {
+                error: e.currentTarget.error,
+                networkState: e.currentTarget.networkState,
+                readyState: e.currentTarget.readyState
+              });
+              handleError(m.id);
+            }}
+            onLoadStart={() => console.log('EnhancedMediaGallery: Video load started:', m.url)}
             className={mediaClass}
             style={{ display: "block" }}
           />
@@ -181,8 +194,15 @@ const EnhancedMediaGallery: React.FC<Props> = ({
             src={m.url}
             alt={`media-${index}`}
             loading="lazy"
-            onLoad={() => handleLoad(m.id)}
-            onError={() => handleError(m.id)}
+            crossOrigin="anonymous"
+            onLoad={() => {
+              console.log('EnhancedMediaGallery: Image loaded successfully:', m.url);
+              handleLoad(m.id);
+            }}
+            onError={(e) => {
+              console.error('EnhancedMediaGallery: Image failed to load:', m.url, e);
+              handleError(m.id);
+            }}
             className={mediaClass}
             style={{ display: "block" }}
           />

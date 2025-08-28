@@ -30,6 +30,19 @@ const FirebaseShareButton: React.FC<FirebaseShareButtonProps> = ({
     console.log('🎯 FirebaseShareButton clicked!');
     console.log('📊 Greeting data to save:', JSON.stringify(greetingData, null, 2));
     
+    // Enhanced logging for Firebase debugging
+    console.log('🔥 FirebaseShareButton: About to save greeting data:', {
+      eventType: greetingData.eventType,
+      senderName: greetingData.senderName,
+      receiverName: greetingData.receiverName,
+      audioUrl: greetingData.audioUrl,
+      textsCount: greetingData.texts?.length || 0,
+      mediaCount: greetingData.media?.length || 0,
+      hasBackgroundSettings: !!greetingData.backgroundSettings,
+      hasBorderSettings: !!greetingData.borderSettings,
+      emojisCount: greetingData.emojis?.length || 0,
+    });
+    
     // Validation
     if (!greetingData.eventType) {
       toast({

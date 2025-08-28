@@ -1,5 +1,5 @@
 // src/pages/create/Create.tsx
-import React from "react";
+import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useCreate } from "./create/useCreate";
 import BackButton from "@/components/ui/back-button";
@@ -7,6 +7,8 @@ import LanguageSelector from "@/components/language/LanguageSelector";
 import CompactFormColumn from "@/components/greeting/form/CompactFormColumn";
 import LivePreviewCard from "./create/LivePreviewCard";
 import PreviewModal from "./create/PreviewModal";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { useFirebaseGreetings } from "@/hooks/useFirebaseGreetings";
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 
 const CreatePage: React.FC = () => {
@@ -28,6 +30,29 @@ const CreatePage: React.FC = () => {
   } = useCreate();
 
   const { translate } = useLanguageTranslation();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const { loadGreeting } = useFirebaseGreetings();
+
+  // Handle editing existing greeting
+  useEffect(() => {
+    const editSlug = searchParams.get('edit');
+    if (editSlug) {
+      // Load existing greeting data
+      loadGreeting(editSlug).then(data => {
+        if (data) {
+          console.log('Loading existing greeting for editing:', data);
+          setFormData(data);
+        }
+      }).catch(err => {
+        console.error('Failed to load greeting for editing:', err);
+      });
+    } else if (location.state?.greetingData) {
+      // Load from navigation state
+      console.log('Loading greeting from navigation state:', location.state.greetingData);
+      setFormData(location.state.greetingData);
+    }
+  }, [searchParams, location.state, loadGreeting, setFormData]);
 
   return (
     <div className="bg-gradient-to-br from-primary/10 via-background to-secondary/20 py-2">

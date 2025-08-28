@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Edit, Eye, Move, Trash2, Volume2 } from 'lucide-react';
+import { Edit, Eye, Move, Trash2, Volume2, Palette } from 'lucide-react';
 
 import BackgroundWrapper from './BackgroundWrapper';
 import BorderContainer from './BorderContainer';
@@ -16,6 +16,8 @@ import EmojisLayer from './EmojisLayer';
 import DragDropInstructions from './DragDropInstructions';
 import MediaFrame from './MediaFrames';
 import { mediaAnimations } from './MediaAnimations';
+import { eventTypes } from '@/types/eventTypes';
+import { EventType } from '@/types/greeting';
 
 // Simple throttle utility
 function throttle(fn: (...args: any[]) => void, wait = 50) {
@@ -38,6 +40,47 @@ function throttle(fn: (...args: any[]) => void, wait = 50) {
   };
 }
 
+// Editable Event Header for edit mode
+const EditableEventHeader = ({ greetingData, onSelect, selectedItem, onUpdate, canEdit, selectedEvent }) => {
+  const currentEvent = selectedEvent || eventTypes.find(e => e.value === greetingData.eventType) || {
+    value: 'custom',
+    emoji: greetingData.customEventEmoji || '🎉',
+    label: greetingData.customEventName || 'Custom Event',
+    defaultMessage: greetingData.customEventText || 'Happy Celebration!',
+    category: 'custom'
+  };
+
+  const handleEventClick = () => {
+    if (canEdit) onSelect({ type: 'event', index: 0 });
+  };
+
+  return (
+    <div className="text-center relative">
+      <motion.div
+        className={`text-4xl md:text-6xl mb-4 cursor-pointer inline-block p-2 rounded-lg transition-all ${
+          selectedItem?.type === 'event' ? 'ring-2 ring-purple-500 bg-purple-50' : 'hover:bg-gray-50'
+        }`}
+        animate={{ scale: [1, 1.1, 1], rotate: [0, 10, -10, 0] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        onClick={handleEventClick}
+      >
+        {currentEvent.emoji}
+      </motion.div>
+      <h1 
+        className={`text-2xl md:text-3xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent cursor-pointer p-2 rounded-lg transition-all ${
+          selectedItem?.type === 'event' ? 'ring-2 ring-purple-500 bg-purple-50' : 'hover:bg-gray-50'
+        }`}
+        onClick={handleEventClick}
+      >
+        Happy {currentEvent.label}
+      </h1>
+      {greetingData.receiverName && (
+        <p className="text-xl md:text-2xl font-bold text-primary">{greetingData.receiverName}</p>
+      )}
+    </div>
+  );
+};
+
 // Editable Greeting Texts (supports live updates via onUpdateLive)
 const GreetingTexts = ({ greetingData, onSelect, selectedItem, onUpdate, onUpdateLive, canEdit, snapGrid }) => (
   <div className="relative">
@@ -45,7 +88,7 @@ const GreetingTexts = ({ greetingData, onSelect, selectedItem, onUpdate, onUpdat
       <Rnd
         key={idx}
         bounds="parent"
-        size={{ width: text.width, height: text.height }}
+        size={{ width: text.width || 200, height: text.height || 60 }}
         position={{ x: text.x || 0, y: text.y || 0 }}
         onDrag={(e, d) => canEdit && onUpdateLive && onUpdateLive('text', idx, { ...text, x: d.x, y: d.y })}
         onDragStop={(e, d) => canEdit && onUpdate && onUpdate('text', idx, { ...text, x: d.x, y: d.y })}
@@ -64,10 +107,10 @@ const GreetingTexts = ({ greetingData, onSelect, selectedItem, onUpdate, onUpdat
         >
           <div
             style={{
-              fontSize: text.fontSize,
-              color: text.color,
-              textAlign: text.alignment,
-              fontFamily: text.fontFamily,
+              fontSize: text.style?.fontSize || text.fontSize || '16px',
+              color: text.style?.color || text.color || '#333333',
+              textAlign: text.style?.textAlign || text.alignment || 'center',
+              fontFamily: text.style?.fontFamily || text.fontFamily || 'inherit',
               fontWeight: text.style?.fontWeight || text.fontWeight || 'normal'
             }}
           >
@@ -123,13 +166,23 @@ const SideEditingPanel = ({ selectedItem, greetingData, onDataChange, onDuplicat
       const updated = [...greetingData.media];
       updated[selectedItem.index] = { ...updated[selectedItem.index], ...updates };
       onDataChange({ ...greetingData, media: updated });
+    } else if (selectedItem.type === 'event') {
+      // Update event details
+      onDataChange({ 
+        ...greetingData, 
+        customEventEmoji: updates.emoji || greetingData.customEventEmoji,
+        customEventName: updates.name || greetingData.customEventName,
+        customEventText: updates.text || greetingData.customEventText
+      });
     }
   };
 
   const item =
     selectedItem.type === 'text'
       ? greetingData.texts[selectedItem.index]
-      : greetingData.media[selectedItem.index];
+      : selectedItem.type === 'media' 
+      ? greetingData.media[selectedItem.index]
+      : null;
 
   // safe reads
   const posX = item?.x ?? 0;
@@ -147,6 +200,35 @@ const SideEditingPanel = ({ selectedItem, greetingData, onDataChange, onDuplicat
         Position: (x: {posX}, y: {posY}) • Size: {width} × {height}
       </div>
 
+      {selectedItem.type === 'event' && (
+        <>
+          <div>
+            <Label>Event Emoji</Label>
+            <Input 
+              value={greetingData.customEventEmoji || '🎉'} 
+              onChange={(e) => updateItem({ emoji: e.target.value })} 
+              placeholder="🎉"
+            />
+          </div>
+          <div>
+            <Label>Event Name</Label>
+            <Input 
+              value={greetingData.customEventName || ''} 
+              onChange={(e) => updateItem({ name: e.target.value })} 
+              placeholder="Event Name"
+            />
+          </div>
+          <div>
+            <Label>Custom Event Text</Label>
+            <Input 
+              value={greetingData.customEventText || ''} 
+              onChange={(e) => updateItem({ text: e.target.value })} 
+              placeholder="Happy Celebration!"
+            />
+          </div>
+        </>
+      )}
+
       {selectedItem.type === 'text' && (
         <>
           <div>
@@ -157,20 +239,60 @@ const SideEditingPanel = ({ selectedItem, greetingData, onDataChange, onDuplicat
             <Label>Font Size</Label>
             <Input
               type="number"
-              value={item.fontSize}
-              onChange={(e) => updateItem({ fontSize: parseInt(e.target.value, 10) })}
+              value={parseInt((item.style?.fontSize || item.fontSize || '16').replace('px', ''))}
+              onChange={(e) => updateItem({ 
+                style: { 
+                  ...item.style, 
+                  fontSize: `${e.target.value}px` 
+                }
+              })}
             />
           </div>
           <div>
             <Label>Color</Label>
-            <Input type="color" value={item.color} onChange={(e) => updateItem({ color: e.target.value })} />
+            <Input 
+              type="color" 
+              value={item.style?.color || item.color || '#333333'} 
+              onChange={(e) => updateItem({ 
+                style: { 
+                  ...item.style, 
+                  color: e.target.value 
+                }
+              })} 
+            />
           </div>
           <div>
             <Label>Alignment</Label>
-            <select value={item.alignment} onChange={(e) => updateItem({ alignment: e.target.value })}>
+            <select 
+              value={item.style?.textAlign || item.alignment || 'center'} 
+              onChange={(e) => updateItem({ 
+                style: { 
+                  ...item.style, 
+                  textAlign: e.target.value 
+                }
+              })}
+              className="w-full p-2 border rounded"
+            >
               <option value="left">Left</option>
               <option value="center">Center</option>
               <option value="right">Right</option>
+            </select>
+          </div>
+          <div>
+            <Label>Font Weight</Label>
+            <select 
+              value={item.style?.fontWeight || item.fontWeight || 'normal'} 
+              onChange={(e) => updateItem({ 
+                style: { 
+                  ...item.style, 
+                  fontWeight: e.target.value 
+                }
+              })}
+              className="w-full p-2 border rounded"
+            >
+              <option value="normal">Normal</option>
+              <option value="bold">Bold</option>
+              <option value="lighter">Light</option>
             </select>
           </div>
         </>
