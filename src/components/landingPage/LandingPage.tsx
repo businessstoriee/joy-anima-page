@@ -198,38 +198,61 @@ onClick={createNewGreeting}
 
 
 <div className="relative text-center px-4 sm:px-6 mb-12 sm:mb-16">
-   {/* Secondary CTA button */}
-
-      <Button
+{/* 🎨 Secondary CTA Button (Polished Glassy Look) */}
+<Button
   onClick={createNewGreeting}
   size="lg"
-  className="relative group px-6 sm:px-12 py-4 sm:py-7 mb-8 sm:mb-12 w-full sm:w-auto shadow-lg sm:shadow-2xl hover:shadow-primary/30 transition-all duration-500 overflow-hidden rounded-xl"
+  className="relative group px-6 sm:px-12 py-8 mb-12 w-full sm:w-auto shadow-lg sm:shadow-2xl transition-all duration-500 overflow-hidden rounded-xl backdrop-blur-md"
 >
-  {/* 🔥 Spinning Gradient Border */}
+  {/* 🔥 Always Spinning Gradient Border */}
   <span
-    className="absolute inset-0 animate-spin-slow"
+    className="absolute inset-0 animate-spin-slow rounded-xl"
     style={{
-      background:
-        "conic-gradient(from 0deg, #f472b6, #c084fc, #38bdf8, #f472b6)",
+      background: `
+        conic-gradient(
+          from 0deg,
+          #f472b6,
+          #c084fc,
+          #6366f1,
+          #3b82f6,
+          #06b6d4,
+          #f472b6
+        )
+      `,
     }}
   ></span>
 
-  {/* Masked Inner (makes border only) */}
-  <span className="absolute inset-[2px] rounded-xl dark:bg-slate-950"></span>
+  {/* Inner Glassy Background */}
+  <span className="absolute inset-[3px] rounded-xl bg-white/70 dark:bg-slate-900/70 backdrop-blur-md"></span>
 
   {/* Button Content */}
   <span className="relative z-10 flex items-center justify-center sm:justify-start">
-    <span className="mr-2 sm:mr-3 text-xl sm:text-2xl group-hover:animate-spin">✨</span>
-    <span className="text-sm sm:text-base md:text-lg">
-       {translate("Let's Get Started!")}
+    <span className="mr-2 sm:mr-3 text-xl sm:text-2xl animate-bounce group-hover:animate-spin">✨</span>
+    {/* 🌈 Spinning Gradient Text */}
+  <span
+    className="text-lg font-bold bg-clip-text text-transparent animate-bounce"
+    style={{
+      background: `
+        conic-gradient(
+          from 0deg,
+          #e14c16ff,
+          #da1078ff,
+          #f80e0eff,
+          #26e311ff,
+          #d44406ff,
+          #f472b6
+        )
+      `,
+      WebkitBackgroundClip: "text",
+      backgroundClip: "text",
+    }}
+  >
+      {translate("Let's Get Started!")}
     </span>
   </span>
 
-  {/* Hover Gradient Overlay */}
-  <span className="absolute inset-[4px] rounded-xl bg-gradient-to-r from-primary to-secondary opacity-0 opacity-100 transition-opacity duration-300"></span>
-
   {/* Shine Effect */}
-  <span className="absolute top-0 left-1/2 w-20 h-full bg-white/30 -skew-x-12 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 group-hover:animate-shine transition-opacity duration-700"></span>
+  <span className="absolute top-0 left-1/2 w-20 h-full bg-white/40 -skew-x-12 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 group-hover:animate-shine transition-opacity duration-700"></span>
 
   {/* Extra CSS */}
   <style>
@@ -239,19 +262,38 @@ onClick={createNewGreeting}
         100% { transform: rotate(360deg); }
       }
       .animate-spin-slow {
-        animation: spinSlow 5s linear infinite;
+        animation: spinSlow 8s linear infinite;
       }
+
+      @keyframes float-slow {
+        0%, 100% { transform: translateY(0) translateX(0); }
+        50% { transform: translateY(-30px) translateX(20px); }
+      }
+      .animate-float-slow {
+        animation: float-slow 18s ease-in-out infinite;
+      }
+
       @keyframes shine {
-        0% { transform: translateX(-150%) skewX(-20deg); }
-        100% { transform: translateX(150%) skewX(-20deg); }
+        0% { transform: translateX(-150%) skewX(-20deg); opacity: 0.4; }
+        50% { opacity: 1; }
+        100% { transform: translateX(150%) skewX(-20deg); opacity: 0.4; }
       }
       .group-hover\\:animate-shine:hover {
-        animation: shine 1s forwards;
+        animation: shine 1.2s forwards;
+      }
+
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      .animate-gradient {
+        background-size: 200% 200%;
+        animation: gradientShift 30s ease infinite;
       }
     `}
   </style>
 </Button>
-
 </div>
 
     {/* Floating particles background */}
@@ -271,6 +313,30 @@ onClick={createNewGreeting}
         />
       ))}
     </div>
+
+    {/* 🌟 Floating Glowing Particles */}
+<div className="fixed inset-0 -z-30 overflow-hidden pointer-events-none">
+  {[...Array(25)].map((_, i) => (
+    <div
+      key={i}
+      className="absolute rounded-full blur-xl opacity-60 animate-float-slow"
+      style={{
+        width: `${Math.random() * 12 + 8}px`,
+        height: `${Math.random() * 12 + 8}px`,
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+        background: [
+          "rgba(244,114,182,0.6)", // pink
+          "rgba(192,132,252,0.6)", // purple
+          "rgba(99,102,241,0.6)",  // indigo
+          "rgba(56,189,248,0.6)",  // cyan
+        ][Math.floor(Math.random() * 4)],
+        animationDelay: `${Math.random() * 10}s`,
+        animationDuration: `${20 + Math.random() * 20}s`,
+      }}
+    />
+  ))}
+</div>
 
   </div>
 </div>
