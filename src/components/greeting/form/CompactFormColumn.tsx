@@ -2,13 +2,16 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { GreetingFormData, EventType } from '@/types/greeting';
+import { GreetingFormData, EventType, TextContent, EventEmojiSettings } from '@/types/greeting';
 import { Palette, Type, Image, Sparkles, Settings, Share } from 'lucide-react';
 import BasicDetailsForm from '../contentEditor/BasicDetailsForm';
 import ContentForm from './ContentForm';
 import AdvancedMediaUploader from '../contentEditor/mediaUploader/AdvancedMediaUploader';
 import EmojiSelector from '@/components/greeting/contentEditor/EmojiSelector/EmojiSelector';
 import CustomizationForm from './CustomizationForm';
+import HeaderTextCustomizer from '../customization/HeaderTextCustomizer';
+import EventNameCustomizer from '../customization/EventNameCustomizer';
+import EventEmojiCustomizer from '../customization/EventEmojiCustomizer';
 import FirebaseDebugger from '@/components/debug/FirebaseDebugger';
 
 interface CompactFormColumnProps {
@@ -26,6 +29,9 @@ interface CompactFormColumnProps {
   onAnimationChange: (animation: string) => void;
   onFrameStyleChange:(frame:string) => void;
   onCustomEventCreate: (event: EventType) => void;
+  onHeaderTextChange?: (headerText: TextContent) => void;
+  onEventNameStyleChange?: (eventNameStyle: TextContent) => void;
+  onEventEmojiSettingsChange?: (settings: EventEmojiSettings) => void;
 }
 
 const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
@@ -43,6 +49,9 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
   onAnimationChange,
   onFrameStyleChange,
   onCustomEventCreate,
+  onHeaderTextChange,
+  onEventNameStyleChange,
+  onEventEmojiSettingsChange,
 }) => {
   const getTabBadgeCount = (tab: string) => {
     switch (tab) {
@@ -176,7 +185,16 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
           onEventChange={onEventChange}
           onInputChange={onInputChange}
           onCustomEventCreate={onCustomEventCreate}
+           // Pass customization props down to BasicDetailsForm
+          selectedEvent={selectedEvent}
+          headerText={formData.headerText}
+          eventNameStyle={formData.eventNameStyle}
+          eventEmojiSettings={formData.eventEmojiSettings}
+          onHeaderTextChange={onHeaderTextChange}
+          onEventNameStyleChange={onEventNameStyleChange}
+          onEventEmojiSettingsChange={onEventEmojiSettingsChange}
         />
+ 
       </TabsContent>
 
       <TabsContent value="content" className="space-y-4 mt-0 animate-fade-in">

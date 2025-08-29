@@ -1,12 +1,16 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { EventType } from '@/types/greeting';
 import CustomEventSelector from './CustomEventSelector';
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 import AudioPlayerInput from '@/components/greeting/contentEditor/AudioPlayerInput/AudioPlayerInput';
 import { useState, useCallback } from "react";
 import { Music } from "lucide-react";
+import HeaderTextCustomizer from '../customization/HeaderTextCustomizer';
+import EventNameCustomizer from '../customization/EventNameCustomizer';
+import EventEmojiCustomizer from '../customization/EventEmojiCustomizer';
+import { TextContent, EventEmojiSettings, EventType } from '@/types/greeting';
+
 
 interface BasicDetailsFormProps {
   eventType: string;
@@ -17,6 +21,14 @@ interface BasicDetailsFormProps {
   onEventChange: (value: string) => void;
   onInputChange: (field: string, value: any) => void;
   onCustomEventCreate: (event: EventType) => void;
+    // New props for customization
+  selectedEvent: EventType | null;
+  headerText?: TextContent;
+  eventNameStyle?: TextContent;
+  eventEmojiSettings?: EventEmojiSettings;
+  onHeaderTextChange?: (headerText: TextContent) => void;
+  onEventNameStyleChange?: (eventNameStyle: TextContent) => void;
+  onEventEmojiSettingsChange?: (settings: EventEmojiSettings) => void;
 }
 
 const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
@@ -28,6 +40,13 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
   onEventChange,
   onInputChange,
   onCustomEventCreate,
+  selectedEvent,
+  headerText,
+  eventNameStyle,
+  eventEmojiSettings,
+  onHeaderTextChange,
+  onEventNameStyleChange,
+  onEventEmojiSettingsChange,
 }) => {
   const handleAudioUrlChange = useCallback((newUrl: string) => {
     onInputChange('audioUrl', newUrl);
@@ -36,6 +55,9 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
   const { translate } = useLanguageTranslation();
   return (
     <>
+
+<Separator />
+
       {/* Custom Event Selector */}
       <CustomEventSelector
         selectedEvent={eventType}
@@ -77,7 +99,7 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
               
               <Label htmlFor="audioUrl" className="flex items-center gap-2 text-sm font-medium">
                  <Music className="h-4 w-4 text-primary" />
-                Background Music URL (optional)
+                Background Music URL <span  className="text-gray-500">(Optional)</span>
               </Label>
               <AudioPlayerInput 
                 value={audioUrl}
@@ -86,6 +108,29 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
               />
             </div>
             
+
+            {/* Event Header Customization */}
+      {eventType && (
+        <div className="space-y-4 border-t pt-4">
+          
+              <HeaderTextCustomizer
+            headerText={headerText!}
+            onChange={onHeaderTextChange || (() => {})}
+          />
+          
+          <EventNameCustomizer
+            eventNameStyle={eventNameStyle!}
+            selectedEvent={selectedEvent}
+            onChange={onEventNameStyleChange || (() => {})}
+          />
+          
+          <EventEmojiCustomizer
+            eventEmojiSettings={eventEmojiSettings!}
+            selectedEvent={selectedEvent}
+            onChange={onEventEmojiSettingsChange || (() => {})}
+          />
+        </div>
+      )}
     </>
   );
 };

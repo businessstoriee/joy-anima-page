@@ -90,6 +90,9 @@ const CreatePage: React.FC = () => {
             onAnimationChange={(anim) => handleInputChange("animationStyle", anim)}
             onFrameStyleChange={(frame) => handleInputChange("framenStyle", frame)}
             onCustomEventCreate={onCustomEventCreate}
+            onHeaderTextChange={(headerText) => setFormData((p: any) => ({ ...p, headerText }))}
+            onEventNameStyleChange={(eventNameStyle) => setFormData((p: any) => ({ ...p, eventNameStyle }))}
+            onEventEmojiSettingsChange={(eventEmojiSettings) => setFormData((p: any) => ({ ...p, eventEmojiSettings }))}
           />
 
           <div className={cn("space-y-6")}>

@@ -30,6 +30,42 @@ export function useCreate() {
     frameStyle: "classic",
     mediaAnimation: "fade",
     theme: "",
+    headerText: {
+      id: "header-text",
+      content: "",
+      style: {
+        fontSize: "32px",
+        fontWeight: "bold",
+        color: "hsl(var(--primary))",
+        textAlign: "center",
+        fontFamily: "inherit"
+      },
+      animation: "fade"
+    },
+    eventNameStyle: {
+      id: "event-name",
+      content: "",
+      style: {
+        fontSize: "28px",
+        fontWeight: "bold",
+        color: "hsl(var(--foreground))",
+        textAlign: "center",
+        fontFamily: "inherit"
+      },
+      animation: "fade"
+    },
+    eventEmojiSettings: {
+      emoji: "🎉",
+      size: 64,
+      animation: "bounce",
+      rotateSpeed: 2,
+      position: { x: 50, y: 50 },
+      effects: {
+        glow: false,
+        bounce: true,
+        rotate: false
+      }
+    },
     backgroundSettings: {
       color: "#ffffff",
       gradient: { enabled: false, colors: ["#ffffff", "#000000"], direction: "to right" },
@@ -146,7 +182,6 @@ export function useCreate() {
     setTextsEdited(true);
   }
 
-  // helper that builds a payload snapshot (used by preview and share)
   function buildPayloadForSharing() {
     const payload = {
       ...formData,
@@ -154,6 +189,9 @@ export function useCreate() {
       texts: formData.texts || [],
       media: formData.media || [],
       emojis: formData.emojis || [],
+      headerText: formData.headerText,
+      eventNameStyle: formData.eventNameStyle,
+      eventEmojiSettings: formData.eventEmojiSettings,
     };
     return payload;
   }

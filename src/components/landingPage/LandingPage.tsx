@@ -1,5 +1,5 @@
 // src/pages/LandingPage.tsx (or src/components/LandingPage.tsx)
-import React from 'react';
+import React, { useEffect, useRef } from "react";
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,6 +8,8 @@ import TypingText from '@/components/reusableTypingText/TypingText'
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 import { useLocation, useNavigate } from 'react-router-dom';
 import BeautifulGreetingsText from './BeautifulGreetingsText'
+// import your existing engine wrapper (the file you posted)
+import { initTspEngine } from "@/components/greeting/customization/BackgroundCustomizer/engines/tspEngine";
 
 
 const LandingPage: React.FC = () => {
@@ -16,8 +18,61 @@ const LandingPage: React.FC = () => {
     // TODO: Replace with your greeting creation logic
      navigate('/create');
   };
-    const { translate } = useLanguageTranslation();
+  const { translate } = useLanguageTranslation();
     
+ // container where tsParticles will be mounted (engine creates its own child div)
+  const particlesRootRef = useRef<HTMLDivElement | null>(null);
+  // store instance for cleanup
+  const instanceRef = useRef<any>(null);
+
+  useEffect(() => {
+    // Only run in browser
+    if (!particlesRootRef.current) return;
+    // Build settings object compatible with your tspEngine init
+    const settings = {
+      animation: {
+        options: {
+          // pick one of your presets: constellation | nebula | snow | fireworks
+          subtype: "constellation",
+          particleColor: "#c084fc",
+          particleCount: 80,
+          links: true,
+          size: 3,
+        },
+      },
+      // optional top-level settings your engine reads (intensity/speed)
+      animationIntensity: 80,
+      animationSpeed: 3,
+    };
+
+    let mounted = true;
+    (async () => {
+      try {
+        const result = await initTspEngine(particlesRootRef.current!, settings);
+        // engine returns object with destroy and instance
+        if (mounted) {
+          instanceRef.current = result;
+        } else {
+          // cleanup if unmounted quickly
+          if (result && result.destroy) await result.destroy();
+        }
+      } catch (err) {
+        // ignore engine load errors (CDN might be blocked, etc.)
+        // console.warn("particles init failed:", err);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+      const cur = instanceRef.current;
+      if (cur && typeof cur.destroy === "function") {
+        // destroy returned container
+        cur.destroy().catch(() => {});
+      }
+      instanceRef.current = null;
+    };
+  }, []);
+
 
  return (
    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/20 p-4 sm:p-6">
@@ -25,6 +80,14 @@ const LandingPage: React.FC = () => {
     eventType="greeting"
     isPreview={false}
   />
+
+ {/* 🌌 Particle Background */}
+{/* Particles root (engine will append a child div inside this element) */}
+      <div
+        ref={particlesRootRef}
+        aria-hidden
+        className="absolute inset-0 -z-50 pointer-events-none"
+      />
   
   {/* Main container with max-width and centered content */}
   <div className="max-w-4xl mx-auto">
@@ -297,7 +360,7 @@ onClick={createNewGreeting}
 </div>
 
     {/* Floating particles background */}
-    <div className="fixed inset-0 -z-30 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 -z-40 overflow-hidden pointer-events-none">
       {[...Array(20)].map((_, i) => (
         <div 
           key={i}
@@ -312,10 +375,10 @@ onClick={createNewGreeting}
           }}
         />
       ))}
-    </div>
+    {/* </div> */}
 
     {/* 🌟 Floating Glowing Particles */}
-<div className="fixed inset-0 -z-30 overflow-hidden pointer-events-none">
+{/* <div className="fixed inset-0 -z-30 overflow-hidden pointer-events-none"> */}
   {[...Array(25)].map((_, i) => (
     <div
       key={i}

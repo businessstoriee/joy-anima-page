@@ -61,6 +61,19 @@ export interface MediaItem {
   };
 }
 
+export interface EventEmojiSettings {
+  emoji: string;
+  size: number;
+  animation: string;
+  rotateSpeed: number;
+  position: { x: number; y: number };
+  effects?: {
+    glow?: boolean;
+    bounce?: boolean;
+    rotate?: boolean;
+  };
+}
+
 export interface GreetingFormData {
   eventType: string;
   customEventName?: string;
@@ -81,6 +94,9 @@ export interface GreetingFormData {
   frameStyle: 'classic' | 'modern' | 'vintage' | 'polaroid' | 'film' | 'elegant' | 'minimal' | 'neon' | 'romantic' | 'starry' | 'magical';
   mediaAnimation?: string;
   theme: string;
+  headerText?: TextContent;
+  eventNameStyle?: TextContent;
+  eventEmojiSettings?: EventEmojiSettings;
   backgroundSettings: {
     color: string;
     image?: string;

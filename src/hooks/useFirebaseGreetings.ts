@@ -61,6 +61,9 @@ export function useFirebaseGreetings() {
         emojis: greetingData.emojis || [],
         backgroundSettings: greetingData.backgroundSettings || {},
         borderSettings: greetingData.borderSettings || {},
+        headerText: greetingData.headerText || null,
+        eventNameStyle: greetingData.eventNameStyle || null,
+        eventEmojiSettings: greetingData.eventEmojiSettings || null,
         isPublic: true,
         viewCount: 0,
         createdAt: serverTimestamp(),
@@ -122,6 +125,42 @@ export function useFirebaseGreetings() {
         audioUrl: data.audioUrl || '',
         videoUrl: '',
         videoPosition: { width: 400, height: 300 },
+        headerText: data.headerText || {
+          id: "header-text",
+          content: "",
+          style: {
+            fontSize: "32px",
+            fontWeight: "bold",
+            color: "hsl(var(--primary))",
+            textAlign: "center",
+            fontFamily: "inherit"
+          },
+          animation: "fade"
+        },
+        eventNameStyle: data.eventNameStyle || {
+          id: "event-name",
+          content: "",
+          style: {
+            fontSize: "28px",
+            fontWeight: "bold",
+            color: "hsl(var(--foreground))",
+            textAlign: "center",
+            fontFamily: "inherit"
+          },
+          animation: "fade"
+        },
+        eventEmojiSettings: data.eventEmojiSettings || {
+          emoji: "🎉",
+          size: 64,
+          animation: "bounce",
+          rotateSpeed: 2,
+          position: { x: 50, y: 50 },
+          effects: {
+            glow: false,
+            bounce: true,
+            rotate: false
+          }
+        },
       };
 
       console.log('✅ useFirebaseGreetings.loadGreeting: processed data ready');
