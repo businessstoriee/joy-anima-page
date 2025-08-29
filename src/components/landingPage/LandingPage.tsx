@@ -187,7 +187,7 @@ const LandingPage: React.FC = () => {
       <Button
 onClick={createNewGreeting}
         size="lg"
-        className="px-6 sm:px-12 py-4 sm:py-7 w-full sm:w-auto relative overflow-hidden group animate-zoom-in shadow-2xl hover:shadow-primary/30 transition-all duration-500 bg-gradient-to-r from-pink-500 to-violet-500 hover:bg-gradient-to-l"
+        className="px-6 sm:px-12 py-4 sm:py-7 mb-8 sm:mb-12 w-full sm:w-auto relative overflow-hidden group animate-zoom-in shadow-2xl hover:shadow-primary/30 transition-all duration-500 bg-gradient-to-r from-pink-500 to-violet-500 hover:bg-gradient-to-l"
         >
         <span className="relative z-10 flex items-center justify-center sm:justify-start">
           <span className="mr-2 sm:mr-3 text-xl sm:text-2xl group-hover:animate-spin">🚀</span>

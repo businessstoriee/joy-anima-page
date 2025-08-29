@@ -41,4 +41,4 @@ export default function PreviewModal({ isOpen, onClose, greetingData, selectedEv
       </div>
     </div>
   );
-} 
+}
