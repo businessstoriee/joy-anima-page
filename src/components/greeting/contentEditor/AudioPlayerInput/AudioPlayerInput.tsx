@@ -429,7 +429,7 @@ export default function AudioPlayerInput({ value, onChange, autoPlay = false, cl
   };
 
   return (
-    <div className={cn("flex flex-col gap-3 p-4 bg-gradient-to-br from-muted/20 to-muted/10 rounded-lg border", className)}>
+    <div className={cn("flex flex-col gap-3 bg-gradient-to-br from-muted/20 to-muted/10 rounded-lg border", className)}>
       {/* Hidden elements */}
       <audio ref={audioRef} className="hidden" />
       <input

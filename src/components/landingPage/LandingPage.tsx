@@ -7,6 +7,7 @@ import SEOManager from '@/components/seo/SEOManager';
 import TypingText from '@/components/reusableTypingText/TypingText'
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 import { useLocation, useNavigate } from 'react-router-dom';
+import BeautifulGreetingsText from './BeautifulGreetingsText'
 
 
 const LandingPage: React.FC = () => {
@@ -90,16 +91,14 @@ const LandingPage: React.FC = () => {
       <div className="relative z-10">
         {/* Animated emoji */}
         <div className="relative inline-block">
-          <div className="text-6xl sm:text-8xl md:text-9xl mb-4 sm:mb-6 animate-bounce-in hover:animate-tada cursor-pointer">
-            🎉
+          <div className="text-4xl sm:text-5xl md:text-6xl mb-4 sm:mb-6 animate-bounce-in hover:animate-tada cursor-pointer">
+            🎉 💖 🥳
           </div>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.8)_0%,_rgba(255,255,255,0)_70%)] animate-pulse-slow pointer-events-none"></div>
         </div>
 
         {/* Gradient heading */}
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-primary via-purple-500 to-secondary bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient-shift animate-bounce">
-          {translate('Beautiful Greetings')}
-        </h1>
+        <BeautifulGreetingsText />
 
         {/* Description */}
         <TypingText
@@ -118,21 +117,36 @@ const LandingPage: React.FC = () => {
 
       </div>
 
-      {/* Primary CTA button */}
+   
+    {/* Primary CTA button */}
+    <div className="text-center px-4 sm:px-0">
+      
       <Button
-        onClick={createNewGreeting}
+onClick={createNewGreeting}
         size="lg"
-        className="relative overflow-hidden group px-6 sm:px-12 py-4 sm:py-7 mb-8 sm:mb-12 animate-zoom-in shadow-lg sm:shadow-2xl hover:shadow-primary/30 transition-all duration-500 w-full sm:w-auto"
-      >
+        className="px-6 sm:px-12 py-4 sm:py-7 w-full sm:w-auto relative overflow-hidden group animate-zoom-in shadow-2xl hover:shadow-primary/30 transition-all duration-500 bg-gradient-to-r from-pink-500 to-violet-500 hover:bg-gradient-to-l"
+        >
         <span className="relative z-10 flex items-center justify-center sm:justify-start">
-          <span className="mr-2 sm:mr-3 text-xl sm:text-2xl group-hover:animate-spin">✨</span>
+          <span className="mr-2 sm:mr-3 text-xl sm:text-2xl group-hover:animate-spin">🚀</span>
           <span className="text-sm sm:text-base md:text-lg">
-            Surprise Them! Design Your Greeting!
+           Surprise Them! Design Your Greeting!
           </span>
-        </span>
-        <span className="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-        <span className="absolute top-0 left-1/2 w-20 h-full bg-white/30 -skew-x-12 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 group-hover:animate-shine transition-opacity duration-700"></span>
-      </Button>
+  </span>
+  
+  {/* Button shine effect */}
+  <span className="absolute top-0 left-1/2 w-20 h-full bg-white/30 -skew-x-12 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 group-hover:animate-shine transition-opacity duration-700"></span>
+  
+  {/* Border elements */}
+  <span className="absolute inset-0 border-2 border-transparent group-hover:border-white/30 rounded-lg 
+                  group-hover:rounded-none transition-all duration-300 ease-[cubic-bezier(0.65,0,0.35,1)]" />
+  
+  {/* Lightning border animation */}
+  <span className="absolute inset-0 border-2 border-transparent 
+                  group-hover:border-[length:400%_400%] group-hover:bg-[length:400%_400%]
+                  group-hover:animate-lightning-rounding" />
+</Button>
+    </div>
+
     </div>
 
     {/* Feature card */}
@@ -174,7 +188,7 @@ const LandingPage: React.FC = () => {
                     <span className="text-xl sm:text-2xl mr-2 sm:mr-3 group-hover:rotate-12 transition-transform">{item.icon}</span>
                     <span className="text-base sm:text-lg group-hover:text-primary transition-colors">{item.text}</span>
                   </div>
-                ))}
+                ))} 
               </div>
             </div>
           </CardContent>
@@ -183,37 +197,65 @@ const LandingPage: React.FC = () => {
     </div>
 
 
-    {/* Secondary CTA button */}
-    <div className="text-center px-4 sm:px-0">
-      
+<div className="relative text-center px-4 sm:px-6 mb-12 sm:mb-16">
+   {/* Secondary CTA button */}
+
       <Button
-onClick={createNewGreeting}
-        size="lg"
-        className="px-6 sm:px-12 py-4 sm:py-7 w-full sm:w-auto relative overflow-hidden group animate-zoom-in shadow-2xl hover:shadow-primary/30 transition-all duration-500 bg-gradient-to-r from-pink-500 to-violet-500 hover:bg-gradient-to-l"
-        >
-        <span className="relative z-10 flex items-center justify-center sm:justify-start">
-          <span className="mr-2 sm:mr-3 text-xl sm:text-2xl group-hover:animate-spin">🚀</span>
-          <span className="text-sm sm:text-base md:text-lg">
-            {translate("Let's Get Started!")}
-          </span>
+  onClick={createNewGreeting}
+  size="lg"
+  className="relative group px-6 sm:px-12 py-4 sm:py-7 mb-8 sm:mb-12 w-full sm:w-auto shadow-lg sm:shadow-2xl hover:shadow-primary/30 transition-all duration-500 overflow-hidden rounded-xl"
+>
+  {/* 🔥 Spinning Gradient Border */}
+  <span
+    className="absolute inset-0 animate-spin-slow"
+    style={{
+      background:
+        "conic-gradient(from 0deg, #f472b6, #c084fc, #38bdf8, #f472b6)",
+    }}
+  ></span>
+
+  {/* Masked Inner (makes border only) */}
+  <span className="absolute inset-[2px] rounded-xl dark:bg-slate-950"></span>
+
+  {/* Button Content */}
+  <span className="relative z-10 flex items-center justify-center sm:justify-start">
+    <span className="mr-2 sm:mr-3 text-xl sm:text-2xl group-hover:animate-spin">✨</span>
+    <span className="text-sm sm:text-base md:text-lg">
+       {translate("Let's Get Started!")}
+    </span>
   </span>
-  
-  {/* Button shine effect */}
+
+  {/* Hover Gradient Overlay */}
+  <span className="absolute inset-[4px] rounded-xl bg-gradient-to-r from-primary to-secondary opacity-0 opacity-100 transition-opacity duration-300"></span>
+
+  {/* Shine Effect */}
   <span className="absolute top-0 left-1/2 w-20 h-full bg-white/30 -skew-x-12 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 group-hover:animate-shine transition-opacity duration-700"></span>
-  
-  {/* Border elements */}
-  <span className="absolute inset-0 border-2 border-transparent group-hover:border-white/30 rounded-lg 
-                  group-hover:rounded-none transition-all duration-300 ease-[cubic-bezier(0.65,0,0.35,1)]" />
-  
-  {/* Lightning border animation */}
-  <span className="absolute inset-0 border-2 border-transparent 
-                  group-hover:border-[length:400%_400%] group-hover:bg-[length:400%_400%]
-                  group-hover:animate-lightning-rounding" />
+
+  {/* Extra CSS */}
+  <style>
+    {`
+      @keyframes spinSlow {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .animate-spin-slow {
+        animation: spinSlow 5s linear infinite;
+      }
+      @keyframes shine {
+        0% { transform: translateX(-150%) skewX(-20deg); }
+        100% { transform: translateX(150%) skewX(-20deg); }
+      }
+      .group-hover\\:animate-shine:hover {
+        animation: shine 1s forwards;
+      }
+    `}
+  </style>
 </Button>
-    </div>
+
+</div>
 
     {/* Floating particles background */}
-    <div className="fixed inset-0 -z-50 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 -z-30 overflow-hidden pointer-events-none">
       {[...Array(20)].map((_, i) => (
         <div 
           key={i}
@@ -229,6 +271,7 @@ onClick={createNewGreeting}
         />
       ))}
     </div>
+
   </div>
 </div>
   );

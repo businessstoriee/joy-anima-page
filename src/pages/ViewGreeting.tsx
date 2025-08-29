@@ -133,13 +133,13 @@ const ViewGreeting: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/20">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
-        <div className="max-w-4xl mr-2 sm:mx-4 px-2 sm:px-4 py-3 flex items-center justify-between">
+        <div className="mr-2 sm:mx-4 px-2 sm:px-4 py-3 flex items-center justify-between">
           <Button variant="ghost" onClick={() => navigate('/')} className="gap-2">
             <ArrowLeft className="h-4 w-4 animate-bounce" />
             Home
           </Button>
 
-          <div className="flex items-center gap-1 sm:gap-3">
+          <div className="flex justify-end gap-1 sm:gap-3">
             {/* Background Audio Player */}
             {greetingData.audioUrl && (
               <BackgroundAudioPlayer 
