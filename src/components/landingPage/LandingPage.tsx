@@ -191,7 +191,7 @@ onClick={createNewGreeting}
         >
         <span className="relative z-10 flex items-center justify-center sm:justify-start">
           <span className="mr-2 sm:mr-3 text-xl sm:text-2xl group-hover:animate-spin">🚀</span>
-          <span className="text-sm sm:text-base md:text-lg">
+          <span className="px-4 text-sm sm:text-base md:text-lg">
            Surprise Them! Design Your Greeting!
           </span>
   </span>
