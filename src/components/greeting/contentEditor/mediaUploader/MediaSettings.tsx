@@ -3,6 +3,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MediaItem } from "@/types/greeting";
 import { frameStyles } from "@/components/preview/MediaFrames";
+import { animationOptions } from "@/types/animations";
+import { frameStyleOptions } from "@/types/frames";
 
 interface MediaSettingsProps {
   item: MediaItem;
@@ -23,9 +25,9 @@ const MediaSettings: React.FC<MediaSettingsProps> = ({ item, index, updateMedia 
              min={50}  // optional lower bound
              max={500} // enforce max width
             value={item.position.width}
-            onChange={(e) =>
-              updateMedia(index, "position", { width: Number(e.target.value) })
-            }
+             onChange={(e) =>
+               updateMedia(index, "position", { ...item.position, width: Number(e.target.value) })
+             }
           />
         </div>
         <div>
@@ -35,9 +37,9 @@ const MediaSettings: React.FC<MediaSettingsProps> = ({ item, index, updateMedia 
              min={40}  // optional lower bound
              max={400} // enforce max width
             value={item.position.height}
-            onChange={(e) =>
-              updateMedia(index, "position", { height: Number(e.target.value) })
-            }
+             onChange={(e) =>
+               updateMedia(index, "position", { ...item.position, height: Number(e.target.value) })
+             }
           />
         </div>
       </div>
@@ -54,16 +56,11 @@ const MediaSettings: React.FC<MediaSettingsProps> = ({ item, index, updateMedia 
             <SelectValue placeholder="Select animation" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="fadeIn">Fade In</SelectItem>
-            <SelectItem value="slideUp">Slide Up</SelectItem>
-            <SelectItem value="zoomIn">Zoom In</SelectItem>
-            <SelectItem value="rotateIn">Rotate In</SelectItem>
-            <SelectItem value="bounceIn">Bounce In</SelectItem>
-
-            <SelectItem value="fadeUpStagger">Fade Up Stagger</SelectItem>
-            <SelectItem value="slideLeft">Slide Left</SelectItem>
-            <SelectItem value="flipIn">Flip In</SelectItem>
-            <SelectItem value="swingIn">Swing In</SelectItem>
+            {animationOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -79,9 +76,9 @@ const MediaSettings: React.FC<MediaSettingsProps> = ({ item, index, updateMedia 
             <SelectValue placeholder="Select frame style" />
           </SelectTrigger>
           <SelectContent>
-            {Object.entries(frameStyles).map(([key, frame]) => (
-              <SelectItem key={key} value={key}>
-                {frame.name}
+            {frameStyleOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
               </SelectItem>
             ))}
           </SelectContent>

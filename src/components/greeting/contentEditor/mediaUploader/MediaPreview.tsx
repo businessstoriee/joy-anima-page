@@ -3,7 +3,7 @@ import { MediaItem } from "@/types/greeting";
 import { validateUrl, getEmbedCode } from "./mediaUtils";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { animationVariants } from "@/types/styles";
+import { animationVariants } from "@/types/animations";
 import MediaFrame from "@/components/preview/MediaFrames";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -35,18 +35,18 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
 }) => {
   const isMobile = useIsMobile(); // ✅ detect mobile
 
-  // ✅ If mobile → fixed width/height (ignore dynamic sizing)
-  const w = isMobile ? "100%" : numericToPx(width ?? item.position?.width, MAX_WIDTH);
-  const h = isMobile ? "auto" : numericToPx(height ?? item.position?.height, MAX_HEIGHT);
+  // ✅ Use item properties directly, with props as fallback for explicit overrides
+  const finalWidth = width ?? item.position?.width;
+  const finalHeight = height ?? item.position?.height;
+  const w = isMobile ? "100%" : numericToPx(finalWidth, MAX_WIDTH);
+  const h = isMobile ? "auto" : numericToPx(finalHeight, MAX_HEIGHT);
 
-  // Get frame style from props or item
+  // Get frame style from props, item, or default
   const currentFrameStyle = frameStyle || (item as any).frameStyle || 'classic';
 
-  // Animation
-  const resolvedAnimation =
-    animationVariants[item.animation as keyof typeof animationVariants] ||
-    animationVariants[animation as keyof typeof animationVariants] ||
-    animationVariants.fadeIn;
+  // Animation - use item animation first, then props, then default
+  const animationKey = (item.animation || animation || 'fadeIn') as keyof typeof animationVariants;
+  const resolvedAnimation = animationVariants[animationKey] || animationVariants.fadeIn;
 
   if (!item.url) {
     return (

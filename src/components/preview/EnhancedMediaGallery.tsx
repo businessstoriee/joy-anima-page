@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import MediaGalleryStyles, { layoutClassMap } from "./MediaGalleryStyles";
 import MediaFrame from "./MediaFrames";
-import { mediaAnimations } from "./MediaAnimations";
+import { animationVariants } from "@/types/animations";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { GreetingFormData, MediaItem } from "@/types/greeting";
 
@@ -130,6 +130,13 @@ const EnhancedMediaGallery: React.FC<Props> = ({
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [slideshowIndex, setSlideshowIndex] = useState(0);
   const [layout, setLayout] = useState<keyof typeof layoutClassMap>(greetingData.layout || "grid");
+
+  // ✅ Use real-time updates from greetingData instead of local state
+  useEffect(() => {
+    if (greetingData.layout && greetingData.layout !== layout) {
+      setLayout(greetingData.layout as keyof typeof layoutClassMap);
+    }
+  }, [greetingData.layout, layout]);
 
   const [muted, setMuted] = useState(true);
   const userInteractedRef = useRef(false);
@@ -248,16 +255,20 @@ const EnhancedMediaGallery: React.FC<Props> = ({
       ? "object-cover w-full h-full"
       : "object-contain w-full h-full";
 
-    // Get animation variant for this media item
-    const animationKey = (m.animation || mediaAnimation || 'fade') as keyof typeof mediaAnimations;
-    const animationVariant = mediaAnimations[animationKey] || mediaAnimations.fade;
+    // Get animation variant for this media item - use real-time settings
+    const itemAnimation = m.animation || mediaAnimation || greetingData.mediaAnimation || greetingData.animationStyle || 'fadeIn';
+    const animationKey = itemAnimation as keyof typeof animationVariants;
+    const animationVariant = animationVariants[animationKey] || animationVariants.fadeIn;
+
+    // Get frame style - use real-time settings
+    const itemFrameStyle = (m as any).frameStyle || frameStyle || greetingData.frameStyle || 'classic';
 
     // fallback UI when final error
     if (errored[m.id]) {
       return (
         <MediaFrame 
           key={m.id} 
-          frameType={frameStyle || greetingData.frameStyle || 'classic'} 
+          frameType={itemFrameStyle} 
           index={index}
           className="gallery-item relative"
         >
@@ -301,7 +312,7 @@ const EnhancedMediaGallery: React.FC<Props> = ({
           transition={{ delay: index * 0.1 }}
         >
           <MediaFrame 
-            frameType={frameStyle || greetingData.frameStyle || 'classic'} 
+            frameType={itemFrameStyle} 
             index={index}
             className="gallery-item relative cursor-pointer overflow-hidden"
           >
@@ -328,7 +339,12 @@ const EnhancedMediaGallery: React.FC<Props> = ({
                   }
                 }}
                 className={`${mediaClass} block`}
-                style={{ display: "block" }}
+                style={{ 
+                  display: "block",
+                  width: m.position?.width ? `${m.position.width}px` : "100%",
+                  height: m.position?.height ? `${m.position.height}px` : "100%",
+                  objectFit: "cover"
+                }}
               />
               <div className="absolute top-2 right-2 opacity-95">
                 <div className="bg-white/85 rounded-full p-1.5">
@@ -354,7 +370,7 @@ const EnhancedMediaGallery: React.FC<Props> = ({
           transition={{ delay: index * 0.1 }}
         >
           <MediaFrame 
-            frameType={frameStyle || greetingData.frameStyle || 'classic'} 
+            frameType={itemFrameStyle} 
             index={index}
             className="gallery-item relative cursor-pointer bg-black"
           >
@@ -383,7 +399,12 @@ const EnhancedMediaGallery: React.FC<Props> = ({
                   }
                 }}
                 className={`${mediaClass} block`}
-                style={{ display: "block" }}
+                style={{ 
+                  display: "block",
+                  width: m.position?.width ? `${m.position.width}px` : "100%",
+                  height: m.position?.height ? `${m.position.height}px` : "100%",
+                  objectFit: "cover"
+                }}
               />
               <div className="absolute top-2 right-2 opacity-95">
                 <div className="bg-white/85 rounded-full p-1.5">
@@ -403,7 +424,7 @@ const EnhancedMediaGallery: React.FC<Props> = ({
         return (
           <MediaFrame 
             key={m.id} 
-            frameType={frameStyle || greetingData.frameStyle || 'classic'} 
+            frameType={itemFrameStyle} 
             index={index}
             className="gallery-item relative p-6 h-40 text-center"
           >
@@ -423,7 +444,7 @@ const EnhancedMediaGallery: React.FC<Props> = ({
           transition={{ delay: index * 0.1 }}
         >
           <MediaFrame 
-            frameType={frameStyle || greetingData.frameStyle || 'classic'} 
+            frameType={itemFrameStyle} 
             index={index}
             className="gallery-item relative cursor-pointer bg-black"
           >
@@ -469,7 +490,7 @@ const EnhancedMediaGallery: React.FC<Props> = ({
         transition={{ delay: index * 0.1 }}
       >
         <MediaFrame 
-          frameType={frameStyle || greetingData.frameStyle || 'classic'} 
+          frameType={itemFrameStyle} 
           index={index}
           className="gallery-item relative cursor-pointer"
         >
@@ -486,6 +507,12 @@ const EnhancedMediaGallery: React.FC<Props> = ({
                 else markError(m.id);
               }}
               className={`${mediaClass} block`}
+              style={{ 
+                display: "block",
+                width: m.position?.width ? `${m.position.width}px` : "100%",
+                height: m.position?.height ? `${m.position.height}px` : "100%",
+                objectFit: "cover"
+              }}
             />
             <div className="absolute top-2 right-2 opacity-95">
               <div className="bg-white/85 rounded-full p-1.5">

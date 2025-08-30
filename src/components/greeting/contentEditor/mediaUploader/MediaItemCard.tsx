@@ -158,12 +158,11 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
         />
 
         <div className="mt-3 flex justify-center">
-          {/* Pass explicit width/height and frameStyle to MediaPreview */}
+          {/* MediaPreview will use the current item state automatically */}
           <MediaPreview
             item={item}
-            width={item.position?.width}
-            height={item.position?.height}
-            frameStyle={(item as any).frameStyle || 'classic'}
+            frameStyle={(item as any).frameStyle}
+            animation={item.animation}
           />
         </div>
 

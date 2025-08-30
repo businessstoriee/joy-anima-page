@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
-import { layoutStyles, animationStyles } from '@/types/eventTypes';
-import { mediaAnimations, getAnimationsByCategory } from '@/components/preview/MediaAnimations';
+import { layoutStyles, layoutDescriptions } from '@/types/layouts';
+import { animationOptions } from '@/types/animations';
 import { ChevronDown, ChevronUp, Zap, Layout } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -41,32 +41,6 @@ const LayoutSelector = ({
       [section]: !prev[section]
     }));
   };
-
-  const layoutDescriptions = {
-    grid: 'Organized in a clean grid pattern',
-    masonry: 'Pinterest-style staggered layout',
-    carousel: 'Horizontal scrolling showcase',
-    slideshow: 'Sequential image display',
-    polaroid: 'Vintage photo style',
-    gallery: 'Museum-style presentation',
-    hexagon: 'Honeycomb pattern',
-    circular: 'Radial arrangement',
-  spiral: 'Swirling pattern',
-    wave: 'Flowing arrangement',
-    // New Creative Layouts
-    floating: 'Freely floating elements',
-    orbiting: 'Circular orbital motion', 
-    cascading: 'Waterfall cascade effect',
-    vortex: 'Spiral vortex pattern',
-    constellation: 'Star constellation layout',
-    magnetic: 'Magnetic attraction layout',
-    ripple: 'Water ripple expansion',
-    kaleidoscope: 'Kaleidoscope pattern',
-    drifting: 'Slow drift movement',
-    pulsing: 'Rhythmic pulsing layout'
-  };
-
-  const animationCategories = getAnimationsByCategory();
 
   return (
     <Card className="border border-blue-300 shadow-xl bg-gradient-to-br from-white to-gray-50/50 overflow-hidden">
@@ -189,11 +163,11 @@ const LayoutSelector = ({
                     <SelectValue placeholder="Choose global animation" />
                   </SelectTrigger>
                   <SelectContent>
-                    {animationStyles.map((style) => (
-                      <SelectItem key={style.value} value={style.value}>
+                    {animationOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
                         <div className="flex items-center gap-2">
                           <div className="w-3 h-3 bg-green-500 rounded-full" />
-                          <span>{style.label}</span>
+                          <span>{option.label}</span>
                         </div>
                       </SelectItem>
                     ))}
@@ -201,18 +175,18 @@ const LayoutSelector = ({
                 </Select>
                 
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {animationStyles.slice(0, 4).map((style) => (
+                  {animationOptions.slice(0, 4).map((option) => (
                     <div
-                      key={style.value}
+                      key={option.value}
                       className={cn(
                         "px-3 py-1.5 rounded-full text-xs cursor-pointer transition-all border",
-                        animationStyle === style.value
+                        animationStyle === option.value
                           ? "bg-green-100 text-green-700 border-green-300 shadow-sm"
                           : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
                       )}
-                      onClick={() => onAnimationChange(style.value)}
+                      onClick={() => onAnimationChange(option.value)}
                     >
-                      {style.label}
+                      {option.label}
                     </div>
                   ))}
                 </div>
