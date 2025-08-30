@@ -90,8 +90,8 @@ export interface GreetingFormData {
     height: number;
   };
   animationStyle: string;
-  layout: 'grid' | 'masonry' | 'carousel' | 'slideshow' | 'polaroid' | 'gallery' | 'hexagon' | 'circular' | 'spiral' | 'wave';  
-  frameStyle: 'classic' | 'modern' | 'vintage' | 'polaroid' | 'film' | 'elegant' | 'minimal' | 'neon' | 'romantic' | 'starry' | 'magical';
+  layout: 'grid' | 'masonry' | 'carousel' | 'slideshow' | 'polaroid' | 'gallery' | 'hexagon' | 'circular' | 'spiral' | 'wave' | 'floating' | 'orbiting' | 'cascading' | 'vortex' | 'constellation' | 'magnetic' | 'ripple' | 'kaleidoscope' | 'drifting' | 'pulsing';  
+  frameStyle: 'classic' | 'modern' | 'vintage' | 'polaroid' | 'film' | 'elegant' | 'minimal' | 'neon' | 'romantic' | 'starry' | 'magical' | 'crystal' | 'royal' | 'nature' | 'cosmic' | 'ocean' | 'fire' | 'rainbow';
   mediaAnimation?: string;
   theme: string;
   headerText?: TextContent;

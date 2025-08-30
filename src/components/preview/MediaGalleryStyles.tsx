@@ -2,7 +2,7 @@ import React from "react";
 
 export const layoutClassMap = {
   grid: "grid-layout",
-  masonry: "masonry-layout",
+  masonry: "masonry-layout", 
   carousel: "carousel-layout",
   slideshow: "slideshow-layout",
   polaroid: "polaroid-layout",
@@ -11,6 +11,17 @@ export const layoutClassMap = {
   spiral: "spiral-layout",
   wave: "wave-layout",
   gallery: "gallery-layout",
+  // New Creative Layouts
+  floating: "floating-layout",
+  orbiting: "orbiting-layout",
+  cascading: "cascading-layout",
+  vortex: "vortex-layout",
+  constellation: "constellation-layout",
+  magnetic: "magnetic-layout", 
+  ripple: "ripple-layout",
+  kaleidoscope: "kaleidoscope-layout",
+  drifting: "drifting-layout",
+  pulsing: "pulsing-layout"
 } as const;
 
 export type LayoutType = keyof typeof layoutClassMap;
@@ -1436,6 +1447,497 @@ const css = `
   to { transform: scale(1); opacity: 1; }
 }
 
+
+/* ========== NEW CREATIVE LAYOUTS ========== */
+
+/* ---------- Floating Layout ---------- */
+.floating-layout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  padding: 40px 20px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.floating-layout .gallery-item {
+  width: 180px;
+  height: 180px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  opacity: 0;
+  animation: floatingEnter 1s ease forwards, floatingMove 8s ease-in-out infinite;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.floating-layout .gallery-item:nth-child(odd) { animation-delay: 0.2s, 1s; }
+.floating-layout .gallery-item:nth-child(even) { animation-delay: 0.4s, 2s; }
+
+.floating-layout .gallery-item:hover {
+  transform: translateY(-15px) scale(1.08);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes floatingEnter {
+  0% { opacity: 0; transform: translateY(50px) scale(0.8); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes floatingMove {
+  0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
+  25% { transform: translateX(15px) translateY(-10px) rotate(2deg); }
+  50% { transform: translateX(-10px) translateY(15px) rotate(-1deg); }
+  75% { transform: translateX(10px) translateY(-5px) rotate(1deg); }
+}
+
+/* ---------- Orbiting Layout ---------- */
+.orbiting-layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 500px;
+  position: relative;
+  padding: 60px;
+}
+
+.orbiting-layout .gallery-item {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  opacity: 0;
+  animation: orbitingEnter 1s ease forwards;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.orbiting-layout .gallery-item:nth-child(1) {
+  animation: orbitingEnter 1s ease forwards, orbit1 12s linear infinite;
+  animation-delay: 0.2s, 1s;
+}
+.orbiting-layout .gallery-item:nth-child(2) {
+  animation: orbitingEnter 1s ease forwards, orbit2 15s linear infinite;
+  animation-delay: 0.4s, 1.5s;
+}
+.orbiting-layout .gallery-item:nth-child(3) {
+  animation: orbitingEnter 1s ease forwards, orbit3 18s linear infinite;
+  animation-delay: 0.6s, 2s;
+}
+
+.orbiting-layout .gallery-item:hover {
+  transform: scale(1.2);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+@keyframes orbitingEnter {
+  0% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes orbit1 {
+  0% { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+}
+
+@keyframes orbit2 {
+  0% { transform: rotate(120deg) translateX(120px) rotate(-120deg); }
+  100% { transform: rotate(480deg) translateX(120px) rotate(-480deg); }
+}
+
+@keyframes orbit3 {
+  0% { transform: rotate(240deg) translateX(180px) rotate(-240deg); }
+  100% { transform: rotate(600deg) translateX(180px) rotate(-600deg); }
+}
+
+/* ---------- Cascading Layout ---------- */
+.cascading-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 30px;
+  position: relative;
+}
+
+.cascading-layout .gallery-item {
+  border-radius: 15px;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(80px) scale(0.9);
+  animation: cascadingEnter 0.8s ease forwards;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.cascading-layout .gallery-item:nth-child(1) { animation-delay: 0.1s; }
+.cascading-layout .gallery-item:nth-child(2) { animation-delay: 0.3s; }
+.cascading-layout .gallery-item:nth-child(3) { animation-delay: 0.5s; }
+.cascading-layout .gallery-item:nth-child(4) { animation-delay: 0.7s; }
+
+.cascading-layout .gallery-item:hover {
+  transform: translateY(-12px) scale(1.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes cascadingEnter {
+  0% { opacity: 0; transform: translateY(80px) scale(0.9); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---------- Vortex Layout ---------- */
+.vortex-layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 600px;
+  position: relative;
+  padding: 80px;
+}
+
+.vortex-layout .gallery-item {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 20px;
+  overflow: hidden;
+  opacity: 0;
+  animation: vortexEnter 2s ease forwards, vortexSpin 20s linear infinite;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.vortex-layout .gallery-item:nth-child(1) { animation-delay: 0.2s, 2s; }
+.vortex-layout .gallery-item:nth-child(2) { animation-delay: 0.6s, 2.5s; }
+.vortex-layout .gallery-item:nth-child(3) { animation-delay: 1s, 3s; }
+
+.vortex-layout .gallery-item:hover {
+  animation-play-state: paused;
+  transform: scale(1.15);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+}
+
+@keyframes vortexEnter {
+  0% { opacity: 0; transform: scale(2) rotate(360deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+@keyframes vortexSpin {
+  0% { transform: rotate(0deg) translateX(200px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(200px) rotate(-360deg); }
+}
+
+/* ---------- Constellation Layout ---------- */
+.constellation-layout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  padding: 50px;
+  min-height: 500px;
+  background: radial-gradient(circle, rgba(25,25,112,0.1) 0%, rgba(0,0,0,0.05) 100%);
+  position: relative;
+}
+
+.constellation-layout .gallery-item {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  overflow: hidden;
+  opacity: 0;
+  position: relative;
+  animation: constellationEnter 1.5s ease forwards, constellationTwinkle 3s ease-in-out infinite;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3), 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.constellation-layout .gallery-item::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, rgba(255,215,0,0.5), rgba(255,255,255,0.3));
+  z-index: -1;
+  animation: constellationGlow 2s ease-in-out infinite alternate;
+}
+
+.constellation-layout .gallery-item:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.6), 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes constellationEnter {
+  0% { opacity: 0; transform: scale(0.3); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes constellationTwinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes constellationGlow {
+  0% { opacity: 0.5; }
+  100% { opacity: 0.9; }
+}
+
+/* ---------- Magnetic Layout ---------- */
+.magnetic-layout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding: 40px;
+  min-height: 450px;
+}
+
+.magnetic-layout .gallery-item {
+  width: 170px;
+  height: 170px;
+  border-radius: 15px;
+  overflow: hidden;
+  opacity: 0;
+  animation: magneticEnter 1s ease forwards, magneticPull 6s ease-in-out infinite;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.magnetic-layout .gallery-item:nth-child(odd) { animation-delay: 0.2s, 1s; }
+.magnetic-layout .gallery-item:nth-child(even) { animation-delay: 0.5s, 2s; }
+
+.magnetic-layout .gallery-item:hover {
+  transform: translateY(-10px) scale(1.05);
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes magneticEnter {
+  0% { opacity: 0; transform: translateX(-100px) scale(0.8); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes magneticPull {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(8px) translateY(-4px); }
+  50% { transform: translateX(-6px) translateY(8px); }
+  75% { transform: translateX(4px) translateY(-6px); }
+}
+
+/* ---------- Ripple Layout ---------- */
+.ripple-layout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  padding: 40px;
+  min-height: 450px;
+}
+
+.ripple-layout .gallery-item {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  opacity: 0;
+  position: relative;
+  animation: rippleEnter 1s ease forwards, rippleEffect 4s ease-in-out infinite;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.ripple-layout .gallery-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  animation: rippleWave 3s ease-out infinite;
+}
+
+.ripple-layout .gallery-item:hover {
+  transform: scale(1.1);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes rippleEnter {
+  0% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes rippleEffect {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+@keyframes rippleWave {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* ---------- Kaleidoscope Layout ---------- */
+.kaleidoscope-layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 600px;
+  position: relative;
+  padding: 80px;
+}
+
+.kaleidoscope-layout .gallery-item {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 20%;
+  overflow: hidden;
+  opacity: 0;
+  animation: kaleidoscopeEnter 2s ease forwards, kaleidoscopeRotate 16s linear infinite;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.kaleidoscope-layout .gallery-item:nth-child(1) { 
+  animation-delay: 0.2s, 1s;
+  transform-origin: 200px 0;
+}
+.kaleidoscope-layout .gallery-item:nth-child(2) { 
+  animation-delay: 0.6s, 1.5s;
+  transform-origin: -100px 173px;
+}
+.kaleidoscope-layout .gallery-item:nth-child(3) { 
+  animation-delay: 1s, 2s;
+  transform-origin: -100px -173px;
+}
+
+.kaleidoscope-layout .gallery-item:hover {
+  animation-play-state: paused;
+  transform: scale(1.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+@keyframes kaleidoscopeEnter {
+  0% { opacity: 0; transform: scale(0.3) rotate(180deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+@keyframes kaleidoscopeRotate {
+  0% { transform: rotate(0deg) translateX(180px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(180px) rotate(-360deg); }
+}
+
+/* ---------- Drifting Layout ---------- */
+.drifting-layout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 35px;
+  padding: 50px;
+  min-height: 500px;
+}
+
+.drifting-layout .gallery-item {
+  width: 180px;
+  height: 180px;
+  border-radius: 25px;
+  overflow: hidden;
+  opacity: 0;
+  animation: driftingEnter 1.5s ease forwards, driftingFloat 10s ease-in-out infinite;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.drifting-layout .gallery-item:nth-child(1) { animation-delay: 0.2s, 1s; }
+.drifting-layout .gallery-item:nth-child(2) { animation-delay: 0.5s, 3s; }
+.drifting-layout .gallery-item:nth-child(3) { animation-delay: 0.8s, 5s; }
+
+.drifting-layout .gallery-item:hover {
+  animation-play-state: paused;
+  transform: translateY(-15px) scale(1.08);
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes driftingEnter {
+  0% { opacity: 0; transform: translateY(60px) rotate(10deg); }
+  100% { opacity: 1; transform: translateY(0) rotate(0deg); }
+}
+
+@keyframes driftingFloat {
+  0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
+  25% { transform: translateX(20px) translateY(-15px) rotate(3deg); }
+  50% { transform: translateX(-15px) translateY(20px) rotate(-2deg); }
+  75% { transform: translateX(10px) translateY(-10px) rotate(1deg); }
+}
+
+/* ---------- Pulsing Layout ---------- */
+.pulsing-layout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding: 40px;
+  min-height: 450px;
+}
+
+.pulsing-layout .gallery-item {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  overflow: hidden;
+  opacity: 0;
+  animation: pulsingEnter 1s ease forwards, pulsingBeat 3s ease-in-out infinite;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.pulsing-layout .gallery-item:nth-child(1) { animation-delay: 0.2s, 1s; }
+.pulsing-layout .gallery-item:nth-child(2) { animation-delay: 0.4s, 1.5s; }
+.pulsing-layout .gallery-item:nth-child(3) { animation-delay: 0.6s, 2s; }
+
+.pulsing-layout .gallery-item:hover {
+  animation-play-state: paused;
+  transform: scale(1.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+@keyframes pulsingEnter {
+  0% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulsingBeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* Reduced motion support for new layouts */
+@media (prefers-reduced-motion: reduce) {
+  .floating-layout .gallery-item,
+  .orbiting-layout .gallery-item,
+  .cascading-layout .gallery-item,
+  .vortex-layout .gallery-item,
+  .constellation-layout .gallery-item,
+  .magnetic-layout .gallery-item,
+  .ripple-layout .gallery-item,
+  .kaleidoscope-layout .gallery-item,
+  .drifting-layout .gallery-item,
+  .pulsing-layout .gallery-item {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1;
+  }
+}
 
 
 `;

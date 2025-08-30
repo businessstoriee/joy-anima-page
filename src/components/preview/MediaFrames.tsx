@@ -130,6 +130,158 @@ export const frameStyles: Record<string, FrameStyle> = {
       </>
     ),
   },
+  // New Creative Frames
+  crystal: {
+    name: 'Crystal',
+    className: 'bg-gradient-to-br from-blue-50 to-cyan-100 border-4 border-cyan-300 shadow-2xl p-3 overflow-hidden relative',
+    decorative: (
+      <>
+        <div className="absolute -inset-1 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-2xl opacity-75 blur-sm" />
+        <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent rounded-xl" />
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-white rounded-full animate-pulse opacity-80"
+            style={{
+              top: `${Math.random() * 80 + 10}%`,
+              left: `${Math.random() * 80 + 10}%`,
+              animationDelay: `${i * 0.4}s`,
+            }}
+          />
+        ))}
+      </>
+    ),
+  },
+  royal: {
+    name: 'Royal',
+    className: 'bg-gradient-to-b from-yellow-100 to-amber-50 border-4 border-yellow-600 shadow-2xl p-4 overflow-hidden relative',
+    decorative: (
+      <>
+        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+          <div className="w-6 h-6 bg-yellow-600 rotate-45 rounded-sm" />
+        </div>
+        <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+          <div className="w-6 h-6 bg-yellow-600 rotate-45 rounded-sm" />
+        </div>
+        <div className="absolute -left-2 top-1/2 transform -translate-y-1/2">
+          <div className="w-6 h-6 bg-yellow-600 rotate-45 rounded-sm" />
+        </div>
+        <div className="absolute -right-2 top-1/2 transform -translate-y-1/2">
+          <div className="w-6 h-6 bg-yellow-600 rotate-45 rounded-sm" />
+        </div>
+        <div className="absolute inset-2 border-2 border-yellow-500 rounded-lg" />
+      </>
+    ),
+  },
+  nature: {
+    name: 'Nature',
+    className: 'bg-gradient-to-br from-green-50 to-emerald-100 border-4 border-green-400 rounded-2xl shadow-xl p-3 overflow-hidden relative',
+    decorative: (
+      <>
+        <div className="absolute inset-0 opacity-20 rounded-2xl" style={{
+          backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(34,197,94,0.1) 10px, rgba(34,197,94,0.1) 20px)'
+        }} />
+        {['🌿', '🍃', '🌱'].map((leaf, i) => (
+          <div
+            key={i}
+            className="absolute text-green-600 animate-pulse opacity-60"
+            style={{
+              top: `${15 + i * 25}%`,
+              right: '8px',
+              animationDelay: `${i * 0.5}s`,
+            }}
+          >
+            {leaf}
+          </div>
+        ))}
+      </>
+    ),
+  },
+  cosmic: {
+    name: 'Cosmic',
+    className: 'bg-gradient-to-br from-purple-900 to-black border-2 border-purple-500 rounded-2xl shadow-2xl p-3 overflow-hidden relative',
+    decorative: (
+      <>
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-pink-500/20 to-blue-600/20 animate-pulse rounded-2xl" />
+        {Array.from({ length: 15 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${i * 0.2}s`,
+              opacity: Math.random(),
+            }}
+          />
+        ))}
+        <div className="absolute top-2 right-2">
+          <div className="w-4 h-4 bg-yellow-300 rounded-full animate-ping opacity-75" />
+        </div>
+      </>
+    ),
+  },
+  ocean: {
+    name: 'Ocean',
+    className: 'bg-gradient-to-br from-blue-100 to-teal-200 border-3 border-blue-400 rounded-3xl shadow-2xl p-4 overflow-hidden relative',
+    decorative: (
+      <>
+        <div className="absolute inset-0 opacity-30 rounded-3xl" style={{
+          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(59,130,246,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(34,211,238,0.3) 0%, transparent 50%)',
+        }} />
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute text-blue-500 animate-bounce opacity-70"
+            style={{
+              bottom: '10px',
+              left: `${20 + i * 20}%`,
+              animationDelay: `${i * 0.3}s`,
+            }}
+          >
+            〰️
+          </div>
+        ))}
+      </>
+    ),
+  },
+  fire: {
+    name: 'Fire',
+    className: 'bg-gradient-to-br from-red-100 to-orange-200 border-3 border-red-500 rounded-2xl shadow-2xl p-3 overflow-hidden relative',
+    decorative: (
+      <>
+        <div className="absolute inset-0 bg-gradient-to-t from-red-500/20 via-orange-400/20 to-yellow-300/20 animate-pulse rounded-2xl" />
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute text-red-500 animate-pulse"
+            style={{
+              bottom: `${10 + Math.random() * 20}px`,
+              left: `${20 + i * 15}%`,
+              animationDelay: `${i * 0.2}s`,
+              transform: `rotate(${Math.random() * 20 - 10}deg)`,
+            }}
+          >
+            🔥
+          </div>
+        ))}
+      </>
+    ),
+  },
+  rainbow: {
+    name: 'Rainbow',
+    className: 'bg-white border-4 rounded-2xl shadow-2xl p-3 overflow-hidden relative',
+    decorative: (
+      <>
+        <div className="absolute -inset-1 bg-gradient-to-r from-red-400 via-yellow-400 via-green-400 via-blue-400 via-indigo-400 to-purple-400 rounded-2xl opacity-75 animate-pulse" />
+        <div className="absolute inset-0 bg-white rounded-xl" />
+        <div className="absolute inset-2 border-2 border-transparent bg-gradient-to-r from-red-300 via-yellow-300 via-green-300 via-blue-300 via-indigo-300 to-purple-300 rounded-lg" style={{
+          backgroundClip: 'border-box',
+          WebkitBackgroundClip: 'border-box',
+        }} />
+      </>
+    ),
+  },
 };
 
 interface MediaFrameProps {

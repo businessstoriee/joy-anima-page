@@ -1,6 +1,6 @@
 // src/components/preview/EnhancedMediaGallery.tsx
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import {
   Image as ImageIcon,
@@ -13,6 +13,8 @@ import {
   Loader2,
 } from "lucide-react";
 import MediaGalleryStyles, { layoutClassMap } from "./MediaGalleryStyles";
+import MediaFrame from "./MediaFrames";
+import { mediaAnimations } from "./MediaAnimations";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { GreetingFormData, MediaItem } from "@/types/greeting";
 
@@ -112,7 +114,13 @@ interface Props {
   frameStyle?: string;
   mediaAnimation?: string;
 }
-const EnhancedMediaGallery: React.FC<Props> = ({ greetingData, isEditing = false, onMediaChange }) => {
+const EnhancedMediaGallery: React.FC<Props> = ({ 
+  greetingData, 
+  isEditing = false, 
+  onMediaChange,
+  frameStyle,
+  mediaAnimation 
+}) => {
   const media = greetingData.media || [];
   const isMobile = useIsMobile();
 
@@ -231,19 +239,28 @@ const EnhancedMediaGallery: React.FC<Props> = ({ greetingData, isEditing = false
     return null;
   };
 
-  // Render single item (no hooks used here)
+  // Render single item with frame and animation
   const renderMediaItem = (m: MediaItem, index: number) => {
     const attempt = retries[m.id] || 0;
     const type = detectType(m.url);
-    const src = cacheBusted(m.url, attempt); // cache bust only affects http(s) per helper
+    const src = cacheBusted(m.url, attempt);
     const mediaClass = ["grid", "carousel", "collage", "slideshow", "polaroid"].includes(layout)
       ? "object-cover w-full h-full"
       : "object-contain w-full h-full";
 
+    // Get animation variant for this media item
+    const animationKey = (m.animation || mediaAnimation || 'fade') as keyof typeof mediaAnimations;
+    const animationVariant = mediaAnimations[animationKey] || mediaAnimations.fade;
+
     // fallback UI when final error
     if (errored[m.id]) {
       return (
-        <div key={m.id} className="gallery-item relative" role="button" aria-label={`Failed to open media ${index + 1}`}>
+        <MediaFrame 
+          key={m.id} 
+          frameType={frameStyle || greetingData.frameStyle || 'classic'} 
+          index={index}
+          className="gallery-item relative"
+        >
           <div className="flex items-center justify-center p-6 h-40 text-center bg-gray-50 rounded">
             <div>
               <AlertCircle className="w-8 h-8 text-red-500 mx-auto" />
@@ -261,7 +278,7 @@ const EnhancedMediaGallery: React.FC<Props> = ({ greetingData, isEditing = false
               </div>
             </div>
           </div>
-        </div>
+        </MediaFrame>
       );
     }
 
@@ -274,79 +291,108 @@ const EnhancedMediaGallery: React.FC<Props> = ({ greetingData, isEditing = false
     // IMAGE (includes data: & blob: URLs, uploaded files and remote images)
     if (type === "image") {
       return (
-        <div
+        <motion.div
           key={m.id}
-          className="gallery-item relative cursor-pointer overflow-hidden rounded"
-          onClick={() => setLightboxIndex(index)}
-          onKeyDown={(e) => e.key === "Enter" && setLightboxIndex(index)}
-          role="button"
-          tabIndex={0}
-          aria-label={`Open image ${index + 1}`}
+          initial="hidden"
+          animate="visible"
+          variants={animationVariant}
+          custom={index}
+          whileHover={{ scale: 1.02 }}
+          transition={{ delay: index * 0.1 }}
         >
-          {loadingOverlay}
-          <img
-            src={src}
-            alt={m.alt || `image-${index + 1}`}
-            loading="lazy"
-            // only set crossOrigin for remote http(s) images when you need it; avoid it for data/blob
-            onLoad={() => markLoaded(m.id)}
-            onError={() => {
-              const current = retries[m.id] || 0;
-              if (current < MAX_RETRIES && isHttpUrl(m.url)) {
-                setTimeout(() => attemptRetry(m.id), current * 1000); // backoff
-              } else {
-                markError(m.id);
-              }
-            }}
-            className={`${mediaClass} block`}
-            style={{ display: "block" }}
-          />
-          <div className="absolute top-2 right-2 opacity-95">
-            <div className="bg-white/85 rounded-full p-1.5">
-              <ImageIcon className="w-4 h-4" />
+          <MediaFrame 
+            frameType={frameStyle || greetingData.frameStyle || 'classic'} 
+            index={index}
+            className="gallery-item relative cursor-pointer overflow-hidden"
+          >
+            <div
+              onClick={() => setLightboxIndex(index)}
+              onKeyDown={(e) => e.key === "Enter" && setLightboxIndex(index)}
+              role="button"
+              tabIndex={0}
+              aria-label={`Open image ${index + 1}`}
+              className="relative w-full h-full"
+            >
+              {loadingOverlay}
+              <img
+                src={src}
+                alt={m.alt || `image-${index + 1}`}
+                loading="lazy"
+                onLoad={() => markLoaded(m.id)}
+                onError={() => {
+                  const current = retries[m.id] || 0;
+                  if (current < MAX_RETRIES && isHttpUrl(m.url)) {
+                    setTimeout(() => attemptRetry(m.id), current * 1000);
+                  } else {
+                    markError(m.id);
+                  }
+                }}
+                className={`${mediaClass} block`}
+                style={{ display: "block" }}
+              />
+              <div className="absolute top-2 right-2 opacity-95">
+                <div className="bg-white/85 rounded-full p-1.5">
+                  <ImageIcon className="w-4 h-4" />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </MediaFrame>
+        </motion.div>
       );
     }
 
     // DIRECT VIDEO FILE
     if (type === "video") {
       return (
-        <div
+        <motion.div
           key={m.id}
-          className="gallery-item relative cursor-pointer rounded overflow-hidden bg-black"
-          onClick={() => setLightboxIndex(index)}
-          onKeyDown={(e) => e.key === "Enter" && setLightboxIndex(index)}
-          role="button"
-          tabIndex={0}
-          aria-label={`Open video ${index + 1}`}
+          initial="hidden"
+          animate="visible"
+          variants={animationVariant}
+          custom={index}
+          whileHover={{ scale: 1.02 }}
+          transition={{ delay: index * 0.1 }}
         >
-          {loadingOverlay}
-          <video
-            src={src}
-            controls
-            playsInline
-            muted={muted}
-            preload="metadata"
-            onLoadedData={() => markLoaded(m.id)}
-            onError={() => {
-              const current = retries[m.id] || 0;
-              if (current < MAX_RETRIES && isHttpUrl(m.url)) {
-                attemptRetry(m.id);
-              } else {
-                markError(m.id);
-              }
-            }}
-            className={`${mediaClass} block`}
-            style={{ display: "block" }}
-          />
-          <div className="absolute top-2 right-2 opacity-95">
-            <div className="bg-white/85 rounded-full p-1.5">
-              <VideoIcon className="w-4 h-4" />
+          <MediaFrame 
+            frameType={frameStyle || greetingData.frameStyle || 'classic'} 
+            index={index}
+            className="gallery-item relative cursor-pointer bg-black"
+          >
+            <div
+              onClick={() => setLightboxIndex(index)}
+              onKeyDown={(e) => e.key === "Enter" && setLightboxIndex(index)}
+              role="button"
+              tabIndex={0}
+              aria-label={`Open video ${index + 1}`}
+              className="relative w-full h-full"
+            >
+              {loadingOverlay}
+              <video
+                src={src}
+                controls
+                playsInline
+                muted={muted}
+                preload="metadata"
+                onLoadedData={() => markLoaded(m.id)}
+                onError={() => {
+                  const current = retries[m.id] || 0;
+                  if (current < MAX_RETRIES && isHttpUrl(m.url)) {
+                    attemptRetry(m.id);
+                  } else {
+                    markError(m.id);
+                  }
+                }}
+                className={`${mediaClass} block`}
+                style={{ display: "block" }}
+              />
+              <div className="absolute top-2 right-2 opacity-95">
+                <div className="bg-white/85 rounded-full p-1.5">
+                  <VideoIcon className="w-4 h-4" />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </MediaFrame>
+        </motion.div>
       );
     }
 
@@ -355,64 +401,100 @@ const EnhancedMediaGallery: React.FC<Props> = ({ greetingData, isEditing = false
       const embed = makeEmbedSrc(m);
       if (!embed) {
         return (
-          <div key={m.id} className="gallery-item relative p-6 h-40 text-center">
+          <MediaFrame 
+            key={m.id} 
+            frameType={frameStyle || greetingData.frameStyle || 'classic'} 
+            index={index}
+            className="gallery-item relative p-6 h-40 text-center"
+          >
             <AlertCircle className="w-8 h-8 text-red-500 mx-auto" />
             <p className="text-sm text-red-600 mt-2">Invalid embed link</p>
-          </div>
+          </MediaFrame>
         );
       }
       return (
-        <div
+        <motion.div
           key={m.id}
-          className="gallery-item relative cursor-pointer rounded overflow-hidden bg-black"
-          onClick={() => setLightboxIndex(index)}
-          onKeyDown={(e) => e.key === "Enter" && setLightboxIndex(index)}
-          role="button"
-          tabIndex={0}
-          aria-label={`Open embedded media ${index + 1}`}
+          initial="hidden"
+          animate="visible"
+          variants={animationVariant}
+          custom={index}
+          whileHover={{ scale: 1.02 }}
+          transition={{ delay: index * 0.1 }}
         >
-          {loadingOverlay}
-          <div className="w-full h-full">
-            <iframe
-              src={embed}
-              title={m.alt || `embedded-${index}`}
-              allow="autoplay; encrypted-media; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full block"
-              onLoad={() => markLoaded(m.id)}
-            />
-          </div>
-          <div className="absolute top-2 right-2 opacity-95">
-            <div className="bg-white/85 rounded-full p-1.5">
-              <VideoIcon className="w-4 h-4" />
+          <MediaFrame 
+            frameType={frameStyle || greetingData.frameStyle || 'classic'} 
+            index={index}
+            className="gallery-item relative cursor-pointer bg-black"
+          >
+            <div
+              onClick={() => setLightboxIndex(index)}
+              onKeyDown={(e) => e.key === "Enter" && setLightboxIndex(index)}
+              role="button"
+              tabIndex={0}
+              aria-label={`Open embedded media ${index + 1}`}
+              className="relative w-full h-full"
+            >
+              {loadingOverlay}
+              <div className="w-full h-full">
+                <iframe
+                  src={embed}
+                  title={m.alt || `embedded-${index}`}
+                  allow="autoplay; encrypted-media; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full block"
+                  onLoad={() => markLoaded(m.id)}
+                />
+              </div>
+              <div className="absolute top-2 right-2 opacity-95">
+                <div className="bg-white/85 rounded-full p-1.5">
+                  <VideoIcon className="w-4 h-4" />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </MediaFrame>
+        </motion.div>
       );
     }
 
     // Unknown fallback -> try rendering an image first (may be remote without extension)
     return (
-      <div key={m.id} className="gallery-item relative cursor-pointer" onClick={() => setLightboxIndex(index)}>
-        {loadingOverlay}
-        <img
-          src={src}
-          alt={m.alt || `media-${index + 1}`}
-          loading="lazy"
-          onLoad={() => markLoaded(m.id)}
-          onError={() => {
-            const current = retries[m.id] || 0;
-            if (current < MAX_RETRIES && isHttpUrl(m.url)) attemptRetry(m.id);
-            else markError(m.id);
-          }}
-          className={`${mediaClass} block`}
-        />
-        <div className="absolute top-2 right-2 opacity-95">
-          <div className="bg-white/85 rounded-full p-1.5">
-            <ImageIcon className="w-4 h-4" />
+      <motion.div
+        key={m.id}
+        initial="hidden"
+        animate="visible"
+        variants={animationVariant}
+        custom={index}
+        whileHover={{ scale: 1.02 }}
+        transition={{ delay: index * 0.1 }}
+      >
+        <MediaFrame 
+          frameType={frameStyle || greetingData.frameStyle || 'classic'} 
+          index={index}
+          className="gallery-item relative cursor-pointer"
+        >
+          <div onClick={() => setLightboxIndex(index)} className="relative w-full h-full">
+            {loadingOverlay}
+            <img
+              src={src}
+              alt={m.alt || `media-${index + 1}`}
+              loading="lazy"
+              onLoad={() => markLoaded(m.id)}
+              onError={() => {
+                const current = retries[m.id] || 0;
+                if (current < MAX_RETRIES && isHttpUrl(m.url)) attemptRetry(m.id);
+                else markError(m.id);
+              }}
+              className={`${mediaClass} block`}
+            />
+            <div className="absolute top-2 right-2 opacity-95">
+              <div className="bg-white/85 rounded-full p-1.5">
+                <ImageIcon className="w-4 h-4" />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </MediaFrame>
+      </motion.div>
     );
   };
 

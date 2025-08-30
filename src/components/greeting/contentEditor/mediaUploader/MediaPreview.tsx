@@ -3,14 +3,15 @@ import { MediaItem } from "@/types/greeting";
 import { validateUrl, getEmbedCode } from "./mediaUtils";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { frameStyles, animationVariants } from "@/types/styles";
-import { useIsMobile } from "@/hooks/use-mobile"; // ✅ import hook
+import { animationVariants } from "@/types/styles";
+import MediaFrame from "@/components/preview/MediaFrames";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MediaPreviewProps {
   item: MediaItem;
   width?: number | string;
   height?: number | string;
-  frameClass?: string;
+  frameStyle?: string;
   animation?: string;
 }
 
@@ -29,7 +30,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
   item,
   width,
   height,
-  frameClass,
+  frameStyle,
   animation,
 }) => {
   const isMobile = useIsMobile(); // ✅ detect mobile
@@ -38,14 +39,8 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
   const w = isMobile ? "100%" : numericToPx(width ?? item.position?.width, MAX_WIDTH);
   const h = isMobile ? "auto" : numericToPx(height ?? item.position?.height, MAX_HEIGHT);
 
-  const Wrapper = motion.div;
-
-  // Frame style
-  const resolvedFrame =
-    frameClass ||
-    ((item as any).frameStyle &&
-      frameStyles[(item as any).frameStyle as keyof typeof frameStyles]) ||
-    "";
+  // Get frame style from props or item
+  const currentFrameStyle = frameStyle || (item as any).frameStyle || 'classic';
 
   // Animation
   const resolvedAnimation =
@@ -55,7 +50,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
 
   if (!item.url) {
     return (
-      <Wrapper
+      <motion.div
         initial="initial"
         animate="animate"
         variants={resolvedAnimation}
@@ -65,19 +60,20 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
           maxWidth: isMobile ? "100%" : `${MAX_WIDTH}px`,
           maxHeight: isMobile ? "none" : `${MAX_HEIGHT}px`,
         }}
-        className={`${resolvedFrame} rounded-md overflow-hidden`}
       >
-        <Card className="p-3 bg-gray-50 text-gray-400 text-sm w-full h-full flex items-center justify-center">
-          No {item.type} URL entered yet
-        </Card>
-      </Wrapper>
+        <MediaFrame frameType={currentFrameStyle} index={0}>
+          <Card className="p-3 bg-gray-50 text-gray-400 text-sm w-full h-full flex items-center justify-center">
+            No {item.type} URL entered yet
+          </Card>
+        </MediaFrame>
+      </motion.div>
     );
   }
 
   const valid = validateUrl(item.url);
   if (!valid) {
     return (
-      <Wrapper
+      <motion.div
         initial="initial"
         animate="animate"
         variants={resolvedAnimation}
@@ -87,17 +83,18 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
           maxWidth: isMobile ? "100%" : `${MAX_WIDTH}px`,
           maxHeight: isMobile ? "none" : `${MAX_HEIGHT}px`,
         }}
-        className={`${resolvedFrame} rounded-md overflow-hidden`}
       >
-        <Card className="p-3 bg-red-50 text-red-500 text-sm w-full h-full flex items-center justify-center">
-          Invalid URL
-        </Card>
-      </Wrapper>
+        <MediaFrame frameType={currentFrameStyle} index={0}>
+          <Card className="p-3 bg-red-50 text-red-500 text-sm w-full h-full flex items-center justify-center">
+            Invalid URL
+          </Card>
+        </MediaFrame>
+      </motion.div>
     );
   }
 
   return (
-    <Wrapper
+    <motion.div
       initial="initial"
       animate="animate"
       variants={resolvedAnimation}
@@ -107,33 +104,34 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
         maxWidth: isMobile ? "100%" : `${MAX_WIDTH}px`,
         maxHeight: isMobile ? "none" : `${MAX_HEIGHT}px`,
       }}
-      className={`${resolvedFrame} rounded-md overflow-hidden`}
     >
-      {(item.type === "image" || item.type === "gif") && (
-        <img
-          src={item.url}
-          alt="Preview"
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        />
-      )}
+      <MediaFrame frameType={currentFrameStyle} index={0}>
+        {(item.type === "image" || item.type === "gif") && (
+          <img
+            src={item.url}
+            alt="Preview"
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        )}
 
-      {item.type === "video" && item.url.includes("youtube") && (
-        <div
-          dangerouslySetInnerHTML={{ __html: getEmbedCode(item.url) }}
-          className="w-full h-full"
-          style={{ minHeight: h ?? undefined }}
-        />
-      )}
+        {item.type === "video" && item.url.includes("youtube") && (
+          <div
+            dangerouslySetInnerHTML={{ __html: getEmbedCode(item.url) }}
+            className="w-full h-full"
+            style={{ minHeight: h ?? undefined }}
+          />
+        )}
 
-      {item.type === "video" && !item.url.includes("youtube") && (
-        <video
-          src={item.url}
-          controls
-          className="w-full h-full"
-          style={{ objectFit: "cover" }}
-        />
-      )}
-    </Wrapper>
+        {item.type === "video" && !item.url.includes("youtube") && (
+          <video
+            src={item.url}
+            controls
+            className="w-full h-full"
+            style={{ objectFit: "cover" }}
+          />
+        )}
+      </MediaFrame>
+    </motion.div>
   );
 };
 

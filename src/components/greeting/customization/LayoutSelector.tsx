@@ -55,8 +55,19 @@ const LayoutSelector = ({
     gallery: 'Museum-style presentation',
     hexagon: 'Honeycomb pattern',
     circular: 'Radial arrangement',
-    spiral: 'Swirling pattern',
-    wave: 'Flowing arrangement'
+  spiral: 'Swirling pattern',
+    wave: 'Flowing arrangement',
+    // New Creative Layouts
+    floating: 'Freely floating elements',
+    orbiting: 'Circular orbital motion', 
+    cascading: 'Waterfall cascade effect',
+    vortex: 'Spiral vortex pattern',
+    constellation: 'Star constellation layout',
+    magnetic: 'Magnetic attraction layout',
+    ripple: 'Water ripple expansion',
+    kaleidoscope: 'Kaleidoscope pattern',
+    drifting: 'Slow drift movement',
+    pulsing: 'Rhythmic pulsing layout'
   };
 
   const animationCategories = getAnimationsByCategory();

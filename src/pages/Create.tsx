@@ -88,7 +88,7 @@ const CreatePage: React.FC = () => {
             onBorderChange={(s) => setFormData((p: any) => ({ ...p, borderSettings: s }))}
             onLayoutChange={(layout) => handleInputChange("layout", layout)}
             onAnimationChange={(anim) => handleInputChange("animationStyle", anim)}
-            onFrameStyleChange={(frame) => handleInputChange("framenStyle", frame)}
+            onFrameStyleChange={(frame) => handleInputChange("frameStyle", frame)}
             onCustomEventCreate={onCustomEventCreate}
             onHeaderTextChange={(headerText) => setFormData((p: any) => ({ ...p, headerText }))}
             onEventNameStyleChange={(eventNameStyle) => setFormData((p: any) => ({ ...p, eventNameStyle }))}

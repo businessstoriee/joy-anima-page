@@ -145,6 +145,133 @@ export const mediaAnimations: Record<string, Variants> = {
       transition: { duration: 1.5, ease: "easeOut" } 
     },
   },
+  // New Creative Animations
+  orbiting: {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      rotate: [0, 360],
+      transition: {
+        duration: 8,
+        repeat: Infinity,
+        ease: "linear",
+      },
+    },
+  },
+  magnetic: {
+    hidden: { opacity: 0, x: -100, y: -100 },
+    visible: {
+      opacity: 1,
+      x: [0, 10, -5, 0],
+      y: [0, -5, 10, 0],
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        ease: "easeInOut",
+      },
+    },
+  },
+  ripple: {
+    hidden: { opacity: 0, scale: 0.5 },
+    visible: {
+      opacity: 1,
+      scale: [1, 1.1, 1],
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        ease: "easeInOut",
+      },
+    },
+  },
+  vortex: {
+    hidden: { opacity: 0, scale: 2, rotate: -360 },
+    visible: { 
+      opacity: 1, 
+      scale: 1, 
+      rotate: 0,
+      transition: { duration: 1.5, ease: "easeOut" } 
+    },
+  },
+  constellation: {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: [0, 1, 0.7, 1],
+      scale: [0.8, 1, 1.05, 1],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        ease: "easeInOut",
+      },
+    },
+  },
+  drifting: {
+    hidden: { opacity: 0, x: -20, y: -20 },
+    visible: {
+      opacity: 1,
+      x: [0, 15, -10, 0],
+      y: [0, -10, 15, 0],
+      transition: {
+        duration: 6,
+        repeat: Infinity,
+        ease: "easeInOut",
+      },
+    },
+  },
+  cascading: {
+    hidden: { opacity: 0, y: -50, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15,
+        delay: 0.2,
+      },
+    },
+  },
+  kaleidoscope: {
+    hidden: { opacity: 0, rotate: -180, scale: 0.5 },
+    visible: {
+      opacity: 1,
+      rotate: [0, 90, 180, 270, 360],
+      scale: [1, 1.1, 1],
+      transition: {
+        duration: 4,
+        repeat: Infinity,
+        ease: "linear",
+      },
+    },
+  },
+  floating: {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      x: [0, Math.random() * 20 - 10, Math.random() * 20 - 10, 0],
+      y: [0, Math.random() * 20 - 10, Math.random() * 20 - 10, 0],
+      rotate: [0, Math.random() * 10 - 5, Math.random() * 10 - 5, 0],
+      transition: {
+        duration: 4,
+        repeat: Infinity,
+        ease: "easeInOut",
+      },
+    },
+  },
+  morphing: {
+    hidden: { opacity: 0, borderRadius: "0%" },
+    visible: {
+      opacity: 1,
+      borderRadius: ["0%", "50%", "25%", "0%"],
+      scale: [1, 1.05, 0.95, 1],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        ease: "easeInOut",
+      },
+    },
+  },
 };
 
 export const getRandomAnimation = (): string => {
@@ -154,9 +281,9 @@ export const getRandomAnimation = (): string => {
 
 export const getAnimationsByCategory = () => {
   return {
-    entrance: ['fade', 'slideUp', 'slideLeft', 'slideRight', 'zoom', 'bounce'],
-    creative: ['rotate', 'flip', 'swing', 'spiral', 'glitch'],
-    continuous: ['pulse', 'wave', 'float'],
-    special: ['typewriter', 'zoomOut'],
+    entrance: ['fade', 'slideUp', 'slideLeft', 'slideRight', 'zoom', 'bounce', 'cascading'],
+    creative: ['rotate', 'flip', 'swing', 'spiral', 'glitch', 'vortex', 'kaleidoscope'],
+    continuous: ['pulse', 'wave', 'float', 'orbiting', 'magnetic', 'ripple', 'drifting'],
+    special: ['typewriter', 'zoomOut', 'constellation', 'floating', 'morphing'],
   };
 };
