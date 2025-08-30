@@ -522,7 +522,7 @@ export const animationStyles = [
 ];
 
 
-
+ 
 export const layoutStyles = [
 
   { value: 'grid', label: '🔲 Grid Layout' },
@@ -543,6 +543,19 @@ export const layoutStyles = [
 
   { value: 'spiral', label: '🌀 Spiral Layout' },
 
+  { value: 'wave', label: '🌊 Wave Layout' },
+
+  { value: 'floating', label: '🌊 Freely Floating Layout' },
+  { value: 'orbiting', label: '🪐 Orbital Motion Layout' },
+  { value: 'cascading', label: '💧 Waterfall Cascade Layout' },
+  { value: 'vortex', label: '🌀 Spiral Vortex Layout' },
+  { value: 'constellation', label: '✨ Star Constellation Layout' },
+  { value: 'magnetic', label: '🧲 Magnetic Attraction Layout' },
+  { value: 'ripple', label: '🌊 Water Ripple Layout' },
+  { value: 'kaleidoscope', label: '🔮 Kaleidoscope Layout' },
+  { value: 'drifting', label: '🌫️ Slow Drift Layout' },
+  { value: 'pulsing', label: '💓 Rhythmic Pulse Layout' },
   { value: 'wave', label: '🌊 Wave Layout' }
+
 
 ];
