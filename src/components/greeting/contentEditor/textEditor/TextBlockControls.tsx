@@ -2,7 +2,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TextContent } from '@/types/greeting';
-import { animationStyles } from '@/types/eventTypes';
+import { animationOptions } from '@/types/animations'; // ✅ Use consolidated animations
 
 const fontSizes = [
   { value: '12px', label: 'Small (12px)' },
@@ -165,8 +165,8 @@ export default function TextBlockControls({ text, onUpdate }: Props) {
         >
           <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
-            {animationStyles.map((style) => (
-              <SelectItem key={style.value} value={style.value}>{style.label}</SelectItem>
+            {animationOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>

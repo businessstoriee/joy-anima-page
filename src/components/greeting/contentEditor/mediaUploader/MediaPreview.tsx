@@ -39,7 +39,7 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
   const finalWidth = width ?? item.position?.width;
   const finalHeight = height ?? item.position?.height;
   const w = isMobile ? "100%" : numericToPx(finalWidth, MAX_WIDTH);
-  const h = isMobile ? "auto" : numericToPx(finalHeight, MAX_HEIGHT);
+  const h = numericToPx(finalHeight, MAX_HEIGHT); // ✅ Always apply height, even on mobile
 
   // Get frame style from props, item, or default
   const currentFrameStyle = frameStyle || (item as any).frameStyle || 'classic';
@@ -58,7 +58,8 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
           width: w,
           height: h,
           maxWidth: isMobile ? "100%" : `${MAX_WIDTH}px`,
-          maxHeight: isMobile ? "none" : `${MAX_HEIGHT}px`,
+          maxHeight: `${MAX_HEIGHT}px`, // ✅ Always apply max height constraint
+          minHeight: h || "200px", // ✅ Ensure minimum height is maintained
         }}
       >
         <MediaFrame frameType={currentFrameStyle} index={0}>
@@ -81,7 +82,8 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
           width: w,
           height: h,
           maxWidth: isMobile ? "100%" : `${MAX_WIDTH}px`,
-          maxHeight: isMobile ? "none" : `${MAX_HEIGHT}px`,
+          maxHeight: `${MAX_HEIGHT}px`,
+          minHeight: h || "200px",
         }}
       >
         <MediaFrame frameType={currentFrameStyle} index={0}>
@@ -102,7 +104,8 @@ const MediaPreview: React.FC<MediaPreviewProps> = ({
         width: w,
         height: h,
         maxWidth: isMobile ? "100%" : `${MAX_WIDTH}px`,
-        maxHeight: isMobile ? "none" : `${MAX_HEIGHT}px`,
+        maxHeight: `${MAX_HEIGHT}px`,
+        minHeight: h || "200px",
       }}
     >
       <MediaFrame frameType={currentFrameStyle} index={0}>

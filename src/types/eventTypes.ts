@@ -508,54 +508,6 @@ export const eventTypes: EventType[] = [
 
 ];
 
-export const animationStyles = [
-  { value: 'fade', label: 'Fade In' },
-  { value: 'slide', label: 'Slide In' },
-  { value: 'zoom', label: 'Zoom In' },
-  { value: 'flip', label: 'Flip In' },
-  { value: 'bounce', label: 'Bounce In' },
-  { value: 'rotate', label: 'Rotate In' },
-  { value: 'pulse', label: 'Pulse' },
-  { value: 'shake', label: 'Shake' },
-  { value: 'swing', label: 'Swing' },
-  { value: 'tada', label: 'Tada' }
-];
-
-
- 
-export const layoutStyles = [
-
-  { value: 'grid', label: '🔲 Grid Layout' },
-
-  { value: 'masonry', label: '🧩 Masonry Layout' },
-
-  { value: 'carousel', label: '🎠 Carousel Layout' },
-
-  { value: 'slideshow', label: '🎬 Slideshow Layout' },
-
-  { value: 'polaroid', label: '📸 Polaroid Layout' },
-
-  { value: 'gallery', label: '🖼️ Gallery Layout' },
-
-  { value: 'hexagon', label: '⬡ Hexagon Layout' },
-
-  { value: 'circular', label: '⭕ Circular Layout' },
-
-  { value: 'spiral', label: '🌀 Spiral Layout' },
-
-  { value: 'wave', label: '🌊 Wave Layout' },
-
-  { value: 'floating', label: '🌊 Freely Floating Layout' },
-  { value: 'orbiting', label: '🪐 Orbital Motion Layout' },
-  { value: 'cascading', label: '💧 Waterfall Cascade Layout' },
-  { value: 'vortex', label: '🌀 Spiral Vortex Layout' },
-  { value: 'constellation', label: '✨ Star Constellation Layout' },
-  { value: 'magnetic', label: '🧲 Magnetic Attraction Layout' },
-  { value: 'ripple', label: '🌊 Water Ripple Layout' },
-  { value: 'kaleidoscope', label: '🔮 Kaleidoscope Layout' },
-  { value: 'drifting', label: '🌫️ Slow Drift Layout' },
-  { value: 'pulsing', label: '💓 Rhythmic Pulse Layout' },
-  { value: 'wave', label: '🌊 Wave Layout' }
-
-
-];
+// ❌ REMOVED: Duplicate animation and layout arrays moved to consolidated files
+// - animationStyles -> Use animationOptions from @/types/animations  
+// - layoutStyles -> Use layoutStyles from @/types/layouts

@@ -3,7 +3,7 @@ import { GreetingFormData } from "@/types/greeting";
 import BackgroundRenderer from "@/components/greeting/customization/BackgroundCustomizer/BackgroundRenderer";
 import { useReducedMotion, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { animationTypes } from "@/types/animationTypes";
+import { animationVariants } from "@/types/animations"; // ✅ Use consolidated animations
 
 interface Props {
   greetingData: GreetingFormData;
@@ -33,7 +33,7 @@ const BackgroundWrapper: React.FC<Props> = ({ greetingData, className, children 
       <motion.div
         initial="hidden"
         animate="visible"
-        variants={animationTypes[animation]}
+        variants={animationVariants[animation]}
       >
         {children}
       </motion.div>
