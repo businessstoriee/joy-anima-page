@@ -1,13 +1,9 @@
 import { useState } from 'react';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { layoutStyles, animationStyles } from '@/types/eventTypes';
-import { frameStyles } from '@/components/preview/MediaFrames';
 import { mediaAnimations, getAnimationsByCategory } from '@/components/preview/MediaAnimations';
-import { Palette, Sparkles, Camera, Play, ChevronDown, ChevronUp, Zap, Layout, ImageIcon } from 'lucide-react';
+import { ChevronDown, ChevronUp, Zap, Layout } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
