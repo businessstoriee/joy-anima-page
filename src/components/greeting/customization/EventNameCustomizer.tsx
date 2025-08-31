@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from 'lucide-react';
 import { TextContent, EventType } from '@/types/greeting';
+import { animationOptions } from '@/types/animations';
 
 interface EventNameCustomizerProps {
   eventNameStyle: TextContent;
@@ -142,11 +143,11 @@ const EventNameCustomizer: React.FC<EventNameCustomizerProps> = ({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="fade">Fade In</SelectItem>
-              <SelectItem value="slide">Slide In</SelectItem>
-              <SelectItem value="bounce">Bounce</SelectItem>
-              <SelectItem value="scale">Scale</SelectItem>
-              <SelectItem value="none">No Animation</SelectItem>
+              {animationOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

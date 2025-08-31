@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { Type } from 'lucide-react';
 import { TextContent } from '@/types/greeting';
+import { animationOptions } from '@/types/animations';
 
 interface HeaderTextCustomizerProps {
   headerText: TextContent;
@@ -38,7 +39,7 @@ const HeaderTextCustomizer: React.FC<HeaderTextCustomizerProps> = ({ headerText,
 <div className="flex items-center gap-3">
   {/* Header Text Input */}
   <div className="flex-1 space-y-2">
-    {/* <Label className="text-sm">Header Text</Label> */}
+    <Label className="text-xs font-medium">Header Text</Label>
     <Input
       value={headerText.content}
       onChange={(e) => updateField('content', e.target.value)}
@@ -134,11 +135,11 @@ const HeaderTextCustomizer: React.FC<HeaderTextCustomizerProps> = ({ headerText,
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="fade">Fade In</SelectItem>
-                  <SelectItem value="slide">Slide In</SelectItem>
-                  <SelectItem value="bounce">Bounce</SelectItem>
-                  <SelectItem value="scale">Scale</SelectItem>
-                  <SelectItem value="none">No Animation</SelectItem>
+                  {animationOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

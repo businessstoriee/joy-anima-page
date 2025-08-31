@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Smile } from 'lucide-react';
 import { EventEmojiSettings, EventType } from '@/types/greeting';
 import ElementPicker from './BorderCustomizer/ElementPicker';
+import { animationOptions } from '@/types/animations';
 
 interface EventEmojiCustomizerProps {
   eventEmojiSettings: EventEmojiSettings;
@@ -101,12 +102,11 @@ const EventEmojiCustomizer: React.FC<EventEmojiCustomizerProps> = ({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="bounce">Bounce</SelectItem>
-              <SelectItem value="float">Float</SelectItem>
-              <SelectItem value="pulse">Pulse</SelectItem>
-              <SelectItem value="shake">Shake</SelectItem>
-              <SelectItem value="rotate">Rotate</SelectItem>
-              <SelectItem value="none">No Animation</SelectItem>
+              {animationOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

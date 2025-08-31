@@ -25,26 +25,27 @@ const EventHeader: React.FC<Props> = ({ greetingData, selectedEvent }) => {
     };
   }, [selectedEvent, greetingData.eventType, translate]);
 
-  // Use custom emoji settings if available
+  // Custom emoji settings
   const displayEmoji = greetingData.eventEmojiSettings?.emoji || currentEvent.emoji;
   const emojiSize = greetingData.eventEmojiSettings?.size || 64;
   const emojiAnimation = greetingData.eventEmojiSettings?.animation || 'bounce';
+  const rotateSpeed = greetingData.eventEmojiSettings?.rotateSpeed || 2;
 
-  // Animation variants for emoji
+  // Animation definitions
   const getEmojiAnimation = (animationType: string) => {
     switch (animationType) {
       case 'bounce':
-        return { scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] };
+        return { y: [0, -20, 0] };
       case 'float':
-        return { y: [0, -10, 0], rotate: [0, 10, -10, 0] };
+        return { y: [0, -15, 0] };
       case 'pulse':
-        return { scale: [1, 1.1, 1] };
+        return { scale: [1, 1.2, 1] };
       case 'shake':
-        return { x: [0, -5, 5, -5, 0], rotate: [0, 2, -2, 0] };
+        return { x: [0, -10, 10, -10, 0] };
       case 'rotate':
         return { rotate: [0, 360] };
       default:
-        return { scale: [1, 1.1, 1], rotate: [0, 10, -10, 0] };
+        return { scale: [1, 1.1, 1] };
     }
   };
 
@@ -68,25 +69,28 @@ const EventHeader: React.FC<Props> = ({ greetingData, selectedEvent }) => {
         </motion.div>
       )}
 
-      {/* Event Emoji */}
+      {/* Event Emoji with looping animation */}
       <motion.div
         className="mb-4 inline-block"
         animate={getEmojiAnimation(emojiAnimation)}
-        transition={{ 
-          duration: greetingData.eventEmojiSettings?.rotateSpeed || 2, 
+        transition={{
+          duration: rotateSpeed,
           repeat: Infinity,
-          ease: "easeInOut" 
+          repeatType: emojiAnimation === 'rotate' ? 'loop' : 'mirror',
+          ease: 'easeInOut'
         }}
         style={{
           fontSize: `${emojiSize}px`,
-          filter: greetingData.eventEmojiSettings?.effects?.glow ? 'drop-shadow(0 0 10px currentColor)' : 'none'
+          filter: greetingData.eventEmojiSettings?.effects?.glow
+            ? 'drop-shadow(0 0 10px currentColor)'
+            : 'none'
         }}
       >
         {displayEmoji}
       </motion.div>
 
       {/* Event Name */}
-      <h1 
+      <h1
         className="font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
         style={{
           fontSize: greetingData.eventNameStyle?.style.fontSize || '28px',
@@ -101,7 +105,9 @@ const EventHeader: React.FC<Props> = ({ greetingData, selectedEvent }) => {
 
       {/* Receiver Name */}
       {greetingData.receiverName && (
-        <p className="text-xl md:text-2xl font-bold text-primary">{greetingData.receiverName}</p>
+        <p className="text-xl md:text-2xl font-bold text-primary">
+          {greetingData.receiverName}
+        </p>
       )}
     </div>
   );

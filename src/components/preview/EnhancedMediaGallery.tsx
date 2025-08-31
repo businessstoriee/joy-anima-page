@@ -18,8 +18,14 @@ import { animationVariants } from "@/types/animations";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { GreetingFormData, MediaItem } from "@/types/greeting";
 
-/** ---------- configuration ---------- */
+/* ---------- configuration ---------- */
 const MAX_RETRIES = 3;
+const MAX_WIDTH_MOBILE = 250;
+const MAX_HEIGHT_MOBILE = 200;
+const MIN_WIDTH = 100;
+const MIN_HEIGHT = 100;
+const MAX_WIDTH_DESKTOP = 400;
+const MAX_HEIGHT_DESKTOP = 350;
 
 /** ---------- helpers ---------- */
 const isHttpUrl = (u?: string) => {
@@ -263,6 +269,18 @@ const EnhancedMediaGallery: React.FC<Props> = ({
     // Get frame style - use real-time settings
     const itemFrameStyle = (m as any).frameStyle || frameStyle || greetingData.frameStyle || 'classic';
 
+    // ✅ Apply responsive sizing constraints
+    const maxWidth = isMobile ? MAX_WIDTH_MOBILE : MAX_WIDTH_DESKTOP;
+    const maxHeight = isMobile ? MAX_HEIGHT_MOBILE : MAX_HEIGHT_DESKTOP;
+    
+    const constrainedWidth = m.position?.width 
+      ? Math.min(Math.max(m.position.width, MIN_WIDTH), maxWidth)
+      : isMobile ? maxWidth : 300;
+    
+    const constrainedHeight = m.position?.height 
+      ? Math.min(Math.max(m.position.height, MIN_HEIGHT), maxHeight)
+      : isMobile ? maxHeight : 200;
+
     // fallback UI when final error
     if (errored[m.id]) {
       return (
@@ -341,8 +359,8 @@ const EnhancedMediaGallery: React.FC<Props> = ({
                 className={`${mediaClass} block`}
                 style={{ 
                   display: "block",
-                  width: m.position?.width ? `${m.position.width}px` : "100%",
-                  height: m.position?.height ? `${m.position.height}px` : "100%",
+                  width: isMobile ? "100%" : `${constrainedWidth}px`,
+                  height: `${constrainedHeight}px`,
                   objectFit: "cover"
                 }}
               />
@@ -401,8 +419,8 @@ const EnhancedMediaGallery: React.FC<Props> = ({
                 className={`${mediaClass} block`}
                 style={{ 
                   display: "block",
-                  width: m.position?.width ? `${m.position.width}px` : "100%",
-                  height: m.position?.height ? `${m.position.height}px` : "100%",
+                  width: isMobile ? "100%" : `${constrainedWidth}px`,
+                  height: `${constrainedHeight}px`,
                   objectFit: "cover"
                 }}
               />
@@ -509,8 +527,8 @@ const EnhancedMediaGallery: React.FC<Props> = ({
               className={`${mediaClass} block`}
               style={{ 
                 display: "block",
-                width: m.position?.width ? `${m.position.width}px` : "100%",
-                height: m.position?.height ? `${m.position.height}px` : "100%",
+                width: isMobile ? "100%" : `${constrainedWidth}px`,
+                height: `${constrainedHeight}px`,
                 objectFit: "cover"
               }}
             />
