@@ -69,8 +69,8 @@ const MediaSettings: React.FC<MediaSettingsProps> = ({ item, index, updateMedia 
       <div>
         <Label>Frame Style</Label>
         <Select
-          value={(item as any).frameStyle || "classic"}
-          onValueChange={(val) => updateMedia(index, "frameStyle" as any, val)}
+          value={item.frameStyle || "classic"}
+          onValueChange={(val) => updateMedia(index, "frameStyle" as keyof MediaItem, val)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select frame style" />

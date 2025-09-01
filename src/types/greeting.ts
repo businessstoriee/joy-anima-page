@@ -23,6 +23,7 @@ export interface TextContent {
     fontFamily?: string;
   };
   animation: string;
+  continuousAnimation?: boolean;
 }
 
 export interface TextOverlay {
@@ -40,6 +41,7 @@ export interface TextOverlay {
   };
 }
 
+// Update the MediaItem type to include frameStyle
 export interface MediaItem {
   id: string;
   url: string;
@@ -59,6 +61,7 @@ export interface MediaItem {
     filter?: string;
     rotation?: number;
   };
+  frameStyle?: string; // Add frameStyle to MediaItem interface
 }
 
 export interface EventEmojiSettings {
@@ -67,6 +70,7 @@ export interface EventEmojiSettings {
   animation: string;
   rotateSpeed: number;
   position: { x: number; y: number };
+  textAlign?: 'left' | 'center' | 'right';
   effects?: {
     glow?: boolean;
     bounce?: boolean;

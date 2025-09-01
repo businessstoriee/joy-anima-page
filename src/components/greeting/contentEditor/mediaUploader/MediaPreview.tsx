@@ -1,9 +1,8 @@
 import React, { useMemo, useState, memo } from "react";
 import { MediaItem } from "@/types/greeting";
 import { validateUrl } from "./mediaUtils";
-import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { animationVariants } from "@/types/animations";
+import { getAnimation } from "@/types/animations";
 import MediaFrame from "@/components/preview/MediaFrames";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -17,13 +16,15 @@ interface MediaPreviewProps {
   objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
 }
 
-/** Constants */
+/** Constants - unified responsive sizing */
 const MAX_WIDTH_MOBILE = 250;
 const MAX_HEIGHT_MOBILE = 200;
 const MIN_WIDTH = 100;
 const MIN_HEIGHT = 100;
 const MAX_WIDTH_DESKTOP = 400;
 const MAX_HEIGHT_DESKTOP = 350;
+const DEFAULT_WIDTH = 300;
+const DEFAULT_HEIGHT = 200;
 
 /** Helpers */
 const numericToPx = (
@@ -132,15 +133,19 @@ const MediaPreviewComponent: React.FC<MediaPreviewProps> = ({
 }) => {
   const isMobile = useIsMobile();
 
-  // Prefer explicit width/height props, fallback to item.position
-  const finalWidth = width ?? item.position?.width;
-  const finalHeight = height ?? item.position?.height;
+  // Prefer explicit width/height props, fallback to item.position, then defaults
+  const finalWidth = width ?? item.position?.width ?? DEFAULT_WIDTH;
+  const finalHeight = height ?? item.position?.height ?? DEFAULT_HEIGHT;
 
   const maxWidth = isMobile ? MAX_WIDTH_MOBILE : MAX_WIDTH_DESKTOP;
   const maxHeight = isMobile ? MAX_HEIGHT_MOBILE : MAX_HEIGHT_DESKTOP;
 
-  const w = isMobile ? "100%" : numericToPx(finalWidth, maxWidth, MIN_WIDTH);
-  const h = numericToPx(finalHeight, maxHeight, MIN_HEIGHT);
+  // Apply responsive constraints properly
+  const constrainedWidth = Math.min(Math.max(Number(finalWidth) || DEFAULT_WIDTH, MIN_WIDTH), maxWidth);
+  const constrainedHeight = Math.min(Math.max(Number(finalHeight) || DEFAULT_HEIGHT, MIN_HEIGHT), maxHeight);
+
+  const w = isMobile ? "100%" : `${constrainedWidth}px`;
+  const h = `${constrainedHeight}px`;
 
   const commonStyle = useMemo<React.CSSProperties>(
     () => ({
@@ -155,12 +160,11 @@ const MediaPreviewComponent: React.FC<MediaPreviewProps> = ({
   );
 
   // Frame style resolution
-  const currentFrameStyle =
-    frameStyle || (item as any).frameStyle || "classic";
+  const currentFrameStyle = frameStyle || item.frameStyle || "classic";
 
-  // Animation resolution
-  const animationKey = (item.animation || animation || "fadeIn") as keyof typeof animationVariants;
-  const resolvedAnimation = animationVariants[animationKey] || animationVariants.fadeIn;
+  // Animation resolution - use centralized animation system
+  const animationKey = item.animation || animation || "fadeIn";
+  const resolvedAnimation = getAnimation(animationKey, "fadeIn");
 
   // Fit (object-fit) resolution
   const fit = objectFit || (item as any).objectFit || "cover";
@@ -180,11 +184,14 @@ const MediaPreviewComponent: React.FC<MediaPreviewProps> = ({
   // Early no-URL state
   if (!item.url) {
     return (
-      <motion.div initial="initial" animate="animate" variants={resolvedAnimation} style={commonStyle}>
+      <motion.div initial="initial" animate="animate" 
+        key={`${item.url}-${animationKey}-${currentFrameStyle}-${constrainedWidth}-${constrainedHeight}`}
+        variants={resolvedAnimation} 
+        style={commonStyle}>
         <MediaFrame frameType={currentFrameStyle} index={0}>
-          <Card className="p-3 bg-gray-50 text-gray-400 text-sm w-full h-full flex items-center justify-center">
+          <div className="p-3 bg-gray-50 text-gray-400 text-sm w-full h-full flex items-center justify-center rounded">
             No {item.type} URL entered yet
-          </Card>
+          </div>
         </MediaFrame>
       </motion.div>
     );
@@ -194,11 +201,14 @@ const MediaPreviewComponent: React.FC<MediaPreviewProps> = ({
   const isValidUrl = validateUrl(item.url);
   if (!isValidUrl) {
     return (
-      <motion.div initial="initial" animate="animate" variants={resolvedAnimation} style={commonStyle}>
+      <motion.div initial="initial" animate="animate" 
+        key={`${item.url}-${animationKey}-${currentFrameStyle}-${constrainedWidth}-${constrainedHeight}`}
+        variants={resolvedAnimation} 
+        style={commonStyle}>
         <MediaFrame frameType={currentFrameStyle} index={0}>
-          <Card className="p-3 bg-red-50 text-red-500 text-sm w-full h-full flex items-center justify-center">
+          <div className="p-3 bg-red-50 text-red-500 text-sm w-full h-full flex items-center justify-center rounded">
             Invalid URL
-          </Card>
+          </div>
         </MediaFrame>
       </motion.div>
     );
@@ -207,7 +217,10 @@ const MediaPreviewComponent: React.FC<MediaPreviewProps> = ({
   /** IMAGES / GIFS */
   if (item.type === "image" || item.type === "gif") {
     return (
-      <motion.div initial="initial" animate="animate" variants={resolvedAnimation} style={commonStyle}>
+      <motion.div initial="initial" animate="animate" 
+        key={`${item.url}-${animationKey}-${currentFrameStyle}-${constrainedWidth}-${constrainedHeight}`}
+        variants={resolvedAnimation} 
+        style={commonStyle}>
         <MediaFrame frameType={currentFrameStyle} index={0}>
           <div className="w-full h-full relative">
             {!imgLoaded && !imgError && (
@@ -227,8 +240,8 @@ const MediaPreviewComponent: React.FC<MediaPreviewProps> = ({
                 onLoad={() => setImgLoaded(true)}
                 onError={() => setImgError(true)}
                 style={{
-                  width: '100%',
-                  height: '100%',
+                  width: w,
+                  height: h,
                   objectFit: fit,
                   display: 'block'
                 }}
@@ -247,29 +260,35 @@ const MediaPreviewComponent: React.FC<MediaPreviewProps> = ({
     if (videoProvider === "youtube" || videoProvider === "vimeo" || videoProvider === "dailymotion") {
       if (!embedSrc) {
         return (
-          <motion.div initial="initial" animate="animate" variants={resolvedAnimation} style={commonStyle}>
-            <MediaFrame frameType={currentFrameStyle} index={0}>
-              <Card className="p-3 bg-red-50 text-red-500 text-sm w-full h-full flex items-center justify-center">
-                Unsupported or invalid video URL
-              </Card>
-            </MediaFrame>
-          </motion.div>
+        <motion.div initial="initial" animate="animate" 
+          key={`${item.url}-${animationKey}-${currentFrameStyle}-${constrainedWidth}-${constrainedHeight}`}
+          variants={resolvedAnimation} 
+          style={commonStyle}>
+          <MediaFrame frameType={currentFrameStyle} index={0}>
+            <div className="p-3 bg-red-50 text-red-500 text-sm w-full h-full flex items-center justify-center rounded">
+              Unsupported or invalid video URL
+            </div>
+          </MediaFrame>
+        </motion.div>
         );
       }
 
       return (
-        <motion.div initial="initial" animate="animate" variants={resolvedAnimation} style={commonStyle}>
+        <motion.div initial="initial" animate="animate" 
+          key={`${item.url}-${animationKey}-${currentFrameStyle}-${constrainedWidth}-${constrainedHeight}`}
+          variants={resolvedAnimation} 
+          style={commonStyle}>
           <MediaFrame frameType={currentFrameStyle} index={0}>
             <div className="w-full h-full">
               <iframe
                 title={altText}
                 src={embedSrc}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  border: 0,
-                  display: 'block'
-                }}
+                  style={{
+                    width: w,
+                    height: h,
+                    border: 0,
+                    display: 'block'
+                  }}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
@@ -282,7 +301,10 @@ const MediaPreviewComponent: React.FC<MediaPreviewProps> = ({
     // Direct video files
     if (videoProvider === "direct" || videoProvider === "unknown") {
       return (
-        <motion.div initial="initial" animate="animate" variants={resolvedAnimation} style={commonStyle}>
+        <motion.div initial="initial" animate="animate" 
+          key={`${item.url}-${animationKey}-${currentFrameStyle}-${constrainedWidth}-${constrainedHeight}`}
+          variants={resolvedAnimation} 
+          style={commonStyle}>
           <MediaFrame frameType={currentFrameStyle} index={0}>
             <div className="w-full h-full relative">
               {videoError ? (
@@ -294,8 +316,8 @@ const MediaPreviewComponent: React.FC<MediaPreviewProps> = ({
                   src={item.url}
                   controls
                   style={{
-                    width: '100%',
-                    height: '100%',
+                    width: w,
+                    height: h,
                     objectFit: fit,
                     display: 'block'
                   }}
@@ -312,13 +334,16 @@ const MediaPreviewComponent: React.FC<MediaPreviewProps> = ({
 
   /** Fallback */
   return (
-    <motion.div initial="initial" animate="animate" variants={resolvedAnimation} style={commonStyle}>
-      <MediaFrame frameType={currentFrameStyle} index={0}>
-        <Card className="p-3 bg-gray-50 text-gray-500 text-sm w-full h-full flex items-center justify-center">
-          Unsupported media type
-        </Card>
-      </MediaFrame>
-    </motion.div>
+      <motion.div initial="initial" animate="animate" 
+        key={`${item.url}-${animationKey}-${currentFrameStyle}-${constrainedWidth}-${constrainedHeight}`}
+        variants={resolvedAnimation} 
+        style={commonStyle}>
+        <MediaFrame frameType={currentFrameStyle} index={0}>
+          <div className="p-3 bg-gray-50 text-gray-500 text-sm w-full h-full flex items-center justify-center rounded">
+            Unsupported media type
+          </div>
+        </MediaFrame>
+      </motion.div>
   );
 };
 

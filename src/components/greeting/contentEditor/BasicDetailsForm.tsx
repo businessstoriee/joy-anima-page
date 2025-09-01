@@ -56,6 +56,17 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
   return (
     <>
 
+     {/* Event Header Customization */}
+      {eventType && (
+        <div className="space-y-4 border-t pt-4">
+          
+              <HeaderTextCustomizer
+            headerText={headerText!}
+            onChange={onHeaderTextChange || (() => {})}
+          />
+          </div>
+          )}
+
 <Separator />
 
       {/* Custom Event Selector */}
@@ -66,6 +77,24 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
         onCustomEventCreate={onCustomEventCreate}
       />
 
+ {/* Event Header Customization */}
+      {eventType && (
+        <div className="space-y-4 border-t pt-4">
+          
+          <EventNameCustomizer
+            eventNameStyle={eventNameStyle!}
+            selectedEvent={selectedEvent}
+            onChange={onEventNameStyleChange || (() => {})}
+          />
+          
+          <EventEmojiCustomizer
+            eventEmojiSettings={eventEmojiSettings!}
+            selectedEvent={selectedEvent}
+            onChange={onEventEmojiSettingsChange || (() => {})}
+          />
+        </div>
+      )}
+      
       <Separator />
 
       {/* Names */}
@@ -107,30 +136,6 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
                 autoPlay={false}
               />
             </div>
-            
-
-            {/* Event Header Customization */}
-      {eventType && (
-        <div className="space-y-4 border-t pt-4">
-          
-              <HeaderTextCustomizer
-            headerText={headerText!}
-            onChange={onHeaderTextChange || (() => {})}
-          />
-          
-          <EventNameCustomizer
-            eventNameStyle={eventNameStyle!}
-            selectedEvent={selectedEvent}
-            onChange={onEventNameStyleChange || (() => {})}
-          />
-          
-          <EventEmojiCustomizer
-            eventEmojiSettings={eventEmojiSettings!}
-            selectedEvent={selectedEvent}
-            onChange={onEventEmojiSettingsChange || (() => {})}
-          />
-        </div>
-      )}
     </>
   );
 };

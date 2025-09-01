@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import MediaGalleryStyles, { layoutClassMap } from "./MediaGalleryStyles";
 import MediaFrame from "./MediaFrames";
-import { animationVariants } from "@/types/animations";
+import { getAnimation } from "@/types/animations";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { GreetingFormData, MediaItem } from "@/types/greeting";
 
@@ -26,6 +26,8 @@ const MIN_WIDTH = 100;
 const MIN_HEIGHT = 100;
 const MAX_WIDTH_DESKTOP = 400;
 const MAX_HEIGHT_DESKTOP = 350;
+const DEFAULT_WIDTH = 300;
+const DEFAULT_HEIGHT = 200;
 
 /** ---------- helpers ---------- */
 const isHttpUrl = (u?: string) => {
@@ -261,25 +263,24 @@ const EnhancedMediaGallery: React.FC<Props> = ({
       ? "object-cover w-full h-full"
       : "object-contain w-full h-full";
 
-    // Get animation variant for this media item - use real-time settings
+    // Get animation variant for this media item - use centralized animation system
     const itemAnimation = m.animation || mediaAnimation || greetingData.mediaAnimation || greetingData.animationStyle || 'fadeIn';
-    const animationKey = itemAnimation as keyof typeof animationVariants;
-    const animationVariant = animationVariants[animationKey] || animationVariants.fadeIn;
+    const animationVariant = getAnimation(itemAnimation, 'fadeIn');
 
     // Get frame style - use real-time settings
-    const itemFrameStyle = (m as any).frameStyle || frameStyle || greetingData.frameStyle || 'classic';
+    const itemFrameStyle = m.frameStyle || frameStyle || greetingData.frameStyle || 'classic';
 
-    // ✅ Apply responsive sizing constraints
+    // ✅ Apply responsive sizing constraints with defaults
     const maxWidth = isMobile ? MAX_WIDTH_MOBILE : MAX_WIDTH_DESKTOP;
     const maxHeight = isMobile ? MAX_HEIGHT_MOBILE : MAX_HEIGHT_DESKTOP;
     
     const constrainedWidth = m.position?.width 
-      ? Math.min(Math.max(m.position.width, MIN_WIDTH), maxWidth)
-      : isMobile ? maxWidth : 300;
+      ? Math.min(Math.max(Number(m.position.width) || DEFAULT_WIDTH, MIN_WIDTH), maxWidth)
+      : isMobile ? Math.min(maxWidth, DEFAULT_WIDTH) : DEFAULT_WIDTH;
     
     const constrainedHeight = m.position?.height 
-      ? Math.min(Math.max(m.position.height, MIN_HEIGHT), maxHeight)
-      : isMobile ? maxHeight : 200;
+      ? Math.min(Math.max(Number(m.position.height) || DEFAULT_HEIGHT, MIN_HEIGHT), maxHeight)
+      : isMobile ? Math.min(maxHeight, DEFAULT_HEIGHT) : DEFAULT_HEIGHT;
 
     // fallback UI when final error
     if (errored[m.id]) {
@@ -321,7 +322,7 @@ const EnhancedMediaGallery: React.FC<Props> = ({
     if (type === "image") {
       return (
         <motion.div
-          key={m.id}
+          key={`${m.id}-${itemAnimation}-${itemFrameStyle}-${constrainedWidth}-${constrainedHeight}`}
           initial="hidden"
           animate="visible"
           variants={animationVariant}
@@ -361,7 +362,9 @@ const EnhancedMediaGallery: React.FC<Props> = ({
                   display: "block",
                   width: isMobile ? "100%" : `${constrainedWidth}px`,
                   height: `${constrainedHeight}px`,
-                  objectFit: "cover"
+                  objectFit: "cover",
+                  maxWidth: `${maxWidth}px`,
+                  maxHeight: `${maxHeight}px`
                 }}
               />
               <div className="absolute top-2 right-2 opacity-95">
@@ -379,7 +382,7 @@ const EnhancedMediaGallery: React.FC<Props> = ({
     if (type === "video") {
       return (
         <motion.div
-          key={m.id}
+          key={`${m.id}-${itemAnimation}-${itemFrameStyle}-${constrainedWidth}-${constrainedHeight}`}
           initial="hidden"
           animate="visible"
           variants={animationVariant}
@@ -421,7 +424,9 @@ const EnhancedMediaGallery: React.FC<Props> = ({
                   display: "block",
                   width: isMobile ? "100%" : `${constrainedWidth}px`,
                   height: `${constrainedHeight}px`,
-                  objectFit: "cover"
+                  objectFit: "cover",
+                  maxWidth: `${maxWidth}px`,
+                  maxHeight: `${maxHeight}px`
                 }}
               />
               <div className="absolute top-2 right-2 opacity-95">
@@ -453,7 +458,7 @@ const EnhancedMediaGallery: React.FC<Props> = ({
       }
       return (
         <motion.div
-          key={m.id}
+          key={`${m.id}-${itemAnimation}-${itemFrameStyle}-${constrainedWidth}-${constrainedHeight}`}
           initial="hidden"
           animate="visible"
           variants={animationVariant}

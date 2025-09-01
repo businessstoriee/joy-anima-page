@@ -333,10 +333,46 @@ export const getAnimationsByCategory = () => {
   };
 };
 
+// Get animation variant by key with fallback
+export const getAnimation = (animationKey: string, fallback: string = 'fadeIn') => {
+  return animationVariants[animationKey as keyof typeof animationVariants] || animationVariants[fallback as keyof typeof animationVariants] || animationVariants.fadeIn;
+};
+
 // Get random animation
 export const getRandomAnimation = (): string => {
   const animations = Object.keys(animationVariants);
   return animations[Math.floor(Math.random() * animations.length)];
+};
+
+// Check if animation exists
+export const hasAnimation = (animationKey: string): boolean => {
+  return animationKey in animationVariants;
+};
+
+// Get animation with speed control
+export const getAnimationWithSpeed = (animationKey: string, speed: number = 1, fallback: string = 'fadeIn') => {
+  const baseAnimation = getAnimation(animationKey, fallback);
+  
+  // Create a modified version with speed control
+  const modifiedAnimation = { ...baseAnimation };
+  
+  // Apply speed to all transition durations
+  Object.keys(modifiedAnimation).forEach(key => {
+    const state = modifiedAnimation[key as keyof typeof modifiedAnimation];
+    if (state && typeof state === 'object' && 'transition' in state) {
+      const transition = state.transition as any;
+      if (transition && typeof transition === 'object') {
+        if ('duration' in transition) {
+          transition.duration = transition.duration / speed;
+        }
+        if ('delay' in transition) {
+          transition.delay = transition.delay / speed;
+        }
+      }
+    }
+  });
+  
+  return modifiedAnimation;
 };
 
 // Animation options for dropdowns

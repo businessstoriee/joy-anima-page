@@ -3,6 +3,7 @@ import { GreetingFormData, EventType } from '@/types/greeting';
 import { eventTypes } from '@/types/eventTypes';
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 import { motion } from 'framer-motion';
+import { getAnimation, getAnimationWithSpeed } from '@/types/animations';
 
 interface Props {
   greetingData: GreetingFormData;
@@ -12,6 +13,7 @@ interface Props {
 const EventHeader: React.FC<Props> = ({ greetingData, selectedEvent }) => {
   const { translate } = useLanguageTranslation();
 
+  // Remove outdated animation definitions - using centralized system now
   const currentEvent = useMemo(() => {
     if (selectedEvent) return selectedEvent;
     const predefinedEvent = eventTypes.find(e => e.value === greetingData.eventType);
@@ -31,77 +33,79 @@ const EventHeader: React.FC<Props> = ({ greetingData, selectedEvent }) => {
   const emojiAnimation = greetingData.eventEmojiSettings?.animation || 'bounce';
   const rotateSpeed = greetingData.eventEmojiSettings?.rotateSpeed || 2;
 
-  // Animation definitions
-  const getEmojiAnimation = (animationType: string) => {
-    switch (animationType) {
-      case 'bounce':
-        return { y: [0, -20, 0] };
-      case 'float':
-        return { y: [0, -15, 0] };
-      case 'pulse':
-        return { scale: [1, 1.2, 1] };
-      case 'shake':
-        return { x: [0, -10, 10, -10, 0] };
-      case 'rotate':
-        return { rotate: [0, 360] };
-      default:
-        return { scale: [1, 1.1, 1] };
-    }
-  };
-
   return (
     <div className="text-center space-y-4">
       {/* Header Text */}
       {greetingData.headerText?.content && (
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-4"
+          key={`${greetingData.headerText.id}-${greetingData.headerText.animation}-${greetingData.headerText.content}-${greetingData.headerText.continuousAnimation}-${Date.now()}`}
+          initial="initial"
+          animate="animate"
+          variants={getAnimation(greetingData.headerText.animation, 'fadeIn')}
+          transition={{ 
+            duration: 0.8,
+            ...(greetingData.headerText.continuousAnimation && {
+              repeat: Infinity,
+              repeatDelay: 0.5
+            })
+          }}
           style={{
             fontSize: greetingData.headerText.style.fontSize,
             fontWeight: greetingData.headerText.style.fontWeight,
             color: greetingData.headerText.style.color,
             textAlign: greetingData.headerText.style.textAlign,
-            fontFamily: greetingData.headerText.style.fontFamily || 'inherit',
+            fontFamily: greetingData.headerText.style.fontFamily || 'inherit'
           }}
+          className="mb-2"
         >
           {greetingData.headerText.content}
         </motion.div>
       )}
 
-      {/* Event Emoji with looping animation */}
-      <motion.div
-        className="mb-4 inline-block"
-        animate={getEmojiAnimation(emojiAnimation)}
-        transition={{
-          duration: rotateSpeed,
-          repeat: Infinity,
-          repeatType: emojiAnimation === 'rotate' ? 'loop' : 'mirror',
-          ease: 'easeInOut'
-        }}
-        style={{
-          fontSize: `${emojiSize}px`,
-          filter: greetingData.eventEmojiSettings?.effects?.glow
-            ? 'drop-shadow(0 0 10px currentColor)'
-            : 'none'
-        }}
-      >
-        {displayEmoji}
-      </motion.div>
-
       {/* Event Name */}
-      <h1
-        className="font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+      <motion.div
+        key={`${greetingData.eventNameStyle?.id}-${greetingData.eventNameStyle?.animation}-${greetingData.eventNameStyle?.content}-${greetingData.eventNameStyle?.continuousAnimation}-${Date.now()}`}
+        initial="initial"
+        animate="animate"
+        variants={getAnimation(greetingData.eventNameStyle?.animation || 'fadeIn', 'fadeIn')}
+        transition={{ 
+          duration: 0.6, 
+          delay: 0.2,
+          ...(greetingData.eventNameStyle?.continuousAnimation && {
+            repeat: Infinity,
+            repeatDelay: 0.5
+          })
+        }}
         style={{
           fontSize: greetingData.eventNameStyle?.style.fontSize || '28px',
           fontWeight: greetingData.eventNameStyle?.style.fontWeight || 'bold',
           color: greetingData.eventNameStyle?.style.color || 'hsl(var(--foreground))',
-          textAlign: greetingData.eventNameStyle?.style.textAlign || 'center',
-          fontFamily: greetingData.eventNameStyle?.style.fontFamily || 'inherit',
+          textAlign: greetingData.eventNameStyle?.style.textAlign || greetingData.eventEmojiSettings?.textAlign || 'center',
+          fontFamily: greetingData.eventNameStyle?.style.fontFamily || 'inherit'
         }}
+        className="mb-4"
       >
         {greetingData.eventNameStyle?.content || `Happy ${currentEvent.label}`}
-      </h1>
+      </motion.div>
+
+      {/* Event Emoji with centralized animation system */}
+      <motion.div
+        key={`emoji-${emojiAnimation}-${displayEmoji}-${emojiSize}`}
+        className="mb-4"
+        initial="initial"
+        animate="animate"
+        variants={getAnimationWithSpeed(emojiAnimation, 1/rotateSpeed, 'bounceIn')}
+        style={{
+          fontSize: `${emojiSize}px`,
+          filter: greetingData.eventEmojiSettings?.effects?.glow
+            ? 'drop-shadow(0 0 10px currentColor)'
+            : 'none',
+          textAlign: greetingData.eventEmojiSettings?.textAlign || 'center',
+          width: '100%'
+        }}
+      >
+        {displayEmoji}
+      </motion.div>
 
       {/* Receiver Name */}
       {greetingData.receiverName && (

@@ -1,28 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
 import { Type } from 'lucide-react';
 import { TextContent } from '@/types/greeting';
 import { animationOptions } from '@/types/animations';
+import { fontSizeOptions, fontWeightOptions, colorOptions, textAlignOptions } from '@/types/textSettings';
+
 
 interface HeaderTextCustomizerProps {
   headerText: TextContent;
   onChange: (headerText: TextContent) => void;
 }
 
-const HeaderTextCustomizer: React.FC<HeaderTextCustomizerProps> = ({ headerText, onChange }) => {
-  const updateField = (field: keyof TextContent, value: any) => {
-    onChange({ ...headerText, [field]: value });
-  };
 
-  const updateStyle = (field: string, value: any) => {
-    onChange({ 
-      ...headerText, 
-      style: { ...headerText.style, [field]: value }
-    });
+const HeaderTextCustomizer: React.FC<HeaderTextCustomizerProps> = ({ headerText, onChange }) => {
+
+  const [animationKey, setAnimationKey] = useState(0);
+  const updateHeaderText = (updates: Partial<TextContent>) => {
+    const updated = { ...headerText, ...updates };
+    onChange(updated);
+    // Force re-animation when animation changes
+    if (updates.animation || updates.continuousAnimation !== undefined) {
+      setAnimationKey(prev => prev + 1);
+    }
   };
 
   return (
@@ -42,110 +45,129 @@ const HeaderTextCustomizer: React.FC<HeaderTextCustomizerProps> = ({ headerText,
     <Label className="text-xs font-medium">Header Text</Label>
     <Input
       value={headerText.content}
-      onChange={(e) => updateField('content', e.target.value)}
+      onChange={(e) => updateHeaderText({ content: e.target.value })}
       placeholder="Enter header text (optional)"
       className="text-sm"
     />
   </div>
 
-  {/* Color Picker (only show if text is entered) */}
-  {headerText.content && (
-    <div className="space-y-2 flex flex-col items-center">
-      <Label className="text-xs">Color</Label>
-      <Input
-        type="color"
-        value={headerText.style.color}
-        onChange={(e) => updateStyle('color', e.target.value)}
-        className="w-10 h-9 p-1 cursor-pointer"
-      />
-    </div>
-  )}
 </div>
 
         {/* Style Controls - Only show if content exists */}
         {headerText.content && (
           <>
-            {/* Font Size and Weight */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label className="text-xs">Font Size</Label>
-                <Select 
-                  value={headerText.style.fontSize} 
-                  onValueChange={(v) => updateStyle('fontSize', v)}
-                >
-                  <SelectTrigger className="text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="20px">Small (20px)</SelectItem>
-                    <SelectItem value="24px">Medium (24px)</SelectItem>
-                    <SelectItem value="32px">Large (32px)</SelectItem>
-                    <SelectItem value="40px">X-Large (40px)</SelectItem>
-                    <SelectItem value="48px">XX-Large (48px)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
 
-              <div className="space-y-2">
-                <Label className="text-xs">Font Weight</Label>
-                <Select 
-                  value={headerText.style.fontWeight} 
-                  onValueChange={(v) => updateStyle('fontWeight', v)}
-                >
-                  <SelectTrigger className="text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="normal">Normal</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="bold">Bold</SelectItem>
-                    <SelectItem value="extrabold">Extra Bold</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+ {/* Font size & weight */}
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label className="text-xs mb-1 block">Font Size</Label>
+          <Select value={headerText.style.fontSize} onValueChange={(value) => updateHeaderText({ style: { ...headerText.style, fontSize: value } })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {fontSizeOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+        </div>
+        <div>
+          <Label className="text-xs mb-1 block">Font Weight</Label>
+           <Select value={headerText.style.fontWeight} onValueChange={(value) => updateHeaderText({ style: { ...headerText.style, fontWeight: value } })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {fontWeightOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+        </div>
+   
 
-            {/* Text Align and Color */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label className="text-xs">Text Align</Label>
-                <Select 
-                  value={headerText.style.textAlign} 
-                  onValueChange={(v) => updateStyle('textAlign', v)}
-                >
-                  <SelectTrigger className="text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="left">Left</SelectItem>
-                    <SelectItem value="center">Center</SelectItem>
-                    <SelectItem value="right">Right</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+      {/* Color & Align */}
+      
+        <div>
+          <Label className="text-xs mb-1 block">Text Color</Label>
+          <div className="flex items-center gap-2">
+            <Input
+              type="color"
+              value={headerText.style.color}
+              onChange={(e) => updateHeaderText({ style: { ...headerText.style, color: e.target.value } })}
+              className="h-8 w-8 p-0 border-none"
+            />
+             <Select value={headerText.style.color} onValueChange={(value) => updateHeaderText({ style: { ...headerText.style, color: value } })}>
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {colorOptions.map((c) => (
+                  <SelectItem key={c.value} value={c.value}>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded border" style={{ backgroundColor: c.value }} />
+                      {c.label}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+       </div>
+       
 
-               {/* Animation */}
-            <div className="space-y-2">
-              <Label className="text-xs">Animation</Label>
-              <Select 
-                value={headerText.animation} 
-                onValueChange={(v) => updateField('animation', v)}
-              >
-                <SelectTrigger className="text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {animationOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        <div>
 
-              
-            </div>
+        <div>
+          <Label className="text-xs mb-1 block">Alignment</Label>
+           <Select value={headerText.style.textAlign} onValueChange={(value: 'left' | 'center' | 'right') => updateHeaderText({ style: { ...headerText.style, textAlign: value } })}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {textAlignOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Animation */}
+      <div>
+        <Label className="text-xs mb-1 block">Animation</Label>
+       <Select value={headerText.animation} onValueChange={(value) => updateHeaderText({ animation: value })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {animationOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+      </div>
+      {/* Continuous Animation */}
+        {/* <div className="space-y-1">
+          <Label className="text-xs mb-1 block">Continuous Animation</Label>
+          <div className="flex items-center gap-2">
+           <Switch
+              checked={headerText.continuousAnimation || false}
+              onCheckedChange={(checked) => updateHeaderText({ continuousAnimation: checked })}
+            />
+            <span className="text-xs text-muted-foreground">Repeat</span>
+          </div>
+        </div> */}
+         </div>
 
            
           </>

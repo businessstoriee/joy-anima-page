@@ -53,7 +53,15 @@ export default function TextBlockItem({ text, index, isActive, onRemove, onMove,
           rows={2}
           className="text-sm min-h-[80px] w-full resize-none overflow-auto break-words whitespace-pre-wrap [text-wrap:pretty] hyphens-auto"
         />
-        {isActive && <TextBlockControls text={text} onUpdate={onUpdate} />}
+        {isActive && (
+          <TextBlockControls 
+            text={text} 
+            index={index}
+            onUpdate={onUpdate} 
+            onRemove={onRemove}
+            onMove={onMove}
+          />
+        )}
       </CardContent>
     </Card>
   );

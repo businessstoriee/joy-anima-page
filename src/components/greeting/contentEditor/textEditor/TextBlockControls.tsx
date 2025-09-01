@@ -3,56 +3,21 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TextContent } from '@/types/greeting';
 import { animationOptions } from '@/types/animations'; // ✅ Use consolidated animations
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Trash2, ChevronUp, ChevronDown } from 'lucide-react';
+import { fontSizeOptions, fontWeightOptions, colorOptions, textAlignOptions } from '@/types/textSettings';
 
-const fontSizes = [
-  { value: '12px', label: 'Small (12px)' },
-  { value: '14px', label: 'Regular (14px)' },
-  { value: '16px', label: 'Medium (16px)' },
-  { value: '18px', label: 'Large (18px)' },
-  { value: '20px', label: 'X-Large (20px)' },
-  { value: '24px', label: 'XX-Large (24px)' },
-  { value: '28px', label: 'XX-Large (28px)' },
-  { value: '32px', label: 'XXX-Large (32px)' },
-  { value: '36px', label: 'XXX-Large (36px)' },
-  { value: '48px', label: 'Huge (48px)' }
-];
-
-const fontWeights = [
-  { value: 'normal', label: 'Normal' },
-  { value: 'bold', label: 'Bold' },
-  { value: '100', label: 'Thin (100)' },
-  { value: '200', label: 'Extra Light (200)' },
-  { value: '300', label: 'Light (300)' },
-  { value: '400', label: 'Regular (400)' },
-  { value: '500', label: 'Medium (500)' },
-  { value: '600', label: 'Semi Bold (600)' },
-  { value: '700', label: 'Bold (700)' },
-  { value: '800', label: 'Extra Bold (800)' },
-  { value: '900', label: 'Black (900)' }
-];
-
-const colors = [
-  { value: 'hsl(var(--foreground))', label: 'Default' },
-  { value: 'hsl(var(--primary))', label: 'Primary' },
-  { value: 'hsl(var(--secondary))', label: 'Secondary' },
-  { value: 'hsl(var(--muted-foreground))', label: 'Muted' },
-  { value: 'hsl(0 0% 100%)', label: 'White' },
-  { value: 'hsl(0 0% 0%)', label: 'Black' },
-  { value: 'hsl(0 70% 50%)', label: 'Red' },
-  { value: 'hsl(120 60% 40%)', label: 'Green' },
-  { value: 'hsl(220 90% 50%)', label: 'Blue' },
-  { value: 'hsl(45 90% 50%)', label: 'Yellow' }
-];
-
-const textAligns = ['left', 'center', 'right'] as const;
-type TextAlign = (typeof textAligns)[number];
 
 interface Props {
   text: TextContent;
+  index: number;
   onUpdate: (updates: Partial<TextContent>) => void;
+  onRemove: () => void;
+  onMove: (direction: 'up' | 'down') => void;
 }
 
-export default function TextBlockControls({ text, onUpdate }: Props) {
+export default function TextBlockControls({ text, index, onUpdate, onRemove, onMove }: Props) {
   return (
     <div className="space-y-3 border-t pt-3 animate-in fade-in">
       {text.content && (
@@ -72,7 +37,9 @@ export default function TextBlockControls({ text, onUpdate }: Props) {
 </div>
 
         </div>
+        
       )}
+
 
       {/* Font size & weight */}
       <div className="grid grid-cols-2 gap-3">
@@ -84,7 +51,7 @@ export default function TextBlockControls({ text, onUpdate }: Props) {
           >
             <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
             <SelectContent>
-              {fontSizes.map((s) => (
+              {fontSizeOptions.map((s) => (
                 <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
               ))}
             </SelectContent>
@@ -98,16 +65,16 @@ export default function TextBlockControls({ text, onUpdate }: Props) {
           >
             <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
             <SelectContent>
-              {fontWeights.map((w) => (
+              {fontWeightOptions.map((w) => (
                 <SelectItem key={w.value} value={w.value}>{w.label}</SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-      </div>
+   
 
       {/* Color & Align */}
-      <div className="grid grid-cols-2 gap-3">
+      
         <div>
           <Label className="text-xs mb-1 block">Text Color</Label>
           <div className="flex items-center gap-2">
@@ -123,7 +90,7 @@ export default function TextBlockControls({ text, onUpdate }: Props) {
             >
               <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
               <SelectContent>
-                {colors.map((c) => (
+                {colorOptions.map((c) => (
                   <SelectItem key={c.value} value={c.value}>
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 rounded border" style={{ backgroundColor: c.value }} />
@@ -134,27 +101,25 @@ export default function TextBlockControls({ text, onUpdate }: Props) {
               </SelectContent>
             </Select>
           </div>
-        </div>
+       </div>
+       
 
         <div>
           <Label className="text-xs mb-1 block">Alignment</Label>
-          <Select
-            value={text.style.textAlign}
-            onValueChange={(v) => {
-              if (textAligns.includes(v as TextAlign)) {
-                onUpdate({ style: { ...text.style, textAlign: v as TextAlign } });
-              }
-            }}
-          >
-            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+          <Select value={text.style.textAlign} onValueChange={(value: 'left' | 'center' | 'right') => onUpdate({ style: { ...text.style, textAlign: value } })}>
+            <SelectTrigger className="h-8">
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
-              {textAligns.map((align) => (
-                <SelectItem key={align} value={align}>{align}</SelectItem>
+              {textAlignOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-      </div>
+
 
       {/* Animation */}
       <div>
@@ -171,6 +136,18 @@ export default function TextBlockControls({ text, onUpdate }: Props) {
           </SelectContent>
         </Select>
       </div>
+      {/* Continuous Animation */}
+        {/* <div className="space-y-1">
+          <Label className="text-xs mb-1 block">Continuous Animation</Label>
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={text.continuousAnimation || false}
+              onCheckedChange={(checked) => onUpdate({ continuousAnimation: checked })}
+            />
+            <span className="text-xs text-muted-foreground">Repeat</span>
+          </div>
+        </div> */}
+         </div>
     </div>
   );
 }

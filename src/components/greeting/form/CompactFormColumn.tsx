@@ -84,12 +84,12 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
 
       <CardContent className="space-y-6 mt-6">
   <Tabs defaultValue="basics" className="w-full">
-    <TabsList className="grid w-full grid-cols-4 h-auto p-1 gap-1 bg-muted/20 rounded-lg">
+    <TabsList className="sticky top-4 z-30 grid w-full grid-cols-4 h-auto p-1 gap-1 bg-background/85 backdrop-blur-sm shadow-sm rounded-lg">
       {/* Basics Tab */}
       <TabsTrigger 
         value="basics" 
         className="flex flex-col items-center gap-1 py-2 relative rounded-md transition-all duration-200
-                  hover:bg-primary/10 hover:text-primary
+                  hover:bg-primary/10 hover:text-primary hover:shadow-lg
                   data-[state=active]:bg-primary data-[state=active]:text-primary-foreground
                   data-[state=active]:shadow-sm"
       >
@@ -104,7 +104,7 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
       <TabsTrigger 
         value="content" 
         className="flex flex-col items-center gap-1 py-2 relative rounded-md transition-all duration-200
-                  hover:bg-primary/10 hover:text-primary
+                  hover:bg-primary/10 hover:text-primary hover:shadow-lg
                   data-[state=active]:bg-primary data-[state=active]:text-primary-foreground
                   data-[state=active]:shadow-sm"
       >
@@ -128,7 +128,7 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
       <TabsTrigger 
         value="media" 
         className="flex flex-col items-center gap-1 py-2 relative rounded-md transition-all duration-200
-                  hover:bg-primary/10 hover:text-primary
+                  hover:bg-primary/10 hover:text-primary hover:shadow-lg
                   data-[state=active]:bg-primary data-[state=active]:text-primary-foreground
                   data-[state=active]:shadow-sm"
       >
@@ -152,7 +152,7 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
       <TabsTrigger 
         value="design" 
         className="flex flex-col items-center gap-1 py-2 relative rounded-md transition-all duration-200
-                  hover:bg-primary/10 hover:text-primary
+                  hover:bg-primary/10 hover:text-primary hover:shadow-lg
                   data-[state=active]:bg-primary data-[state=active]:text-primary-foreground
                   data-[state=active]:shadow-sm"
       >
