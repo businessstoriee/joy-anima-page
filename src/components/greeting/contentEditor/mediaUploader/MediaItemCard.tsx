@@ -2,13 +2,16 @@
 import React, { useMemo, useRef, useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Settings, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Settings, Trash2, ArrowUp, ArrowDown, Upload, Link, X } from "lucide-react";
 import MediaPreview from "./MediaPreview";
 import MediaSettings from "./MediaSettings";
 import { MediaItem } from "@/types/greeting";
 import { frameStyles as globalFrameStyles } from "@/components/preview/MediaFrames";
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
 interface MediaItemCardProps {
   item: MediaItem;
@@ -46,8 +49,12 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
   highlight = false,
 }) => {
   const [showSettings, setShowSettings] = React.useState(false);
+  const [inputMode, setInputMode] = useState<'url' | 'file'>('url');
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isAutofocus, setIsAutofocus] = useState(false);
+  const [lastBlobUrl, setLastBlobUrl] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // compute frame class from key if provided
   const frameClass = useMemo(() => {
@@ -61,13 +68,85 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
   useEffect(() => {
     if (active) {
       setTimeout(() => {
-        inputRef.current?.focus();
+        if (inputMode === 'url') {
+          inputRef.current?.focus();
+        }
         // show subtle ring + pulse on focus
         setIsAutofocus(true);
         setTimeout(() => setIsAutofocus(false), 900);
       }, 80);
     }
-  }, [active]);
+  }, [active, inputMode]);
+
+  // cleanup blob URL when component unmounts or URL changes
+  useEffect(() => {
+    return () => {
+      if (lastBlobUrl) {
+        URL.revokeObjectURL(lastBlobUrl);
+      }
+    };
+  }, [lastBlobUrl]);
+
+  // handle file selection
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // validate file type
+    const isValidImage = item.type === 'image' && file.type.startsWith('image/');
+    const isValidVideo = item.type === 'video' && file.type.startsWith('video/');
+    
+    if (!isValidImage && !isValidVideo) {
+      toast({
+        title: "Invalid file type",
+        description: `Please select a ${item.type} file.`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // cleanup previous blob URL
+    if (lastBlobUrl) {
+      URL.revokeObjectURL(lastBlobUrl);
+    }
+
+    // create new blob URL
+    const blobUrl = URL.createObjectURL(file);
+    setLastBlobUrl(blobUrl);
+    updateMedia(index, "url", blobUrl);
+    
+    toast({
+      title: `${item.type === 'image' ? 'Image' : 'Video'} uploaded`,
+      description: file.name
+    });
+
+    // clear file input
+    event.target.value = '';
+  };
+
+  // handle URL input change
+  const handleUrlChange = (url: string) => {
+    // cleanup blob URL if switching from file to URL
+    if (lastBlobUrl && url !== lastBlobUrl) {
+      URL.revokeObjectURL(lastBlobUrl);
+      setLastBlobUrl(null);
+    }
+    updateMedia(index, "url", url);
+  };
+
+  // clear current media
+  const handleClearMedia = () => {
+    if (lastBlobUrl) {
+      URL.revokeObjectURL(lastBlobUrl);
+      setLastBlobUrl(null);
+    }
+    updateMedia(index, "url", "");
+    setInputMode('url');
+    toast({
+      title: "Media cleared",
+      description: "Media has been removed from this slot."
+    });
+  };
 
   // replace animation variants
   const replaceVariants = {
@@ -146,16 +225,99 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
           </TooltipProvider>
         </div>
 
-        {/* URL Input */}
-        <Input
-          ref={inputRef}
-          type="url"
-          placeholder={`Enter ${item.type} URL`}
-          value={item.url}
-          onChange={(e) => updateMedia(index, "url", e.target.value)}
-          onFocus={() => setActive(index)}
-          className={`text-sm break-all overflow-hidden text-ellipsis whitespace-nowrap ${isAutofocus ? "ring-2 ring-pink-400/40 animate-pulse" : ""}`}
-        />
+        {/* Input Mode Toggle & Controls */}
+        <div className="space-y-3">
+          {/* Mode Toggle Buttons */}
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant={inputMode === 'url' ? 'default' : 'outline'}
+              onClick={() => setInputMode('url')}
+              className="flex-1 gap-2 h-8"
+            >
+              <Link className="h-3.5 w-3.5" />
+              <span className="text-xs">URL</span>
+            </Button>
+            <Button
+              size="sm"
+              variant={inputMode === 'file' ? 'default' : 'outline'}
+              onClick={() => setInputMode('file')}
+              className="flex-1 gap-2 h-8"
+            >
+              <Upload className="h-3.5 w-3.5" />
+              <span className="text-xs">Upload</span>
+            </Button>
+            {item.url && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleClearMedia}
+                className="h-8 px-2"
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            )}
+          </div>
+
+          {/* URL Input Mode */}
+          {inputMode === 'url' && (
+            <div className="space-y-2">
+              <Input
+                ref={inputRef}
+                type="url"
+                placeholder={`Enter ${item.type} URL`}
+                value={item.url}
+                onChange={(e) => handleUrlChange(e.target.value)}
+                onFocus={() => setActive(index)}
+                className={`text-sm break-all overflow-hidden text-ellipsis whitespace-nowrap ${isAutofocus ? "ring-2 ring-pink-400/40 animate-pulse" : ""}`}
+              />
+              {item.url && (
+                <Badge variant="outline" className="text-xs">
+                  URL: {item.url.length > 30 ? `${item.url.slice(0, 30)}...` : item.url}
+                </Badge>
+              )}
+            </div>
+          )}
+
+          {/* File Upload Mode */}
+          {inputMode === 'file' && (
+            <div className="space-y-2">
+              <div className="relative">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept={item.type === 'image' ? 'image/*' : 'video/*'}
+                  onChange={handleFileSelect}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  onClick={() => setActive(index)}
+                />
+                <div className={`flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg transition-all ${
+                  item.url 
+                    ? 'border-primary bg-primary/5' 
+                    : 'border-muted-foreground/25 bg-muted/20 hover:border-primary/50 hover:bg-primary/5'
+                } ${isAutofocus ? "border-pink-400 bg-pink-50" : ""}`}>
+                  <Upload className="h-5 w-5 text-muted-foreground" />
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground">
+                      {item.url 
+                        ? `${item.type === 'image' ? 'Image' : 'Video'} uploaded`
+                        : `Drop ${item.type} or click to browse`
+                      }
+                    </p>
+                    <p className="text-xs text-muted-foreground/70">
+                      {item.type === 'image' ? 'JPG, PNG, GIF, WebP' : 'MP4, WebM, MOV'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              {item.url && lastBlobUrl && (
+                <Badge variant="outline" className="text-xs">
+                  File: Uploaded from device
+                </Badge>
+              )}
+            </div>
+          )}
+        </div>
 
         <div className="mt-3 flex justify-center">
           {/* MediaPreview will use the current item state automatically */}
