@@ -225,8 +225,15 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
             layout={formData.layout}
             frameStyle={formData.frameStyle} 
             animationStyle={formData.animationStyle}
+            media={formData.media}
+            layoutGroupOrder={formData.layoutGroupOrder}
             onBackgroundChange={onBackgroundChange}
             onBorderChange={onBorderChange}
+            onLayoutChange={onLayoutChange}
+            onAnimationChange={onAnimationChange}
+            onFrameStyleChange={onFrameStyleChange}
+            onLayoutGroupOrderChange={onLayoutGroupOrderChange}
+          />
             onLayoutChange={onLayoutChange}
             onAnimationChange={onAnimationChange}
             onFrameStyleChange={onFrameStyleChange}

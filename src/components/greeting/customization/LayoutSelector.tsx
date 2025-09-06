@@ -6,16 +6,21 @@ import { animationOptions } from '@/types/animations';
 import { ChevronDown, ChevronUp, Zap, Layout } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import LayoutGroupManager from './LayoutGroupManager';
+import { MediaItem } from '@/types/greeting';
 
 interface LayoutSelectorProps {
   layout: string;
   animationStyle: string;
   frameStyle?: string;
   mediaAnimation?: string;
+  media?: MediaItem[];
+  layoutGroupOrder?: string[];
   onLayoutChange: (layout: string) => void;
   onAnimationChange: (animation: string) => void;
   onFrameStyleChange?: (frame: string) => void;
   onMediaAnimationChange?: (animation: string) => void;
+  onLayoutGroupOrderChange?: (order: string[]) => void;
 }
 
 const LayoutSelector = ({ 
@@ -23,10 +28,13 @@ const LayoutSelector = ({
   animationStyle,
   frameStyle,
   mediaAnimation = 'fade',
+  media = [],
+  layoutGroupOrder = [],
   onLayoutChange, 
   onAnimationChange,
   onFrameStyleChange,
-  onMediaAnimationChange
+  onMediaAnimationChange,
+  onLayoutGroupOrderChange
 }: LayoutSelectorProps) => {
   const [expandedSections, setExpandedSections] = useState({
     layout: false,
@@ -194,6 +202,15 @@ const LayoutSelector = ({
             )}
           </AnimatePresence>
         </motion.div>
+
+        {/* Layout Group Manager */}
+        {media.length > 0 && onLayoutGroupOrderChange && (
+          <LayoutGroupManager
+            media={media}
+            layoutGroupOrder={layoutGroupOrder}
+            onLayoutGroupOrderChange={onLayoutGroupOrderChange}
+          />
+        )}
       </CardContent>
     </Card>
   );

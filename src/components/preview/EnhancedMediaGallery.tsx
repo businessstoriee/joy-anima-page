@@ -122,6 +122,7 @@ interface Props {
   frameStyle?: string;
   mediaAnimation?: string;
 }
+
 const EnhancedMediaGallery: React.FC<Props> = ({ 
   greetingData, 
   isEditing = false, 
@@ -136,27 +137,56 @@ const EnhancedMediaGallery: React.FC<Props> = ({
   const [errored, setErrored] = useState<Record<string, boolean>>({});
   const [retries, setRetries] = useState<Record<string, number>>({});
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [slideshowIndex, setSlideshowIndex] = useState(0);
-  const [layout, setLayout] = useState<keyof typeof layoutClassMap>(greetingData.layout || "grid");
+  const [slideshowIndexes, setSlideshowIndexes] = useState<Record<string, number>>({});
 
-  // ✅ Use real-time updates from greetingData instead of local state
-  useEffect(() => {
-    if (greetingData.layout && greetingData.layout !== layout) {
-      setLayout(greetingData.layout as keyof typeof layoutClassMap);
-    }
-  }, [greetingData.layout, layout]);
+  // Group media by individual layout settings
+  const mediaGroups = useMemo(() => {
+    const groups: Record<string, MediaItem[]> = {};
+    media.forEach(item => {
+      const itemLayout = item.layout || greetingData.layout || 'grid';
+      if (!groups[itemLayout]) {
+        groups[itemLayout] = [];
+      }
+      groups[itemLayout].push(item);
+    });
+    return groups;
+  }, [media, greetingData.layout]);
+
+  // Get ordered layout groups
+  const orderedLayoutGroups = useMemo(() => {
+    const availableLayouts = Object.keys(mediaGroups);
+    const order = greetingData.layoutGroupOrder || [];
+    
+    // Return layouts in specified order, then any remaining layouts
+    return [
+      ...order.filter(layout => availableLayouts.includes(layout)),
+      ...availableLayouts.filter(layout => !order.includes(layout))
+    ];
+  }, [mediaGroups, greetingData.layoutGroupOrder]);
 
   const [muted, setMuted] = useState(true);
   const userInteractedRef = useRef(false);
 
-  const cssLayoutClass = layoutClassMap[layout] || layoutClassMap.grid;
-
-  // slideshow autoplay
+  // slideshow autoplay for each group
   useEffect(() => {
-    if (layout !== "slideshow" || media.length === 0) return;
-    const t = setInterval(() => setSlideshowIndex((s) => (s + 1) % media.length), 3500);
-    return () => clearInterval(t);
-  }, [layout, media.length]);
+    const intervals: NodeJS.Timeout[] = [];
+    
+    Object.entries(mediaGroups).forEach(([layoutKey, groupMedia]) => {
+      if (layoutKey === "slideshow" && groupMedia.length > 0) {
+        const interval = setInterval(() => {
+          setSlideshowIndexes(prev => ({
+            ...prev,
+            [layoutKey]: ((prev[layoutKey] || 0) + 1) % groupMedia.length
+          }));
+        }, 3500);
+        intervals.push(interval);
+      }
+    });
+    
+    return () => {
+      intervals.forEach(clearInterval);
+    };
+  }, [mediaGroups]);
 
   // lightbox body lock
   useEffect(() => {
@@ -255,11 +285,11 @@ const EnhancedMediaGallery: React.FC<Props> = ({
   };
 
   // Render single item with frame and animation
-  const renderMediaItem = (m: MediaItem, index: number) => {
+  const renderMediaItem = (m: MediaItem, index: number, groupLayout: string) => {
     const attempt = retries[m.id] || 0;
     const type = detectType(m.url);
     const src = cacheBusted(m.url, attempt);
-    const mediaClass = ["grid", "carousel", "collage", "slideshow", "polaroid"].includes(layout)
+    const mediaClass = ["grid", "carousel", "collage", "slideshow", "polaroid"].includes(groupLayout)
       ? "object-cover w-full h-full"
       : "object-contain w-full h-full";
 
@@ -486,7 +516,13 @@ const EnhancedMediaGallery: React.FC<Props> = ({
                   title={m.alt || `embedded-${index}`}
                   allow="autoplay; encrypted-media; picture-in-picture"
                   allowFullScreen
-                  className="w-full h-full block"
+                  className="w-full h-full rounded-lg border-0"
+                  style={{ 
+                    width: isMobile ? "100%" : `${constrainedWidth}px`,
+                    height: `${constrainedHeight}px`,
+                    maxWidth: `${maxWidth}px`,
+                    maxHeight: `${maxHeight}px`
+                  }}
                   onLoad={() => markLoaded(m.id)}
                 />
               </div>
@@ -501,158 +537,182 @@ const EnhancedMediaGallery: React.FC<Props> = ({
       );
     }
 
-    // Unknown fallback -> try rendering an image first (may be remote without extension)
-    return (
-      <motion.div
-        key={m.id}
-        initial="hidden"
-        animate="visible"
-        variants={animationVariant}
-        custom={index}
-        whileHover={{ scale: 1.02 }}
-        transition={{ delay: index * 0.1 }}
-      >
-        <MediaFrame 
-          frameType={itemFrameStyle} 
-          index={index}
-          className="gallery-item relative cursor-pointer"
-        >
-          <div onClick={() => setLightboxIndex(index)} className="relative w-full h-full">
-            {loadingOverlay}
-            <img
-              src={src}
-              alt={m.alt || `media-${index + 1}`}
-              loading="lazy"
-              onLoad={() => markLoaded(m.id)}
-              onError={() => {
-                const current = retries[m.id] || 0;
-                if (current < MAX_RETRIES && isHttpUrl(m.url)) attemptRetry(m.id);
-                else markError(m.id);
-              }}
-              className={`${mediaClass} block`}
-              style={{ 
-                display: "block",
-                width: isMobile ? "100%" : `${constrainedWidth}px`,
-                height: `${constrainedHeight}px`,
-                objectFit: "cover"
-              }}
-            />
-            <div className="absolute top-2 right-2 opacity-95">
-              <div className="bg-white/85 rounded-full p-1.5">
-                <ImageIcon className="w-4 h-4" />
+    return null;
+  };
+
+  // Render layout group
+  const renderLayoutGroup = (layoutKey: string, groupMedia: MediaItem[]) => {
+    const cssLayoutClass = layoutClassMap[layoutKey as keyof typeof layoutClassMap] || layoutClassMap.grid;
+    
+    // Special handling for slideshow layout
+    if (layoutKey === "slideshow") {
+      const currentIndex = slideshowIndexes[layoutKey] || 0;
+      const currentItem = groupMedia[currentIndex];
+      
+      if (!currentItem) return null;
+      
+      return (
+        <div key={layoutKey} className="mb-8">
+          <motion.div 
+            className="slideshow-container relative w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            {renderMediaItem(currentItem, media.findIndex(m => m.id === currentItem.id), layoutKey)}
+            
+            {/* Slideshow indicators */}
+            {groupMedia.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                {groupMedia.map((_, idx) => (
+                  <button
+                    key={idx}
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      idx === currentIndex ? 'bg-white' : 'bg-white/50'
+                    }`}
+                    onClick={() => setSlideshowIndexes(prev => ({ ...prev, [layoutKey]: idx }))}
+                  />
+                ))}
               </div>
-            </div>
-          </div>
-        </MediaFrame>
-      </motion.div>
+            )}
+          </motion.div>
+        </div>
+      );
+    }
+    
+    return (
+      <div key={layoutKey} className="mb-8">
+        <div className={`media-gallery ${cssLayoutClass}`}>
+          {groupMedia.map((item) => {
+            const globalIndex = media.findIndex(m => m.id === item.id);
+            return renderMediaItem(item, globalIndex, layoutKey);
+          })}
+        </div>
+      </div>
     );
   };
 
-  const closeLightbox = () => setLightboxIndex(null);
-  const prevLightbox = () => setLightboxIndex((i) => (i === null ? null : (i - 1 + media.length) % media.length));
-  const nextLightbox = () => setLightboxIndex((i) => (i === null ? null : (i + 1) % media.length));
+  // Render lightbox modal
+  const renderLightbox = () => {
+    if (lightboxIndex === null || !media[lightboxIndex]) return null;
+    const m = media[lightboxIndex];
+    const type = detectType(m.url);
+    const src = cacheBusted(m.url, retries[m.id] || 0);
 
-  // layout renderer
-  const renderLayout = () => {
-    if (layout === "slideshow") {
-      return (
-        <div className="slideshow-layout">
-          {media.map((m, i) => (
-            <div key={m.id} className={`gallery-item ${i === slideshowIndex ? "active" : ""}`}>
-              {renderMediaItem(m, i)}
+    const renderMediaContent = () => {
+      if (type === "image") {
+        return (
+          <img
+            src={src}
+            alt={m.alt || `lightbox-${lightboxIndex}`}
+            className="max-w-full max-h-full object-contain rounded-lg"
+          />
+        );
+      }
+      if (type === "video") {
+        return (
+          <video 
+            src={src} 
+            controls 
+            autoPlay 
+            muted={muted} 
+            className="max-w-full max-h-full object-contain rounded-lg" 
+          />
+        );
+      }
+      if (["youtube", "vimeo", "dailymotion", "twitch", "facebook"].includes(type)) {
+        const embed = makeEmbedSrc(m);
+        if (!embed) return <div className="p-8 text-white">Invalid embed link</div>;
+        return (
+          <iframe 
+            src={embed + "&autoplay=1"} 
+            allow="autoplay; encrypted-media; picture-in-picture" 
+            allowFullScreen
+            title={m.alt || "Embedded media"} 
+            className="w-full h-[70vh] max-w-4xl rounded-lg border-0" 
+          />
+        );
+      }
+      return <div className="p-8 text-white">Unsupported media type</div>;
+    };
+
+    return (
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+          onClick={() => setLightboxIndex(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] w-full flex items-center justify-center">
+            <button
+              onClick={() => setLightboxIndex(null)}
+              className="absolute top-2 right-2 z-10 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
+            >
+              <XIcon className="w-6 h-6 text-white" />
+            </button>
+
+            {media.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLightboxIndex((i) => (i === null ? null : (i - 1 + media.length) % media.length));
+                  }}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
+                >
+                  <ChevronLeft className="w-6 h-6 text-white" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLightboxIndex((i) => (i === null ? null : (i + 1) % media.length));
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
+                >
+                  <ChevronRight className="w-6 h-6 text-white" />
+                </button>
+              </>
+            )}
+
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="w-full h-full flex items-center justify-center"
+            >
+              {renderMediaContent()}
             </div>
-          ))}
-        </div>
-      );
-    }
-    if (layout === "carousel") {
-      return (
-        <div className="carousel-layout">
-          {media.map((m, i) => (
-            <div key={m.id} style={{ minWidth: isMobile ? "85%" : 380 }}>
-              {renderMediaItem(m, i)}
-            </div>
-          ))}
-        </div>
-      );
-    }
-    return <div className={cssLayoutClass}>{media.map(renderMediaItem)}</div>;
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    );
   };
 
   // editing empty state
   if (isEditing && media.length === 0) {
     return (
-      <>
-        <MediaGalleryStyles />
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-6">
-            <ImageIcon className="w-12 h-12 text-gray-400" />
-          </div>
-          <h3 className="text-xl font-semibold text-gray-600 mb-2">No media added yet</h3>
-          <p className="text-gray-500 text-sm">Add images or videos to make your greeting special</p>
+      <div className="flex items-center justify-center h-40 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+        <div className="text-center">
+          <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+          <p className="text-gray-500">No media items added yet</p>
+          <p className="text-sm text-gray-400">Add images, videos, or GIFs to get started</p>
         </div>
-      </>
+      </div>
     );
   }
 
   return (
-    <>
+    <div className="w-full relative">
       <MediaGalleryStyles />
-      <div className={cn("gallery-container", cssLayoutClass)} style={{ padding: isMobile ? 12 : 20 }}>
-        {renderLayout()}
-      </div>
+      
+      {/* Render each layout group in specified order */}
+      {orderedLayoutGroups.map(layoutKey => (
+        mediaGroups[layoutKey] && mediaGroups[layoutKey].length > 0 && 
+        renderLayoutGroup(layoutKey, mediaGroups[layoutKey])
+      ))}
 
-      <AnimatePresence>
-        {lightboxIndex !== null && media[lightboxIndex] && (
-          <div className="lightbox-backdrop" onClick={closeLightbox} role="dialog" aria-modal="true">
-            <div className="lightbox-panel" onClick={(e) => e.stopPropagation()}>
-              <div className="flex justify-between p-3">
-                <div />
-                <div className="flex gap-2">
-                  <button onClick={prevLightbox} className="p-2 rounded-full bg-white/90" aria-label="Previous">
-                    <ChevronLeft />
-                  </button>
-                  <button onClick={nextLightbox} className="p-2 rounded-full bg-white/90" aria-label="Next">
-                    <ChevronRight />
-                  </button>
-                  <button onClick={closeLightbox} className="p-2 rounded-full bg-white/90" aria-label="Close">
-                    <XIcon />
-                  </button>
-                </div>
-              </div>
-
-              <div className="lightbox-media">
-                {(() => {
-                  const m = media[lightboxIndex!];
-                  const type = detectType(m.url);
-                  const attempt = retries[m.id] || 0;
-                  const src = cacheBusted(m.url, attempt);
-
-                  if (type === "image") {
-                    return (
-                      <img
-                        src={src}
-                        alt={m.alt || `lightbox-${lightboxIndex}`}
-                        style={{ maxWidth: "100%", maxHeight: "80vh", objectFit: "contain" }}
-                      />
-                    );
-                  }
-                  if (type === "video") {
-                    return <video src={src} controls autoPlay muted={muted} className="lightbox-inner-media" style={{ maxWidth: "100%", maxHeight: "80vh", objectFit: "contain" }} />;
-                  }
-                  if (type === "youtube" || type === "vimeo" || type === "dailymotion" || type === "twitch" || /facebook\.com/.test(m.url)) {
-                    const embed = makeEmbedSrc(m);
-                    if (!embed) return <div className="p-8">Invalid embed link</div>;
-                    return <iframe src={embed + "&autoplay=1"} allow="autoplay; encrypted-media" title={m.alt || "Embedded media"} style={{ width: "100%", height: "70vh", border: 0 }} />;
-                  }
-                  return <div className="p-8">Unsupported media type</div>;
-                })()}
-              </div>
-            </div>
-          </div>
-        )}
-      </AnimatePresence>
-    </>
+      {renderLightbox()}
+    </div>
   );
 };
 

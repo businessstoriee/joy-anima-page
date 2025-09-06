@@ -83,6 +83,7 @@ export function useCreate() {
       elements: [],
       decorativeElements: [],
     },
+    layoutGroupOrder: [], // Initialize layout group order
   });
 
   const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
@@ -303,6 +304,10 @@ export function useCreate() {
     setSelectedEvent(newEvent);
   }
 
+  function handleLayoutGroupOrderChange(newOrder: string[]) {
+    setFormData((prev) => ({ ...prev, layoutGroupOrder: newOrder }));
+  }
+
   return {
     formData,
     setFormData,
@@ -319,5 +324,6 @@ export function useCreate() {
     handlePreviewClick,
     buildPayloadForSharing,
     onCustomEventCreate,
+    handleLayoutGroupOrderChange,
   };
 }
