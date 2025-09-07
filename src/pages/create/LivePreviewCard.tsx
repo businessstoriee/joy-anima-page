@@ -10,6 +10,7 @@ interface LivePreviewCardProps {
   selectedEvent: EventType | null;
   onOpenPreview: () => void;
   onDataChange: (data: GreetingFormData) => void;
+  onClearAutoSave?: () => void;
 }
 
 const LivePreviewCard: React.FC<LivePreviewCardProps> = ({
@@ -17,6 +18,7 @@ const LivePreviewCard: React.FC<LivePreviewCardProps> = ({
   selectedEvent,
   onOpenPreview,
   onDataChange,
+  onClearAutoSave,
 }) => {
 
   const { translate } = useLanguageTranslation();
@@ -59,6 +61,7 @@ const LivePreviewCard: React.FC<LivePreviewCardProps> = ({
               <FirebaseShareButton
                 greetingData={formData}
                 selectedEvent={selectedEvent}
+                onClearAutoSave={onClearAutoSave}
               />
             </div>
           </div>

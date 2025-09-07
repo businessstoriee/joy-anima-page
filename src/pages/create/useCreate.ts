@@ -4,13 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { GreetingFormData, MediaItem, TextContent, EventType } from "@/types/greeting";
 import { eventTypes } from "@/types/eventTypes";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 export function useCreate() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { autoSave, loadFromLocalStorage, clearAutoSave, hasAutoSaveData } = useAutoSave();
 
   // refs
   const prevDefaultRef = useRef<string | null>(null);
+  const isInitializedRef = useRef(false);
 
   // user-edited texts flag
   const [textsEdited, setTextsEdited] = useState(false);
@@ -91,6 +94,38 @@ export function useCreate() {
 
   // preview modal
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  // Initialize with auto-saved data if available
+  useEffect(() => {
+    if (isInitializedRef.current) return;
+    
+    const savedData = loadFromLocalStorage();
+    if (savedData && hasAutoSaveData()) {
+      setFormData(savedData);
+      toast({
+        title: "Draft restored",
+        description: "Your previous work has been restored from auto-save.",
+      });
+    }
+    
+    isInitializedRef.current = true;
+  }, [loadFromLocalStorage, hasAutoSaveData, toast]);
+
+  // Auto-save form data whenever it changes
+  useEffect(() => {
+    if (!isInitializedRef.current) return; // Don't auto-save during initialization
+    
+    // Only auto-save if there's meaningful content
+    const hasContent = formData.eventType || 
+      formData.senderName || 
+      formData.receiverName || 
+      (formData.texts && formData.texts.length > 0) ||
+      (formData.media && formData.media.length > 0);
+    
+    if (hasContent) {
+      autoSave(formData);
+    }
+  }, [formData, autoSave]);
 
   // keep previous injection behaviour: when eventType changes inject default text unless user edited
   useEffect(() => {
@@ -308,6 +343,11 @@ export function useCreate() {
     setFormData((prev) => ({ ...prev, layoutGroupOrder: newOrder }));
   }
 
+  // Clear auto-save data when successfully creating/sharing greeting
+  function handleSuccessfulCreate() {
+    clearAutoSave();
+  }
+
   return {
     formData,
     setFormData,
@@ -325,5 +365,8 @@ export function useCreate() {
     buildPayloadForSharing,
     onCustomEventCreate,
     handleLayoutGroupOrderChange,
+    handleSuccessfulCreate,
+    clearAutoSave,
+    hasAutoSaveData,
   };
 }

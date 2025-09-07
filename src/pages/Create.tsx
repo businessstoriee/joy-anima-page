@@ -27,6 +27,7 @@ const CreatePage: React.FC = () => {
     onCustomEventCreate,
     setFormData,
     setCustomEvent,
+    clearAutoSave,
   } = useCreate();
 
   const { translate } = useLanguageTranslation();
@@ -101,6 +102,7 @@ const CreatePage: React.FC = () => {
               selectedEvent={selectedEvent} 
               onOpenPreview={handlePreviewClick} 
               onDataChange={setFormData}
+              onClearAutoSave={clearAutoSave}
             />
 
             {/* Enhanced preview modal with editing capabilities */}
