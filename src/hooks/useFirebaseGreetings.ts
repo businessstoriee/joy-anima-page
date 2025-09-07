@@ -1,6 +1,6 @@
 // hooks/useFirebaseGreetings.ts
-import { useState, useCallback } from 'react';
-import { collection, doc, setDoc, getDoc, serverTimestamp, updateDoc, increment } from 'firebase/firestore';
+import { useState, useCallback, useEffect } from 'react';
+import { collection, doc, setDoc, getDoc, serverTimestamp, updateDoc, increment, query, where, getDocs, writeBatch } from 'firebase/firestore';
 import { db } from '@/utils/firebase/firebase';
 import { GreetingFormData } from '@/types/greeting';
 
@@ -21,6 +21,47 @@ export function useFirebaseGreetings() {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [savedGreetings, setSavedGreetings] = useState<SavedGreeting[]>([]);
+
+  // Cleanup old greetings (7+ days old)
+  const cleanupOldGreetings = useCallback(async () => {
+    try {
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      const greetingsRef = collection(db, 'greetings');
+      const oldGreetingsQuery = query(
+        greetingsRef,
+        where('createdAt', '<', sevenDaysAgo)
+      );
+      
+      const querySnapshot = await getDocs(oldGreetingsQuery);
+      
+      if (querySnapshot.empty) {
+        console.log('🧹 No old greetings to cleanup');
+        return;
+      }
+
+      const batch = writeBatch(db);
+      querySnapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+      console.log(`🗑️ Cleaned up ${querySnapshot.docs.length} old greetings`);
+    } catch (error) {
+      console.warn('⚠️ Failed to cleanup old greetings:', error);
+    }
+  }, []);
+
+  // Run cleanup on hook initialization (once per session)
+  useEffect(() => {
+    const hasCleanedThisSession = sessionStorage.getItem('greetings-cleaned');
+    if (!hasCleanedThisSession) {
+      // Delay cleanup to not block initial load
+      setTimeout(() => {
+        cleanupOldGreetings();
+        sessionStorage.setItem('greetings-cleaned', 'true');
+      }, 2000);
+    }
+  }, [cleanupOldGreetings]);
 
   // helper: slug generator (deterministic)
   const generateSlug = (senderName: string, receiverName: string, eventName: string): string => {
