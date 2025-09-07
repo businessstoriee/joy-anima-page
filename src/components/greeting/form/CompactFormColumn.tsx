@@ -32,6 +32,7 @@ interface CompactFormColumnProps {
   onHeaderTextChange?: (headerText: TextContent) => void;
   onEventNameStyleChange?: (eventNameStyle: TextContent) => void;
   onEventEmojiSettingsChange?: (settings: EventEmojiSettings) => void;
+  onLayoutGroupOrderChange?: (order: string[]) => void;
 }
 
 const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
@@ -52,6 +53,7 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
   onHeaderTextChange,
   onEventNameStyleChange,
   onEventEmojiSettingsChange,
+  onLayoutGroupOrderChange,
 }) => {
   const getTabBadgeCount = (tab: string) => {
     switch (tab) {
@@ -233,10 +235,6 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
             onAnimationChange={onAnimationChange}
             onFrameStyleChange={onFrameStyleChange}
             onLayoutGroupOrderChange={onLayoutGroupOrderChange}
-          />
-            onLayoutChange={onLayoutChange}
-            onAnimationChange={onAnimationChange}
-            onFrameStyleChange={onFrameStyleChange}
           />
           
           {/* Debug Panel */}
