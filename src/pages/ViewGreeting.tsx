@@ -128,6 +128,7 @@ const ViewGreeting: React.FC = () => {
         title={`${greetingData.eventType || 'Greeting'} for ${greetingData.receiverName || 'You'}`}
         description={greetingData.texts?.[0]?.content || greetingData.customEventText || ' '}
         customEventName = {greetingData.customEventName}
+        greetingData={greetingData}
       />
 
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/20">
