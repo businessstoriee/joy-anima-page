@@ -132,4 +132,5 @@ export interface GreetingFormData {
     animation: string;
   }[];
   borderSettings: BorderSettings;
+  isPublic?: boolean; // Default false (private)
 }

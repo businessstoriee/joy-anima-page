@@ -33,6 +33,7 @@ export function useCreate() {
     frameStyle: "classic",
     mediaAnimation: "fade",
     theme: "",
+    isPublic: false, // Default to private
     headerText: {
       id: "header-text",
       content: "",

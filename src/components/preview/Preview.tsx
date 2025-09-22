@@ -8,6 +8,7 @@ import EventHeader from './EventHeader';
 import GreetingTexts from './GreetingTexts';
 import EnhancedMediaGallery from './EnhancedMediaGallery';
 import SenderSection from './SenderSection';
+import AudioAutoPlay from './AudioAutoPlay';
 
 interface PreviewProps {
   greetingData: GreetingFormData;
@@ -55,6 +56,12 @@ const Preview = ({
         </BorderContainer>
 
         <EmojisLayer emojis={greetingData.emojis} />
+
+        {/* Auto-playing audio for shared greetings */}
+        <AudioAutoPlay 
+          audioUrl={greetingData.audioUrl} 
+          autoPlay={true}
+        />
     </BackgroundWrapper>
   );
 };

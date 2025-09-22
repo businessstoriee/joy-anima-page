@@ -4,6 +4,7 @@ import { eventTypes } from '@/types/eventTypes';
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 import { motion } from 'framer-motion';
 import { getAnimation, getAnimationWithSpeed } from '@/types/animations';
+import HoverAnimations from './HoverAnimations';
 
 interface Props {
   greetingData: GreetingFormData;
@@ -89,29 +90,33 @@ const EventHeader: React.FC<Props> = ({ greetingData, selectedEvent }) => {
       </motion.div>
 
       {/* Event Emoji with centralized animation system */}
-      <motion.div
-        key={`emoji-${emojiAnimation}-${displayEmoji}-${emojiSize}`}
-        className="mb-4"
-        initial="initial"
-        animate="animate"
-        variants={getAnimationWithSpeed(emojiAnimation, 1/rotateSpeed, 'bounceIn')}
-        style={{
-          fontSize: `${emojiSize}px`,
-          filter: greetingData.eventEmojiSettings?.effects?.glow
-            ? 'drop-shadow(0 0 10px currentColor)'
-            : 'none',
-          textAlign: greetingData.eventEmojiSettings?.textAlign || 'center',
-          width: '100%'
-        }}
-      >
-        {displayEmoji}
-      </motion.div>
+      <HoverAnimations animation="bounce">
+        <motion.div
+          key={`emoji-${emojiAnimation}-${displayEmoji}-${emojiSize}`}
+          className="mb-4"
+          initial="initial"
+          animate="animate"
+          variants={getAnimationWithSpeed(emojiAnimation, 1/rotateSpeed, 'bounceIn')}
+          style={{
+            fontSize: `${emojiSize}px`,
+            filter: greetingData.eventEmojiSettings?.effects?.glow
+              ? 'drop-shadow(0 0 10px currentColor)'
+              : 'none',
+            textAlign: greetingData.eventEmojiSettings?.textAlign || 'center',
+            width: '100%'
+          }}
+        >
+          {displayEmoji}
+        </motion.div>
+      </HoverAnimations>
 
       {/* Receiver Name */}
       {greetingData.receiverName && (
-        <p className="text-xl md:text-2xl font-bold text-primary">
-          {greetingData.receiverName}
-        </p>
+        <HoverAnimations animation="glow">
+          <p className="text-xl md:text-2xl font-bold text-primary">
+            {greetingData.receiverName}
+          </p>
+        </HoverAnimations>
       )}
     </div>
   );

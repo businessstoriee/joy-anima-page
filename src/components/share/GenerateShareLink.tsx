@@ -73,7 +73,7 @@ const FirebaseShareButton: React.FC<FirebaseShareButtonProps> = ({
       console.log('💾 Saving to Firebase with title:', title);
       
       // Save to Firebase
-      const slug = await saveGreeting(greetingData, title);
+      const slug = await saveGreeting(greetingData, title, greetingData.isPublic || false);
       
       console.log('✅ Firebase save completed, received slug:', slug);
       

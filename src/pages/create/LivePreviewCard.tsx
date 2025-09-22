@@ -4,6 +4,7 @@ import { GreetingFormData, EventType } from '@/types/greeting';
 import Preview from '@/components/preview/Preview';
 import FirebaseShareButton from '@/components/share/GenerateShareLink';
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
+import AudioAutoPlay from '@/components/preview/AudioAutoPlay';
 
 interface LivePreviewCardProps {
   formData: GreetingFormData;
@@ -64,6 +65,12 @@ const LivePreviewCard: React.FC<LivePreviewCardProps> = ({
                 onClearAutoSave={onClearAutoSave}
               />
             </div>
+
+            {/* Auto-playing audio */}
+            <AudioAutoPlay 
+              audioUrl={formData.audioUrl} 
+              autoPlay={true}
+            />
           </div>
         ) : (
           <div className="text-center text-muted-foreground py-12">

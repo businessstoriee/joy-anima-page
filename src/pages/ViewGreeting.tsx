@@ -11,6 +11,7 @@ import ShareActions from '@/components/share/ShareActions';
 import { FloatingButton } from '@/components/share/CustomizeAndShare';
 import SEOManager from '@/components/seo/SEOManager';
 import BackgroundAudioPlayer from '@/components/greeting/contentEditor/AudioPlayerInput/BackgroundAudioPlayer';
+import AudioAutoPlay from '@/components/preview/AudioAutoPlay';
 
 
 const ViewGreeting: React.FC = () => {

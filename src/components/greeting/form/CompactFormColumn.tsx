@@ -13,6 +13,7 @@ import HeaderTextCustomizer from '../customization/HeaderTextCustomizer';
 import EventNameCustomizer from '../customization/EventNameCustomizer';
 import EventEmojiCustomizer from '../customization/EventEmojiCustomizer';
 import FirebaseDebugger from '@/components/debug/FirebaseDebugger';
+import PublicPrivateToggle from '@/components/share/PublicPrivateToggle';
 
 interface CompactFormColumnProps {
   formData: GreetingFormData;
@@ -33,6 +34,7 @@ interface CompactFormColumnProps {
   onEventNameStyleChange?: (eventNameStyle: TextContent) => void;
   onEventEmojiSettingsChange?: (settings: EventEmojiSettings) => void;
   onLayoutGroupOrderChange?: (order: string[]) => void;
+  onPublicToggle?: (isPublic: boolean) => void;
 }
 
 const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
@@ -54,6 +56,7 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
   onEventNameStyleChange,
   onEventEmojiSettingsChange,
   onLayoutGroupOrderChange,
+  onPublicToggle,
 }) => {
   const getTabBadgeCount = (tab: string) => {
     switch (tab) {
@@ -195,6 +198,13 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
           onHeaderTextChange={onHeaderTextChange}
           onEventNameStyleChange={onEventNameStyleChange}
           onEventEmojiSettingsChange={onEventEmojiSettingsChange}
+        />
+
+        {/* Public/Private Toggle */}
+        <PublicPrivateToggle
+          isPublic={formData.isPublic || false}
+          onToggle={onPublicToggle || (() => {})}
+          className="mt-4"
         />
  
       </TabsContent>
