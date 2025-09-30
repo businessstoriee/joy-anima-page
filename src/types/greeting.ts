@@ -41,7 +41,7 @@ export interface TextOverlay {
   };
 }
 
-// Update the MediaItem type to include frameStyle and layout
+// Update the MediaItem type to include frameStyle
 export interface MediaItem {
   id: string;
   url: string;
@@ -62,7 +62,6 @@ export interface MediaItem {
     rotation?: number;
   };
   frameStyle?: string; // Add frameStyle to MediaItem interface
-  layout?: string; // Add individual layout selection for each media item
 }
 
 export interface EventEmojiSettings {
@@ -95,8 +94,7 @@ export interface GreetingFormData {
     height: number;
   };
   animationStyle: string;
-  layout: 'grid' | 'masonry' | 'carousel' | 'slideshow' | 'polaroid' | 'gallery' | 'hexagon' | 'circular' | 'spiral' | 'wave' | 'floating' | 'orbiting' | 'cascading' | 'vortex' | 'constellation' | 'magnetic' | 'ripple' | 'kaleidoscope' | 'drifting' | 'pulsing';
-  layoutGroupOrder?: string[]; // Order of layout groups for display
+  layout: 'grid' | 'masonry' | 'carousel' | 'slideshow' | 'polaroid' | 'gallery' | 'hexagon' | 'circular' | 'spiral' | 'wave' | 'floating' | 'orbiting' | 'cascading' | 'vortex' | 'constellation' | 'magnetic' | 'ripple' | 'kaleidoscope' | 'drifting' | 'pulsing';  
   frameStyle: 'classic' | 'modern' | 'vintage' | 'polaroid' | 'film' | 'elegant' | 'minimal' | 'neon' | 'romantic' | 'starry' | 'magical' | 'crystal' | 'royal' | 'nature' | 'cosmic' | 'ocean' | 'fire' | 'rainbow';
   mediaAnimation?: string;
   theme: string;
@@ -132,5 +130,4 @@ export interface GreetingFormData {
     animation: string;
   }[];
   borderSettings: BorderSettings;
-  isPublic?: boolean; // Default false (private)
 }

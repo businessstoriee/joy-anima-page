@@ -27,7 +27,6 @@ const CreatePage: React.FC = () => {
     onCustomEventCreate,
     setFormData,
     setCustomEvent,
-    clearAutoSave,
   } = useCreate();
 
   const { translate } = useLanguageTranslation();
@@ -94,7 +93,6 @@ const CreatePage: React.FC = () => {
             onHeaderTextChange={(headerText) => setFormData((p: any) => ({ ...p, headerText }))}
             onEventNameStyleChange={(eventNameStyle) => setFormData((p: any) => ({ ...p, eventNameStyle }))}
             onEventEmojiSettingsChange={(eventEmojiSettings) => setFormData((p: any) => ({ ...p, eventEmojiSettings }))}
-            onPublicToggle={(isPublic) => setFormData((p: any) => ({ ...p, isPublic }))}
           />
 
           <div className={cn("space-y-6")}>
@@ -103,7 +101,6 @@ const CreatePage: React.FC = () => {
               selectedEvent={selectedEvent} 
               onOpenPreview={handlePreviewClick} 
               onDataChange={setFormData}
-              onClearAutoSave={clearAutoSave}
             />
 
             {/* Enhanced preview modal with editing capabilities */}

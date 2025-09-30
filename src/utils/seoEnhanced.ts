@@ -5,7 +5,6 @@ export interface AdvancedSEOData {
   ogTitle: string;
   ogDescription: string;
   ogImage?: string;
-  twitterImage?: string;
   canonical?: string;
   lang: string;
   structuredData?: any;
@@ -346,9 +345,8 @@ export const updateAdvancedPageSEO = (seoData: AdvancedSEOData) => {
   updateMeta('twitter:card', 'summary_large_image');
   updateMeta('twitter:title', seoData.ogTitle);
   updateMeta('twitter:description', seoData.ogDescription);
-  const twitterImageSrc = seoData.twitterImage || seoData.ogImage;
-  if (twitterImageSrc) {
-    updateMeta('twitter:image', twitterImageSrc);
+  if (seoData.ogImage) {
+    updateMeta('twitter:image', seoData.ogImage);
   }
 
   // Language and direction

@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 import { generateAdvancedSEO, updateAdvancedPageSEO } from '@/utils/seoEnhanced';
-import { GreetingFormData } from '@/types/greeting';
 
 interface SEOManagerProps { 
   title?: string;
@@ -9,7 +8,6 @@ interface SEOManagerProps {
   eventType?: string;
   customEventName?: string;
   isPreview?: boolean;
-  greetingData?: GreetingFormData;
 }
 
 
@@ -18,30 +16,14 @@ const SEOManager = ({
   description,
   eventType = 'greeting', 
   customEventName, 
-  isPreview = false,
-  greetingData 
+  isPreview = false 
 }: SEOManagerProps) => {
   const { currentLanguage } = useLanguageTranslation();
 
   useEffect(() => {
-    // Extract first image and text from greeting data for social sharing
-    const firstImage = greetingData?.media?.find(item => item.type === 'image')?.url;
-    const firstText = greetingData?.texts?.[0]?.content;
-
     // Use the passed title/description if they exist
-    let finalTitle = title || `${customEventName || eventType} Greeting Cards | Create & Share Free`;
-    let finalDescription = description || `Create beautiful ${customEventName || eventType} greeting cards with animations, music, and custom messages.`;
-    
-    // If we have greeting data, use the first text for more personalized sharing
-    if (firstText && !title) {
-      finalTitle = `${firstText} - ${customEventName || eventType} Greeting`;
-    }
-    
-    if (firstText && !description) {
-      finalDescription = firstText.length > 160 
-        ? `${firstText.substring(0, 157)}...` 
-        : firstText;
-    }
+    const finalTitle = title || `${customEventName || eventType} Greeting Cards | Create & Share Free`;
+    const finalDescription = description || `Create beautiful ${customEventName || eventType} greeting cards with animations, music, and custom messages.`;
 
     const seoEventType = eventType === 'custom' && customEventName 
       ? customEventName.toLowerCase().replace(/\s+/g, '-')
@@ -50,21 +32,15 @@ const SEOManager = ({
     //const seoData = generateAdvancedSEO(seoEventType, currentLanguage);
     const seoData = generateAdvancedSEO(seoEventType, currentLanguage.code);
 
-    // Override with custom title/description
-    seoData.title = finalTitle;
-    seoData.description = finalDescription;
-    
-    // Enhanced OG tags for social sharing
-    seoData.ogTitle = finalTitle;
-    seoData.ogDescription = finalDescription;
-    
-    // Add first image for social sharing if available
-    if (firstImage) {
-      seoData.ogImage = firstImage;
-      seoData.twitterImage = firstImage;
-    }
+    // Override with custom title/description if provided
+    if (title) seoData.title = title;
+    if (description) seoData.description = description;
 
     if (eventType === 'custom' && customEventName) {
+      seoData.title = finalTitle;
+      seoData.description = finalDescription;
+      seoData.ogTitle = `${customEventName} Greeting Cards - Free & Personalized`;
+      seoData.ogDescription = `Create and share stunning ${customEventName} greeting cards with custom animations, music, and messages.`;
       seoData.keywords = [
         ...seoData.keywords,
         customEventName.toLowerCase(),
@@ -79,7 +55,7 @@ const SEOManager = ({
     }
 
     updateAdvancedPageSEO(seoData);
-  }, [eventType, customEventName, currentLanguage, isPreview, title, description, greetingData]);
+  }, [eventType, customEventName, currentLanguage, isPreview, title, description]);
 
   return null;
 };
