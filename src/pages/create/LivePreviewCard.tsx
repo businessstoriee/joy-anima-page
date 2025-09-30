@@ -4,12 +4,14 @@ import { GreetingFormData, EventType } from '@/types/greeting';
 import Preview from '@/components/preview/Preview';
 import FirebaseShareButton from '@/components/share/GenerateShareLink';
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
+import AudioAutoPlay from '@/components/preview/AudioAutoPlay';
 
 interface LivePreviewCardProps {
   formData: GreetingFormData;
   selectedEvent: EventType | null;
   onOpenPreview: () => void;
   onDataChange: (data: GreetingFormData) => void;
+  onClearAutoSave?: () => void;
 }
 
 const LivePreviewCard: React.FC<LivePreviewCardProps> = ({
@@ -17,6 +19,7 @@ const LivePreviewCard: React.FC<LivePreviewCardProps> = ({
   selectedEvent,
   onOpenPreview,
   onDataChange,
+  onClearAutoSave,
 }) => {
 
   const { translate } = useLanguageTranslation();
@@ -59,8 +62,15 @@ const LivePreviewCard: React.FC<LivePreviewCardProps> = ({
               <FirebaseShareButton
                 greetingData={formData}
                 selectedEvent={selectedEvent}
+                onClearAutoSave={onClearAutoSave}
               />
             </div>
+
+            {/* Auto-playing audio */}
+            <AudioAutoPlay 
+              audioUrl={formData.audioUrl} 
+              autoPlay={true}
+            />
           </div>
         ) : (
           <div className="text-center text-muted-foreground py-12">

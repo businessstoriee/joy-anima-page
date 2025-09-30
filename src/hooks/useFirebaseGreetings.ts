@@ -1,6 +1,6 @@
 // hooks/useFirebaseGreetings.ts
-import { useState, useCallback } from 'react';
-import { collection, doc, setDoc, getDoc, serverTimestamp, updateDoc, increment } from 'firebase/firestore';
+import { useState, useCallback, useEffect } from 'react';
+import { collection, doc, setDoc, getDoc, serverTimestamp, updateDoc, increment, query, where, getDocs, writeBatch } from 'firebase/firestore';
 import { db } from '@/utils/firebase/firebase';
 import { GreetingFormData } from '@/types/greeting';
 
@@ -15,12 +15,56 @@ export interface SavedGreeting {
   receiverName: string;
   createdAt: any;
   viewCount: number;
+  isPublic: boolean;
+  firstMedia?: string;
+  firstText?: string;
 }
 
 export function useFirebaseGreetings() {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [savedGreetings, setSavedGreetings] = useState<SavedGreeting[]>([]);
+
+  // Cleanup old greetings (7+ days old)
+  const cleanupOldGreetings = useCallback(async () => {
+    try {
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      const greetingsRef = collection(db, 'greetings');
+      const oldGreetingsQuery = query(
+        greetingsRef,
+        where('createdAt', '<', sevenDaysAgo)
+      );
+      
+      const querySnapshot = await getDocs(oldGreetingsQuery);
+      
+      if (querySnapshot.empty) {
+        console.log('🧹 No old greetings to cleanup');
+        return;
+      }
+
+      const batch = writeBatch(db);
+      querySnapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+      console.log(`🗑️ Cleaned up ${querySnapshot.docs.length} old greetings`);
+    } catch (error) {
+      console.warn('⚠️ Failed to cleanup old greetings:', error);
+    }
+  }, []);
+
+  // Run cleanup on hook initialization (once per session)
+  useEffect(() => {
+    const hasCleanedThisSession = sessionStorage.getItem('greetings-cleaned');
+    if (!hasCleanedThisSession) {
+      // Delay cleanup to not block initial load
+      setTimeout(() => {
+        cleanupOldGreetings();
+        sessionStorage.setItem('greetings-cleaned', 'true');
+      }, 2000);
+    }
+  }, [cleanupOldGreetings]);
 
   // helper: slug generator (deterministic)
   const generateSlug = (senderName: string, receiverName: string, eventName: string): string => {
@@ -34,7 +78,7 @@ export function useFirebaseGreetings() {
   };
 
   // Save greeting (stable reference)
-  const saveGreeting = useCallback(async (greetingData: GreetingFormData, title?: string): Promise<string | null> => {
+  const saveGreeting = useCallback(async (greetingData: GreetingFormData, title?: string, isPublic: boolean = false): Promise<string | null> => {
     console.log('🔥 useFirebaseGreetings.saveGreeting: starting');
     setIsSaving(true);
     try {
@@ -64,7 +108,9 @@ export function useFirebaseGreetings() {
         headerText: greetingData.headerText || null,
         eventNameStyle: greetingData.eventNameStyle || null,
         eventEmojiSettings: greetingData.eventEmojiSettings || null,
-        isPublic: true,
+        isPublic: isPublic,
+        firstMedia: greetingData.media?.[0]?.url || '',
+        firstText: greetingData.texts?.[0]?.content || '',
         viewCount: 0,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -75,7 +121,21 @@ export function useFirebaseGreetings() {
       await setDoc(greetingRef, greetingPayload);
       console.log('✅ useFirebaseGreetings.saveGreeting: saved');
       // Optionally update local savedGreetings
-      setSavedGreetings(prev => [{ id: slug, title: greetingPayload.title, slug, eventType: greetingPayload.eventType, eventName, eventEmoji: greetingPayload.eventEmoji, senderName: greetingPayload.senderName, receiverName: greetingPayload.receiverName, createdAt: greetingPayload.createdAt, viewCount: 0 }, ...prev]);
+      setSavedGreetings(prev => [{ 
+        id: slug, 
+        title: greetingPayload.title, 
+        slug, 
+        eventType: greetingPayload.eventType, 
+        eventName, 
+        eventEmoji: greetingPayload.eventEmoji, 
+        senderName: greetingPayload.senderName, 
+        receiverName: greetingPayload.receiverName, 
+        createdAt: greetingPayload.createdAt, 
+        viewCount: 0, 
+        isPublic: isPublic,
+        firstMedia: greetingPayload.firstMedia,
+        firstText: greetingPayload.firstText
+      }, ...prev]);
       return slug;
     } catch (err) {
       console.error('❌ useFirebaseGreetings.saveGreeting error:', err);
@@ -212,6 +272,50 @@ export function useFirebaseGreetings() {
     return suggestions[eventType] || suggestions.default;
   }, []);
 
+  // Fetch public greetings for home page feed
+  const getPublicGreetings = useCallback(async (limit: number = 20): Promise<SavedGreeting[]> => {
+    try {
+      const greetingsRef = collection(db, 'greetings');
+      const publicQuery = query(
+        greetingsRef,
+        where('isPublic', '==', true)
+      );
+      
+      const querySnapshot = await getDocs(publicQuery);
+      const publicGreetings: SavedGreeting[] = [];
+      
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        publicGreetings.push({
+          id: data.id,
+          title: data.title,
+          slug: data.slug,
+          eventType: data.eventType,
+          eventName: data.eventName,
+          eventEmoji: data.eventEmoji,
+          senderName: data.senderName,
+          receiverName: data.receiverName,
+          createdAt: data.createdAt,
+          viewCount: data.viewCount || 0,
+          isPublic: data.isPublic,
+          firstMedia: data.firstMedia,
+          firstText: data.firstText
+        });
+      });
+      
+      // Sort by creation date (newest first)
+      return publicGreetings.sort((a, b) => {
+        if (a.createdAt?.seconds && b.createdAt?.seconds) {
+          return b.createdAt.seconds - a.createdAt.seconds;
+        }
+        return 0;
+      }).slice(0, limit);
+    } catch (error) {
+      console.error('❌ Error fetching public greetings:', error);
+      return [];
+    }
+  }, []);
+
   return {
     isLoading,
     isSaving,
@@ -219,5 +323,6 @@ export function useFirebaseGreetings() {
     saveGreeting,
     loadGreeting,
     getAITextSuggestions,
+    getPublicGreetings,
   };
 }

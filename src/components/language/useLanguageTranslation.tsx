@@ -1446,20 +1446,21 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+// Move getInitialLanguage outside component to avoid hook issues
+const getInitialLanguage = (): Language => {
+  if (typeof window === 'undefined') return languages[0];
+  
+  const savedLangCode = localStorage.getItem('language');
+  const foundLang = languages.find(l => l.code === savedLangCode);
+  return foundLang || languages[0];
+};
+
 interface LanguageProviderProps {
   children: ReactNode;
 }
 
 export const LanguageProvider = ({ children }: LanguageProviderProps) => {
-  const getInitialLanguage = useCallback((): Language => {
-    if (typeof window === 'undefined') return languages[0];
-    
-    const savedLangCode = localStorage.getItem('language');
-    const foundLang = languages.find(l => l.code === savedLangCode);
-    return foundLang || languages[0];
-  }, []);
-
-  const [currentLanguage, setCurrentLanguage] = useState<Language>(getInitialLanguage());
+  const [currentLanguage, setCurrentLanguage] = useState<Language>(getInitialLanguage);
 
   useEffect(() => {
     document.documentElement.lang = currentLanguage.code;

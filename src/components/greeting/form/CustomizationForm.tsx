@@ -13,12 +13,15 @@ interface CustomizationFormProps {
   animationStyle: string;
   emojis: { id: string; emoji: string; position: { x: number; y: number }; size: number; animation: string; }[];
   frameStyle: string;
+  media?: any[];
+  layoutGroupOrder?: string[];
   onBackgroundChange: (settings: any) => void;
   onBorderChange: (settings: BorderSettings) => void;
   onLayoutChange: (layout: string) => void;
   onAnimationChange: (animation: string) => void;
   onEmojiChange: (emojis: any[]) => void;
   onFrameStyleChange: (frame: string) => void;
+  onLayoutGroupOrderChange?: (order: string[]) => void;
 }
 
 const CustomizationForm = ({
@@ -28,13 +31,15 @@ const CustomizationForm = ({
   animationStyle,
   emojis,
   frameStyle,
+  media = [],
+  layoutGroupOrder = [],
   onBackgroundChange,
   onBorderChange,
   onLayoutChange,
   onAnimationChange,
   onEmojiChange,
-  onFrameStyleChange, 
-
+  onFrameStyleChange,
+  onLayoutGroupOrderChange,
 }: CustomizationFormProps) => {
 
   return (
@@ -68,10 +73,13 @@ const CustomizationForm = ({
       <LayoutSelector
         layout={layout}
         animationStyle={animationStyle}
-        frameStyle = {frameStyle}
+        frameStyle={frameStyle}
+        media={media}
+        layoutGroupOrder={layoutGroupOrder}
         onLayoutChange={onLayoutChange}
         onAnimationChange={onAnimationChange}
         onFrameStyleChange={onFrameStyleChange}
+        onLayoutGroupOrderChange={onLayoutGroupOrderChange}
       />
       
     </>

@@ -5,6 +5,7 @@ import { MediaItem } from "@/types/greeting";
 import { frameStyles } from "@/components/preview/MediaFrames";
 import { animationOptions } from "@/types/animations";
 import { frameStyleOptions } from "@/types/frames";
+import { layoutStyles } from "@/types/layouts";
 
 interface MediaSettingsProps {
   item: MediaItem;
@@ -44,19 +45,18 @@ const MediaSettings: React.FC<MediaSettingsProps> = ({ item, index, updateMedia 
         </div>
       </div>
       </div>
-<div className="grid grid-cols-2 gap-3">
-      {/* Animation Select */}
-      <div>
-        <Label>Animation</Label>
+      {/* Layout Selection for Individual Media */}
+      <div className="mb-3">
+        <Label>Photo Layout</Label>
         <Select
-          value={item.animation || "fade"}
-          onValueChange={(val) => updateMedia(index, "animation", val)}
+          value={item.layout || "grid"}
+          onValueChange={(val) => updateMedia(index, "layout" as keyof MediaItem, val)}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Select animation" />
+            <SelectValue placeholder="Select layout" />
           </SelectTrigger>
           <SelectContent>
-            {animationOptions.map((option) => (
+            {layoutStyles.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
@@ -65,25 +65,46 @@ const MediaSettings: React.FC<MediaSettingsProps> = ({ item, index, updateMedia 
         </Select>
       </div>
 
-      {/* Frame Style */}
-      <div>
-        <Label>Frame Style</Label>
-        <Select
-          value={item.frameStyle || "classic"}
-          onValueChange={(val) => updateMedia(index, "frameStyle" as keyof MediaItem, val)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select frame style" />
-          </SelectTrigger>
-          <SelectContent>
-            {frameStyleOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <div className="grid grid-cols-2 gap-3">
+        {/* Animation Select */}
+        <div>
+          <Label>Animation</Label>
+          <Select
+            value={item.animation || "fade"}
+            onValueChange={(val) => updateMedia(index, "animation", val)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select animation" />
+            </SelectTrigger>
+            <SelectContent>
+              {animationOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Frame Style */}
+        <div>
+          <Label>Frame Style</Label>
+          <Select
+            value={item.frameStyle || "classic"}
+            onValueChange={(val) => updateMedia(index, "frameStyle" as keyof MediaItem, val)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select frame style" />
+            </SelectTrigger>
+            <SelectContent>
+              {frameStyleOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
     </div>
   );

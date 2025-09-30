@@ -10,6 +10,7 @@ interface FirebaseShareButtonProps {
   greetingData: GreetingFormData;
   selectedEvent?: EventType | null;
   onSuccess?: (slug: string) => void;
+  onClearAutoSave?: () => void;
   variant?: "default" | "outline" | "secondary" | "ghost" | "destructive";
   size?: "default" | "sm" | "lg" | "icon";
 }
@@ -18,6 +19,7 @@ const FirebaseShareButton: React.FC<FirebaseShareButtonProps> = ({
   greetingData,
   selectedEvent,
   onSuccess,
+  onClearAutoSave,
   variant = "default",
   size = "lg"
 }) => {
@@ -71,7 +73,7 @@ const FirebaseShareButton: React.FC<FirebaseShareButtonProps> = ({
       console.log('💾 Saving to Firebase with title:', title);
       
       // Save to Firebase
-      const slug = await saveGreeting(greetingData, title);
+      const slug = await saveGreeting(greetingData, title, greetingData.isPublic || false);
       
       console.log('✅ Firebase save completed, received slug:', slug);
       
@@ -88,6 +90,11 @@ const FirebaseShareButton: React.FC<FirebaseShareButtonProps> = ({
         });
         
         console.log('🔗 Shareable URL:', shareableURL);
+        
+        // Clear auto-save data on successful save
+        if (onClearAutoSave) {
+          onClearAutoSave();
+        }
         
         if (onSuccess) {
           onSuccess(slug);

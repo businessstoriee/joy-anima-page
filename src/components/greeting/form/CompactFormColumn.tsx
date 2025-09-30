@@ -13,6 +13,7 @@ import HeaderTextCustomizer from '../customization/HeaderTextCustomizer';
 import EventNameCustomizer from '../customization/EventNameCustomizer';
 import EventEmojiCustomizer from '../customization/EventEmojiCustomizer';
 import FirebaseDebugger from '@/components/debug/FirebaseDebugger';
+import PublicPrivateToggle from '@/components/share/PublicPrivateToggle';
 
 interface CompactFormColumnProps {
   formData: GreetingFormData;
@@ -32,6 +33,8 @@ interface CompactFormColumnProps {
   onHeaderTextChange?: (headerText: TextContent) => void;
   onEventNameStyleChange?: (eventNameStyle: TextContent) => void;
   onEventEmojiSettingsChange?: (settings: EventEmojiSettings) => void;
+  onLayoutGroupOrderChange?: (order: string[]) => void;
+  onPublicToggle?: (isPublic: boolean) => void;
 }
 
 const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
@@ -52,6 +55,8 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
   onHeaderTextChange,
   onEventNameStyleChange,
   onEventEmojiSettingsChange,
+  onLayoutGroupOrderChange,
+  onPublicToggle,
 }) => {
   const getTabBadgeCount = (tab: string) => {
     switch (tab) {
@@ -194,6 +199,13 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
           onEventNameStyleChange={onEventNameStyleChange}
           onEventEmojiSettingsChange={onEventEmojiSettingsChange}
         />
+
+        {/* Public/Private Toggle */}
+        <PublicPrivateToggle
+          isPublic={formData.isPublic || false}
+          onToggle={onPublicToggle || (() => {})}
+          className="mt-4"
+        />
  
       </TabsContent>
 
@@ -225,11 +237,14 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
             layout={formData.layout}
             frameStyle={formData.frameStyle} 
             animationStyle={formData.animationStyle}
+            media={formData.media}
+            layoutGroupOrder={formData.layoutGroupOrder}
             onBackgroundChange={onBackgroundChange}
             onBorderChange={onBorderChange}
             onLayoutChange={onLayoutChange}
             onAnimationChange={onAnimationChange}
             onFrameStyleChange={onFrameStyleChange}
+            onLayoutGroupOrderChange={onLayoutGroupOrderChange}
           />
           
           {/* Debug Panel */}

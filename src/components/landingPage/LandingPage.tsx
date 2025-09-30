@@ -8,6 +8,7 @@ import TypingText from '@/components/reusableTypingText/TypingText'
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 import { useLocation, useNavigate } from 'react-router-dom';
 import BeautifulGreetingsText from './BeautifulGreetingsText'
+import PublicGreetingsFeed from '@/components/feed/PublicGreetingsFeed';
 // import your existing engine wrapper (the file you posted)
 import { initTspEngine } from "@/components/greeting/customization/BackgroundCustomizer/engines/tspEngine";
 
@@ -358,6 +359,11 @@ onClick={createNewGreeting}
   </style>
 </Button>
 </div>
+
+    {/* Public Greetings Feed */}
+    <div className="mt-16 mb-12">
+      <PublicGreetingsFeed />
+    </div>
 
     {/* Floating particles background */}
     <div className="fixed inset-0 -z-40 overflow-hidden pointer-events-none">
