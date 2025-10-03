@@ -291,7 +291,7 @@ const PublicGreetingsFeed: React.FC = () => {
       </motion.div>
 
       {/* Instagram Explore Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className=" grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4">
         {publicGreetings.map((greeting, index) => (
           <GreetingCard
             key={greeting.id}
@@ -312,10 +312,10 @@ const PublicGreetingsFeed: React.FC = () => {
         <Button 
           onClick={() => navigate('/create')}
           size="lg"
-          className="bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500 hover:opacity-90 text-white px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all group"
+          className="bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500 border hover:opacity-90 text-white px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all group"
         >
           <span className="flex items-center gap-2 text-base">
-            <span className="text-xl group-hover:scale-110 transition-transform">✨</span>
+            <span className="text-xl transition-transform hover:animate-spin">✨</span>
             Share Your Greeting
           </span>
         </Button>
