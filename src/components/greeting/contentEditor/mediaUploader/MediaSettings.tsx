@@ -45,25 +45,6 @@ const MediaSettings: React.FC<MediaSettingsProps> = ({ item, index, updateMedia 
         </div>
       </div>
       </div>
-      {/* Layout Selection for Individual Media */}
-      <div className="mb-3">
-        <Label>Photo Layout</Label>
-        <Select
-          value={item.layout || "grid"}
-          onValueChange={(val) => updateMedia(index, "layout" as keyof MediaItem, val)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select layout" />
-          </SelectTrigger>
-          <SelectContent>
-            {layoutStyles.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
 
       <div className="grid grid-cols-2 gap-3">
         {/* Animation Select */}
@@ -105,6 +86,26 @@ const MediaSettings: React.FC<MediaSettingsProps> = ({ item, index, updateMedia 
             </SelectContent>
           </Select>
         </div>
+
+      {/* Layout Selection for Individual Media */}
+      <div>
+        <Label>Photo Layout</Label>
+        <Select
+          value={item.layout || "grid"}
+          onValueChange={(val) => updateMedia(index, "layout" as keyof MediaItem, val)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select layout" />
+          </SelectTrigger>
+          <SelectContent>
+            {layoutStyles.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       </div>
     </div>
   );

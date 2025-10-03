@@ -84,7 +84,7 @@ const EventHeader: React.FC<Props> = ({ greetingData, selectedEvent }) => {
           textAlign: greetingData.eventNameStyle?.style.textAlign || greetingData.eventEmojiSettings?.textAlign || 'center',
           fontFamily: greetingData.eventNameStyle?.style.fontFamily || 'inherit'
         }}
-        className="mb-4"
+        className="mb-4 hover:animate-pulse"
       >
         {greetingData.eventNameStyle?.content || `Happy ${currentEvent.label}`}
       </motion.div>
@@ -112,7 +112,7 @@ const EventHeader: React.FC<Props> = ({ greetingData, selectedEvent }) => {
 
       {/* Receiver Name */}
       {greetingData.receiverName && (
-        <HoverAnimations animation="glow">
+        <HoverAnimations animation="pulse">
           <p className="text-xl md:text-2xl font-bold text-primary">
             {greetingData.receiverName}
           </p>

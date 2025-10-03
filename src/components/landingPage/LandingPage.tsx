@@ -1,5 +1,5 @@
 // src/pages/LandingPage.tsx (or src/components/LandingPage.tsx)
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState} from "react";
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,10 +8,9 @@ import TypingText from '@/components/reusableTypingText/TypingText'
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 import { useLocation, useNavigate } from 'react-router-dom';
 import BeautifulGreetingsText from './BeautifulGreetingsText'
-import PublicGreetingsFeed from '@/components/feed/PublicGreetingsFeed';
 // import your existing engine wrapper (the file you posted)
 import { initTspEngine } from "@/components/greeting/customization/BackgroundCustomizer/engines/tspEngine";
-
+import PublicGreetingsFeed from '@/components/feed/PublicGreetingsFeed';
 
 const LandingPage: React.FC = () => {
      const navigate = useNavigate();
@@ -26,6 +25,29 @@ const LandingPage: React.FC = () => {
   // store instance for cleanup
   const instanceRef = useRef<any>(null);
 
+  const [scattered, setScattered] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleClick = () => {
+    if (scattered) {
+      // If already scattered, return immediately
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+      setScattered(false);
+    } else {
+      // Scatter letters
+      setScattered(true);
+
+      // Automatically return after 3 seconds
+      timeoutRef.current = setTimeout(() => {
+        setScattered(false);
+        timeoutRef.current = null;
+      }, 3000);
+    }
+  };
+
   useEffect(() => {
     // Only run in browser
     if (!particlesRootRef.current) return;
@@ -35,7 +57,8 @@ const LandingPage: React.FC = () => {
         options: {
           // pick one of your presets: constellation | nebula | snow | fireworks
           subtype: "constellation",
-          particleColor: "#c084fc",
+          particleColor:  ["#c084fc", "#2e0bf3ff", "#ec0e88ff"], // violet, blue, pink
+    
           particleCount: 80,
           links: true,
           size: 3,
@@ -219,14 +242,35 @@ onClick={createNewGreeting}
         <Card className="mx-auto shadow-lg sm:shadow-2xl animate-slide-in bg-gradient-to-br from-background to-muted/50 border border-muted/30 backdrop-blur-sm">
           <CardContent className="p-6 sm:p-8">
             <div className="flex items-center justify-center mb-4 sm:mb-6">
-              <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center mr-3 sm:mr-4">
-                <span className="text-xl sm:text-2xl">✨</span>
+              <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center mr-3 sm:mr-3">
+                <span className="text-xl sm:text-2xl hover:animate-spin">✨</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-                Amazing Features
+              <h2  onClick={handleClick} className="cursor-pointer text-2xl sm:text-3xl font-bold bg-clip-text hover:text-primary hover:scale-105 transition-transform duration-500 ease-out">
+                {"Amazing .Features".split("").map((char, i) => {
+          // Random offset when scattered
+          const x = scattered ? Math.floor(Math.random() * 200 - 100) : 0;
+          const y = scattered ? Math.floor(Math.random() * 200 - 100) : 0;
+          const rotate = scattered ? Math.floor(Math.random() * 60 - 30) : 0;
+
+          return (
+            <span
+              key={i}
+              style={{
+                display: "inline-block",
+                transform: `translate(${x}px, ${y}px) rotate(${rotate}deg)`,
+                transition: "all 0.8s ease-in-out",
+              }}
+              className="hover:scale-125"
+            >
+              {char}
+            </span>
+          );
+        })}
               </h2>
+              
             </div>
-            
+           
+   
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-left">
               <div className="space-y-3 sm:space-y-4">
                 {[
@@ -360,11 +404,14 @@ onClick={createNewGreeting}
 </Button>
 </div>
 
+
+
     {/* Public Greetings Feed */}
     <div className="mt-16 mb-12">
       <PublicGreetingsFeed />
     </div>
 
+    
     {/* Floating particles background */}
     <div className="fixed inset-0 -z-40 overflow-hidden pointer-events-none">
       {[...Array(20)].map((_, i) => (

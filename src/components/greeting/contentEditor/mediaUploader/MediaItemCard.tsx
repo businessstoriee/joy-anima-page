@@ -174,7 +174,42 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
         onDragEnd={handleDragEnd}
       >
         {/* Toolbar */}
-        <div className="absolute bg-white/90 right-3 flex gap-0 sm:gap-1 z-10 rounded-xl shadow-xl">
+      
+
+        {/* Input Mode Toggle & Controls */}
+        <div className="space-y-3">
+          {/* Mode Toggle Buttons */}
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant={inputMode === 'url' ? 'default' : 'outline'}
+              onClick={() => setInputMode('url')}
+              className="flex-1 gap-2 h-8"
+            >
+              <Link className="h-3.5 w-3.5" />
+              <span className="text-xs">URL</span>
+            </Button>
+            <Button
+              size="sm"
+              variant={inputMode === 'file' ? 'default' : 'outline'}
+              onClick={() => setInputMode('file')}
+              className="flex-1 gap-2 h-8"
+            >
+              <Upload className="h-3.5 w-3.5" />
+              <span className="text-xs">Upload</span>
+            </Button>
+            {item.url && (
+               <div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleClearMedia}
+                className="h-8 px-2"
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+
+  <div className="absolute bg-white/50 right-3 flex gap-0 sm:gap-1 z-10 rounded-xl shadow-xl">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -212,51 +247,20 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
               <TooltipContent>Settings</TooltipContent>
             </Tooltip>
           </TooltipProvider>
-
-          <TooltipProvider>
+</div>
+          
+        </div> 
+            )}
+            <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <button className="p-2 text-red-500" onClick={() => removeMedia(index)} aria-label="Delete">
+                <Button className="text-red-500 flex-1 gap-2 h-8" variant='outline' onClick={() => removeMedia(index)} aria-label="Delete">
                   <Trash2 className="w-4 h-4" />
-                </button>
+                </Button>
               </TooltipTrigger>
               <TooltipContent>Delete</TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </div>
-
-        {/* Input Mode Toggle & Controls */}
-        <div className="space-y-3">
-          {/* Mode Toggle Buttons */}
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant={inputMode === 'url' ? 'default' : 'outline'}
-              onClick={() => setInputMode('url')}
-              className="flex-1 gap-2 h-8"
-            >
-              <Link className="h-3.5 w-3.5" />
-              <span className="text-xs">URL</span>
-            </Button>
-            <Button
-              size="sm"
-              variant={inputMode === 'file' ? 'default' : 'outline'}
-              onClick={() => setInputMode('file')}
-              className="flex-1 gap-2 h-8"
-            >
-              <Upload className="h-3.5 w-3.5" />
-              <span className="text-xs">Upload</span>
-            </Button>
-            {item.url && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleClearMedia}
-                className="h-8 px-2"
-              >
-                <X className="h-3.5 w-3.5" />
-              </Button>
-            )}
           </div>
 
           {/* URL Input Mode */}

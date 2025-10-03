@@ -38,6 +38,34 @@ export async function initTspEngine(container: HTMLElement, settings: any) {
         move: { enable: true, speed, outModes: "out" },
         size: { value: Math.max(1, opts.size ?? 3) }
       },
+
+      interactivity: {
+    events: {
+      onHover: {
+        enable: true,
+        mode: ["bubble", "repulse"], // hover → grow + scatter
+      },
+      onClick: {
+        enable: true,
+        mode: ["push", "repulse"], // click → add + scatter
+      },
+    },
+    modes: {
+      bubble: {
+        distance: 50,
+        size: 6,
+        duration: 2,
+        opacity: 0.8,
+      },
+      repulse: {
+        distance: 50,
+        duration: 0.6,
+      },
+      push: {
+        quantity: 4,
+      },
+    },
+  },
       detectRetina: true
     },
     nebula: {

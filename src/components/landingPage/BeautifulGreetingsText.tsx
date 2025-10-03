@@ -46,8 +46,10 @@ const AnimatedGradientText = ({ text = 'Beautiful Greetings' }) => {
     return () => clearInterval(interval);
   }, []);
 
+   const letters = text.split("");
+
   return (
-    <div className="text-center">
+    <div className="text-center group hover:animate-pulse">
       <motion.h1 
         className="text-4xl sm:text-5xl md:text-6xl font-bold bg-clip-text text-transparent animate-bounce"
         style={{
@@ -64,8 +66,39 @@ const AnimatedGradientText = ({ text = 'Beautiful Greetings' }) => {
         }}
       >
         {text}
+        <span className="absolute left-1/2 -translate-x-1/2 -bottom-1 
+                 w-0 h-0.5 transition-all duration-300 
+                 group-hover:w-2/3"
+        style={{
+          backgroundImage: `linear-gradient(90deg, ${colorPalettes[currentPalette].join(', ')})`,
+          backgroundSize: '300% 100%',
+        }}
+        ></span>
       </motion.h1>
-      
+
+
+{/* 
+<button className="hover:animate-bounce">Hover Bounce</button>
+<button className="hover:animate-pulse">Hover Pulse</button>
+<button className="hover:animate-jello">Hover Jello</button>
+<button className="hover:animate-heartBeat">Hover HeartBeat</button>
+<button className="hover:animate-swing">Hover Swing</button>
+<button className="hover:animate-shakeX">Hover Shake X</button>
+<button className="hover:animate-shakeY">Hover Shake Y</button>
+<button className="hover:animate-flip">Hover Flip</button>
+<button className="hover:animate-wobble">Hover Wobble</button>
+
+<button className="active:animate-rubberBand">Click RubberBand</button>
+<button className="active:animate-headShake">Click HeadShake</button>
+<button className="active:animate-flash">Click Flash</button>
+<button className="active:animate-bounceIn">Click BounceIn</button>
+<button className="active:animate-fadeIn">Click FadeIn</button>
+<button className="active:animate-fadeOut">Click FadeOut</button>
+<button className="active:animate-zoomIn">Click ZoomIn</button>
+<button className="active:animate-zoomOut">Click ZoomOut</button>
+ */}
+
+
     </div>
   );
 };
