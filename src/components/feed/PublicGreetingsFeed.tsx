@@ -1,17 +1,208 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useFirebaseGreetings, SavedGreeting } from '@/hooks/useFirebaseGreetings';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Eye, Heart, MessageCircle, Share2, User } from 'lucide-react';
+import { Eye, User, ChevronLeft, ChevronRight, Heart, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
+import { normalizeViews, formatTimeAgo, getEventGradient } from '@/utils/greetingHelpers';
+import { cn } from '@/lib/utils';
 
-interface PublicGreetingsFeedProps {
-  className?: string;
+interface GreetingCardProps {
+  greeting: SavedGreeting;
+  index: number;
+  onClick: () => void;
 }
 
-const PublicGreetingsFeed: React.FC<PublicGreetingsFeedProps> = ({ className = "" }) => {
+const GreetingCard: React.FC<GreetingCardProps> = ({ greeting, index, onClick }) => {
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  
+  // Parse media from greeting data - use media array if available, fallback to firstMedia
+  const mediaItems = greeting.media && greeting.media.length > 0 
+    ? greeting.media.map(m => m.url)
+    : greeting.firstMedia 
+      ? [greeting.firstMedia] 
+      : [];
+  const hasMultipleMedia = mediaItems.length > 1;
+  const viewCount = normalizeViews(greeting.viewCount);
+  const timeAgo = formatTimeAgo(greeting.createdAt);
+  const gradientClass = getEventGradient(greeting.eventName);
+
+  const handlePrevMedia = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentMediaIndex((prev) => (prev === 0 ? mediaItems.length - 1 : prev - 1));
+  }, [mediaItems.length]);
+
+  const handleNextMedia = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentMediaIndex((prev) => (prev === mediaItems.length - 1 ? 0 : prev + 1));
+  }, [mediaItems.length]);
+
+  // Keyboard navigation
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowLeft') {
+      e.stopPropagation();
+      handlePrevMedia(e as any);
+    } else if (e.key === 'ArrowRight') {
+      e.stopPropagation();
+      handleNextMedia(e as any);
+    } else if (e.key === 'Enter') {
+      onClick();
+    }
+  }, [handlePrevMedia, handleNextMedia, onClick]);
+
+  const cardHeight = greeting.firstText ? 280 : 320;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05, duration: 0.3 }}
+      whileHover={{ y: -6 }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="button"
+      aria-label={`View ${greeting.eventName} greeting from ${greeting.senderName}`}
+      className="group cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-xl"
+    >
+      <div className="relative overflow-hidden rounded-xl border border-border/30 shadow-sm hover:shadow-2xl transition-all duration-300 bg-card">
+        {/* Media Section */}
+        <div 
+          className="relative overflow-hidden bg-gradient-to-br from-primary/10 to-secondary/10"
+          style={{ height: cardHeight }}
+        >
+          {/* Media Display */}
+          {mediaItems.length > 0 ? (
+            <div className="relative w-full h-full">
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={currentMediaIndex}
+                  src={mediaItems[currentMediaIndex]}
+                  alt={`${greeting.eventName} greeting`}
+                  draggable={false}
+                  loading="lazy"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  onError={(e) => {
+                    // Fallback to emoji if image fails
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </AnimatePresence>
+
+              {/* Carousel Navigation */}
+              {hasMultipleMedia && (
+                <>
+                  <button
+                    onClick={handlePrevMedia}
+                    aria-label="Previous image"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/50 text-white backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={handleNextMedia}
+                    aria-label="Next image"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/50 text-white backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+
+                  {/* Pagination Dots */}
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                    {mediaItems.map((_, idx) => (
+                      <div
+                        key={idx}
+                        className={cn(
+                          "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                          idx === currentMediaIndex
+                            ? "bg-white w-6"
+                            : "bg-white/50"
+                        )}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            // Emoji Fallback
+            <div className="w-full h-full flex items-center justify-center">
+              <motion.div
+                animate={{ scale: isHovered ? 1.1 : 1 }}
+                transition={{ duration: 0.2 }}
+                className="text-7xl opacity-90"
+              >
+                {greeting.eventEmoji || '🎉'}
+              </motion.div>
+            </div>
+          )}
+
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
+
+          {/* Event Badge */}
+          <Badge 
+            className={cn(
+              "absolute top-3 left-3 px-3 py-1 text-xs font-semibold bg-gradient-to-r backdrop-blur-md border-white/20 text-white shadow-lg",
+              gradientClass
+            )}
+          >
+            <span className="mr-1.5">{greeting.eventEmoji}</span>
+            {greeting.eventName}
+          </Badge>
+
+          {/* View Count Badge */}
+          <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/40 backdrop-blur-sm text-white text-xs font-medium">
+            <Eye className="w-3.5 h-3.5" />
+            <span>{viewCount}</span>
+          </div>
+
+          {/* Bottom Content Overlay */}
+          <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
+            {/* Sender Info */}
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-7 h-7 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
+                <User className="w-4 h-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold truncate">
+                  {greeting.senderName || 'Anonymous'}
+                </p>
+                <p className="text-xs text-white/80">
+                  {timeAgo}
+                </p>
+              </div>
+            </div>
+
+            {/* Text Preview */}
+            {greeting.firstText && (
+              <p className="text-sm leading-relaxed line-clamp-2 opacity-95 mb-2">
+                {greeting.firstText}
+              </p>
+            )}
+
+            {/* Receiver Info */}
+            {greeting.receiverName && (
+              <p className="text-xs text-white/90">
+                For <span className="font-semibold">{greeting.receiverName}</span>
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const PublicGreetingsFeed: React.FC = () => {
   const [publicGreetings, setPublicGreetings] = useState<SavedGreeting[]>([]);
   const [loading, setLoading] = useState(true);
   const { getPublicGreetings } = useFirebaseGreetings();
@@ -20,7 +211,7 @@ const PublicGreetingsFeed: React.FC<PublicGreetingsFeedProps> = ({ className = "
   useEffect(() => {
     const fetchPublicGreetings = async () => {
       setLoading(true);
-      const greetings = await getPublicGreetings(20);
+      const greetings = await getPublicGreetings(24); // Fetch more for better grid
       setPublicGreetings(greetings);
       setLoading(false);
     };
@@ -28,62 +219,55 @@ const PublicGreetingsFeed: React.FC<PublicGreetingsFeedProps> = ({ className = "
     fetchPublicGreetings();
   }, [getPublicGreetings]);
 
-  const handleGreetingClick = (slug: string) => {
+  const handleGreetingClick = useCallback((slug: string) => {
     navigate(`/${slug}`);
-  };
-
-  const formatTimeAgo = (timestamp: any) => {
-    if (!timestamp?.seconds) return 'Recently';
-    
-    const now = new Date();
-    const created = new Date(timestamp.seconds * 1000);
-    const diffInHours = Math.floor((now.getTime() - created.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d ago`;
-    return `${Math.floor(diffInDays / 7)}w ago`;
-  };
+  }, [navigate]);
 
   if (loading) {
     return (
-      <div className={`space-y-4 ${className}`}>
-        {[...Array(6)].map((_, i) => (
-          <Card key={i} className="animate-pulse">
-            <CardContent className="p-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-12 h-12 bg-muted rounded-full flex-shrink-0" />
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-muted rounded w-3/4" />
-                  <div className="h-3 bg-muted rounded w-1/2" />
-                </div>
-              </div>
-              <div className="mt-3 h-32 bg-muted rounded-lg" />
-            </CardContent>
-          </Card>
-        ))}
+      <div className="space-y-6">
+        {/* Loading Skeleton */}
+        <div className="text-center space-y-2">
+          <div className="h-8 w-64 bg-muted/50 rounded-lg mx-auto animate-pulse" />
+          <div className="h-4 w-96 bg-muted/30 rounded mx-auto animate-pulse" />
+        </div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="aspect-square bg-muted/50 rounded-xl" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   if (publicGreetings.length === 0) {
     return (
-      <div className={`text-center py-12 ${className}`}>
+      <div className="text-center py-16 px-4">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="space-y-6"
         >
-          <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-            <Heart className="w-8 h-8 text-primary" />
+          <div className="w-20 h-20 mx-auto bg-gradient-to-br from-pink-500/20 to-violet-500/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+            <Heart className="w-10 h-10 text-primary" />
           </div>
-          <h3 className="text-lg font-semibold">No public greetings yet</h3>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            Be the first to share a beautiful greeting with the community! Create your greeting and make it public to inspire others.
-          </p>
-          <Button onClick={() => navigate('/create')} className="mt-4">
-            Create First Public Greeting
+          <div className="space-y-2">
+            <h3 className="text-2xl font-bold bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500 bg-clip-text text-transparent">
+              No Public Greetings Yet
+            </h3>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              Be the first to share a beautiful greeting with the community! Create your greeting and make it public to inspire others.
+            </p>
+          </div>
+          <Button 
+            onClick={() => navigate('/create')}
+            size="lg"
+            className="bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500 hover:opacity-90 text-white px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all"
+          >
+            <span className="text-lg">✨ Create First Public Greeting</span>
           </Button>
         </motion.div>
       </div>
@@ -91,113 +275,51 @@ const PublicGreetingsFeed: React.FC<PublicGreetingsFeedProps> = ({ className = "
   }
 
   return (
-    <div className={`space-y-6 ${className}`}>
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+    <div className="space-y-8">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center space-y-3"
+      >
+        <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500 bg-clip-text text-transparent">
           Community Greetings
         </h2>
-        <p className="text-muted-foreground">
-          Beautiful greetings shared by our community
+        <p className="text-muted-foreground text-lg">
+          Beautiful greetings shared by our community ✨
         </p>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Instagram Explore Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {publicGreetings.map((greeting, index) => (
-          <motion.div
+          <GreetingCard
             key={greeting.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="group"
-          >
-            <Card 
-              className="overflow-hidden border-border/50 hover:border-primary/50 transition-all duration-300 cursor-pointer hover:shadow-lg hover-scale"
-              onClick={() => handleGreetingClick(greeting.slug)}
-            >
-              <CardContent className="p-0">
-                {/* Media/Image Section */}
-                <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-primary/10 to-secondary/10">
-                  {greeting.firstMedia ? (
-                    <img
-                      src={greeting.firstMedia}
-                      alt={`${greeting.eventName} greeting`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <div className="text-6xl opacity-80">
-                        {greeting.eventEmoji || '🎉'}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Overlay gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                  
-                  {/* Event type badge */}
-                  <Badge 
-                    variant="secondary" 
-                    className="absolute top-3 left-3 bg-black/20 backdrop-blur-sm text-white border-white/20"
-                  >
-                    {greeting.eventEmoji} {greeting.eventName}
-                  </Badge>
-                  
-                  {/* View count */}
-                  <div className="absolute top-3 right-3 bg-black/20 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
-                    <Eye className="w-3 h-3 text-white" />
-                    <span className="text-xs text-white">{greeting.viewCount || 0}</span>
-                  </div>
-                </div>
-
-                {/* Content Section */}
-                <div className="p-4 space-y-3">
-                  {/* User info */}
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">
-                        {greeting.senderName || 'Anonymous'}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatTimeAgo(greeting.createdAt)}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Greeting text preview */}
-                  {greeting.firstText && (
-                    <p className="text-sm text-foreground/80 line-clamp-2 leading-relaxed">
-                      {greeting.firstText}
-                    </p>
-                  )}
-
-                  {/* Receiver info */}
-                  {greeting.receiverName && (
-                    <div className="pt-2 border-t border-border/50">
-                      <p className="text-xs text-muted-foreground">
-                        For <span className="text-primary font-medium">{greeting.receiverName}</span>
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+            greeting={greeting}
+            index={index}
+            onClick={() => handleGreetingClick(greeting.slug)}
+          />
         ))}
       </div>
 
-      <div className="text-center">
+      {/* CTA Button */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="text-center pt-4"
+      >
         <Button 
-          variant="outline" 
           onClick={() => navigate('/create')}
-          className="hover-scale"
+          size="lg"
+          className="bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500 hover:opacity-90 text-white px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all group"
         >
-          <Share2 className="w-4 h-4 mr-2" />
-          Share Your Greeting
+          <span className="flex items-center gap-2 text-base">
+            <span className="text-xl group-hover:scale-110 transition-transform">✨</span>
+            Share Your Greeting
+          </span>
         </Button>
-      </div>
+      </motion.div>
     </div>
   );
 };

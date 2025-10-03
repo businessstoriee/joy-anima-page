@@ -13,7 +13,7 @@ import HeaderTextCustomizer from '../customization/HeaderTextCustomizer';
 import EventNameCustomizer from '../customization/EventNameCustomizer';
 import EventEmojiCustomizer from '../customization/EventEmojiCustomizer';
 import FirebaseDebugger from '@/components/debug/FirebaseDebugger';
-import PublicPrivateToggle from '@/components/greeting/PublicPrivateToggle';
+import PublicPrivateToggle from '@/components/share/PublicPrivateToggle';
 
 interface CompactFormColumnProps {
   formData: GreetingFormData;

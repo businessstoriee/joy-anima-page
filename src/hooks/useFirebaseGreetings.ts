@@ -18,6 +18,7 @@ export interface SavedGreeting {
   isPublic: boolean;
   firstMedia?: string;
   firstText?: string;
+  media?: Array<{ url: string; type: string }>;
 }
 
 export function useFirebaseGreetings() {
@@ -299,7 +300,8 @@ export function useFirebaseGreetings() {
           viewCount: data.viewCount || 0,
           isPublic: data.isPublic,
           firstMedia: data.firstMedia,
-          firstText: data.firstText
+          firstText: data.firstText,
+          media: data.media?.map((m: any) => ({ url: m.url, type: m.type })) || []
         });
       });
       
