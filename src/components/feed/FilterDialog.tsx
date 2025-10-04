@@ -103,7 +103,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
               }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
-              <Sparkles className="w-7 h-7 text-primary" />
+              <Sparkles className="w-7 h-7 text-primary hover:animate-spin" />
             </motion.div>
             <span className="bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500 bg-clip-text text-transparent">
               Filter Greetings
@@ -373,7 +373,8 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
               onClick={handleApply}
               className="w-full rounded-full bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500 hover:opacity-90 shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              Apply Filters ✨
+              Apply Filters
+              <span className="text-xl animate-bounce hover:animate-spin">✨</span>
             </Button>
           </motion.div>
         </motion.div>

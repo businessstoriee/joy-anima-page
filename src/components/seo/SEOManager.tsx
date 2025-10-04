@@ -12,7 +12,6 @@ interface SEOManagerProps {
   greetingData?: GreetingFormData;
 }
 
-
 const SEOManager = ({ 
   title,
   description,
@@ -24,47 +23,48 @@ const SEOManager = ({
   const { currentLanguage } = useLanguageTranslation();
 
   useEffect(() => {
-    // Extract first image and text from greeting data for social sharing
+    if (!currentLanguage) return;
+
+    // Extract relevant info from greetingData
     const firstImage = greetingData?.media?.find(item => item.type === 'image')?.url;
     const firstText = greetingData?.texts?.[0]?.content;
+    const senderName = greetingData?.senderName || "Someone";
+    const eventEmoji = greetingData?.emojis || "🎉";
+    const eventDisplay = customEventName || eventType;
 
-    // Use the passed title/description if they exist
-    let finalTitle = title || `${customEventName || eventType} Greeting Cards | Create & Share Free`;
-    let finalDescription = description || `Create beautiful ${customEventName || eventType} greeting cards with animations, music, and custom messages.`;
-    
-    // If we have greeting data, use the first text for more personalized sharing
-    if (firstText && !title) {
-      finalTitle = `${firstText} - ${customEventName || eventType} Greeting`;
-    }
-    
-    if (firstText && !description) {
-      finalDescription = firstText.length > 160 
-        ? `${firstText.substring(0, 157)}...` 
-        : firstText;
-    }
+    // --- Build Title ---
+    let finalTitle = title 
+      || `${eventEmoji} Sending you ${eventDisplay} Greetings from ${senderName}`;
+
+    // --- Build Description ---
+    let finalDescription = description 
+      || (firstText 
+          ? firstText.length > 160 
+            ? `${firstText.substring(0, 157)}...`
+            : firstText
+          : `Create beautiful ${eventDisplay} greetings with animations, music & custom messages.`);
 
     const seoEventType = eventType === 'custom' && customEventName 
       ? customEventName.toLowerCase().replace(/\s+/g, '-')
       : eventType;
 
-    //const seoData = generateAdvancedSEO(seoEventType, currentLanguage);
+    // Generate base SEO
     const seoData = generateAdvancedSEO(seoEventType, currentLanguage.code);
 
-    // Override with custom title/description
+    // Override with our custom values
     seoData.title = finalTitle;
     seoData.description = finalDescription;
-    
-    // Enhanced OG tags for social sharing
+
+    // Open Graph / Twitter cards
     seoData.ogTitle = finalTitle;
     seoData.ogDescription = finalDescription;
-    
-    // Add first image for social sharing if available
     if (firstImage) {
       seoData.ogImage = firstImage;
       seoData.twitterImage = firstImage;
     }
 
-    if (eventType === 'custom' && customEventName) {
+    // Add event-specific keywords
+    if (customEventName) {
       seoData.keywords = [
         ...seoData.keywords,
         customEventName.toLowerCase(),
@@ -73,6 +73,7 @@ const SEOManager = ({
       ];
     }
 
+    // Preview Mode
     if (isPreview) {
       seoData.title = `Preview: ${seoData.title}`;
       seoData.robots = 'noindex, nofollow';
@@ -83,6 +84,5 @@ const SEOManager = ({
 
   return null;
 };
-
 
 export default SEOManager;

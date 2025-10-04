@@ -3,6 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Moon, Sun } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 
 const ThemeToggle: React.FC = () => {
   const [isDark, setIsDark] = useState(false);
@@ -35,6 +42,12 @@ const ThemeToggle: React.FC = () => {
   };
 
   return (
+
+    <TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger asChild>
+
+
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -64,7 +77,7 @@ const ThemeToggle: React.FC = () => {
       className="group"
     >
       <Sun
-        className="w-5 h-5 text-orange-500 fill-transparent transition-colors duration-300 group-hover:fill-orange-500 hover:animate-spin"
+        className="w-6 h-6 text-orange-500 fill-transparent transition-colors duration-300 group-hover:fill-orange-500 hover:animate-spin"
       />
     </motion.div>
   )}
@@ -82,7 +95,7 @@ const ThemeToggle: React.FC = () => {
       className="group"
     >
       <Moon
-        className="w-5 h-5 text-primary fill-transparent transition-colors duration-300 group-hover:fill-primary hover:animate-spin"
+        className="w-6 h-6 text-primary fill-transparent transition-colors duration-300 group-hover:fill-primary hover:animate-spin"
       />
     </motion.div>
   )}
@@ -124,12 +137,13 @@ const ThemeToggle: React.FC = () => {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className={cn(
-            "text-sm font-medium min-w-[50px]",
+            "hidden sm:inline-block text-sm font-medium min-w-[50px]", 
             isDark ? "text-slate-200" : "text-slate-700"
           )}
         >
           {isDark ? 'Dark' : 'Light'}
         </motion.span>
+
       </div>
 
       {/* Sparkles Effect on Toggle */}
@@ -190,6 +204,15 @@ const ThemeToggle: React.FC = () => {
   )}
   
     </motion.div>
+
+
+    </TooltipTrigger>
+    <TooltipContent side="left" className="text-sm">
+      {isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>
+
   );
 };
 

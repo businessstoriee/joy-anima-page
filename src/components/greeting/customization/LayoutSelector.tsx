@@ -51,32 +51,32 @@ const LayoutSelector = ({
   };
 
   return (
-    <Card className="border border-blue-300 shadow-xl bg-gradient-to-br from-white to-gray-50/50 overflow-hidden">
+    <Card className="border border-blue-300 shadow-xl bg-gradient-to-br from-white to-gray-50/50 dark:from-slate-900 dark:to-slate-800 dark:border-slate-700 dark:shadow-slate-900/50 overflow-hidden">
       
       <CardContent className="p-5 space-y-4">
         {/* Layout Selection */}
         <motion.div 
           initial={false}
           animate={{ height: 'auto' }}
-          className="rounded-lg border border-gray-200 bg-white overflow-hidden"
+          className="rounded-lg border border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-900 overflow-hidden"
         >
           <button
             onClick={() => toggleSection('layout')}
-            className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+            className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
           >
             <div className="flex items-center gap-3">
               <div className="p-2 bg-purple-100 rounded-lg">
-                <Layout className="h-4 w-4 text-purple-600" />
+                <Layout className="h-4 w-4 text-purple-600 dark:text-purple-40" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-800">Photo Layout Design</h3>
-                <small className="text-gray-500">Choose how your photos are arranged</small>
+                <h3 className="font-semibold text-gray-800 dark:text-gray-100">Photo Layout Design</h3>
+                <small className="text-gray-500 dark:text-gray-400">Choose how your photos are arranged</small>
               </div>
             </div>
             {expandedSections.layout ? (
-              <ChevronUp className="h-4 w-4 text-gray-500" />
+              <ChevronUp className="h-4 w-4 text-gray-500 dark:text-gray-400" />
             ) : (
-              <ChevronDown className="h-4 w-4 text-gray-500" />
+              <ChevronDown className="h-4 w-4 text-gray-500 dark:text-gray-400" />
             )}
           </button>
           
@@ -90,15 +90,15 @@ const LayoutSelector = ({
                 className="px-4 pb-4"
               >
                 <Select value={layout} onValueChange={onLayoutChange}>
-                  <SelectTrigger className="w-full border-blue-300 ">
+                  <SelectTrigger className="w-full border-blue-300 dark:border-blue-600">
                     <SelectValue placeholder="Choose layout style" />
                   </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
+                  <SelectContent className="max-h-[300px] dark:bg-slate-900 dark:border-slate-700">
                     {layoutStyles.map((style) => (
                       <SelectItem key={style.value} value={style.value}>
                         <div>
-                          <div className="font-medium">{style.label}</div>
-                          <div className="text-xs text-muted-foreground mt-1">
+                          <div className="font-medium dark:text-slate-200">{style.label}</div>
+                          <div className="text-xs text-muted-foreground mt-1 dark:text-slate-400">
                             {layoutDescriptions[style.value as keyof typeof layoutDescriptions]}
                           </div>
                         </div>
@@ -114,8 +114,8 @@ const LayoutSelector = ({
                       className={cn(
                         "p-2 rounded-md text-xs text-center cursor-pointer transition-all border",
                         layout === style.value
-                          ? "bg-blue-100 text-blue-700 border-blue-300 shadow-sm"
-                          : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
+                          ? "bg-blue-100 text-blue-700 border-blue-300 shadow-sm dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-600"
+                          : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700"
                       )}
                       onClick={() => onLayoutChange(style.value)}
                     >
@@ -135,25 +135,25 @@ const LayoutSelector = ({
         <motion.div 
           initial={false}
           animate={{ height: 'auto' }}
-          className="rounded-lg border border-gray-200 bg-white overflow-hidden"
+          className="rounded-lg border border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-900 overflow-hidden"
         >
           <button
             onClick={() => toggleSection('globalAnimation')}
-            className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+            className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
           >
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Zap className="h-4 w-4 text-purple-600" />
+              <div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
+                <Zap className="h-4 w-4 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-800">Global Animation Style</h3>
-                <small className="text-gray-500">Set the overall animation theme</small>
+                <h3 className="font-semibold text-gray-800 dark:text-gray-100">Global Animation Style</h3>
+                <small className="text-gray-500 dark:text-gray-400">Set the overall animation theme</small>
               </div>
             </div>
             {expandedSections.globalAnimation ? (
-              <ChevronUp className="h-4 w-4 text-gray-500" />
+              <ChevronUp className="h-4 w-4 text-gray-500 dark:text-gray-400" />
             ) : (
-              <ChevronDown className="h-4 w-4 text-gray-500" />
+              <ChevronDown className="h-4 w-4 text-gray-500 dark:text-gray-400" />
             )}
           </button>
           
@@ -167,15 +167,15 @@ const LayoutSelector = ({
                 className="px-4 pb-4"
               >
                 <Select value={animationStyle} onValueChange={onAnimationChange}>
-                  <SelectTrigger className="w-full border-green-200">
+                  <SelectTrigger className="w-full border-green-200 dark:border-green-600">
                     <SelectValue placeholder="Choose global animation" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="dark:bg-slate-900 dark:border-slate-700">
                     {animationOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         <div className="flex items-center gap-2">
                           <div className="w-3 h-3 bg-green-500 rounded-full" />
-                          <span>{option.label}</span>
+                          <span className="dark:text-slate-200">{option.label}</span>
                         </div>
                       </SelectItem>
                     ))}
@@ -189,8 +189,8 @@ const LayoutSelector = ({
                       className={cn(
                         "px-3 py-1.5 rounded-full text-xs cursor-pointer transition-all border",
                         animationStyle === option.value
-                          ? "bg-green-100 text-green-700 border-green-300 shadow-sm"
-                          : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200"
+                          ? "bg-green-100 text-green-700 border-green-300 shadow-sm dark:bg-green-900/50 dark:text-green-300 dark:border-green-600"
+                          : "bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700"
                       )}
                       onClick={() => onAnimationChange(option.value)}
                     >

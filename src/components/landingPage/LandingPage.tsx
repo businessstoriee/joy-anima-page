@@ -60,7 +60,7 @@ const LandingPage: React.FC = () => {
           subtype: "constellation",
           particleColor:  ["#c084fc", "#2e0bf3ff", "#ec0e88ff"], // violet, blue, pink
     
-          particleCount: 80,
+          particleCount: 30,
           links: true,
           size: 3,
         },
@@ -185,7 +185,7 @@ const LandingPage: React.FC = () => {
           <div className="text-4xl sm:text-5xl md:text-6xl mb-4 sm:mb-6 animate-bounce-in hover:animate-tada cursor-pointer">
             🎉 💖 🥳
           </div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.8)_0%,_rgba(255,255,255,0)_70%)] animate-pulse-slow pointer-events-none"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.1)_0%,_rgba(255,255,255,0)_50%)] animate-pulse-slow pointer-events-none"></div>
         </div>
 
         {/* Gradient heading */}

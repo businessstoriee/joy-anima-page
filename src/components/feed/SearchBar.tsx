@@ -78,7 +78,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onFiltersChange, resultsCount }) 
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative"
+        className="relative hover:animate-pulse"
       >
         <div
           className={cn(

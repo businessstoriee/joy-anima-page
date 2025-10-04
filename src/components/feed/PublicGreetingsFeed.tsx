@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { normalizeViews, formatTimeAgo, getEventGradient } from '@/utils/greetingHelpers';
 import { cn } from '@/lib/utils';
 import SearchBar, { SearchFilters } from './SearchBar';
+import BeautifulGreetingsText from '../landingPage/BeautifulGreetingsText'
+
 
 interface GreetingCardProps {
   greeting: SavedGreeting;
@@ -343,18 +345,33 @@ const PublicGreetingsFeed: React.FC = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-3"
-      >
-        <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500 bg-clip-text text-transparent">
-          Community Greetings
-        </h2>
-        <p className="text-muted-foreground text-lg">
-          Beautiful greetings shared by our community ✨
-        </p>
-      </motion.div>
+     <motion.div
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, ease: "easeOut" }}
+  className="text-center space-y-3 px-4"
+>
+  {/* Title */}
+  
+   <BeautifulGreetingsText text="Community Greetings"/>
+
+  {/* Subtitle */}
+  <p
+    className={cn(
+      "text-base md:text-lg max-w-2xl mx-auto leading-relaxed",
+      "text-slate-600 dark:text-slate-300"
+    )}
+  >
+    Beautiful greetings shared by our community{" "}
+    <span className="inline-block text-xl hover:animate-spin cursor-pointer">
+      ✨
+    </span>
+  </p>
+<small className="text-gray-400 dark:text-gray-500">
+  Posts stay live for 7 days from the time they're created.
+</small>
+</motion.div>
+
 
       {/* Search Bar */}
       <SearchBar
@@ -391,29 +408,41 @@ const PublicGreetingsFeed: React.FC = () => {
         </div>
       )}
 
+
+
       {/* CTA Button */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="text-center pt-4"
-      >
-        <Button 
-          onClick={() => navigate('/create')}
-          size="lg"
-          className="bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500 border hover:opacity-90 text-white px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all group hover:animate-bounce hover:bg-gradient-to-l"
-        >
-          <span className="flex items-center gap-2 text-base">
-            <span className="text-xl transition-transform hover:animate-spin">✨</span>
-            Share Your Greeting
-          </span>
+<motion.div
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ delay: 0.3 }}
+  className="flex justify-center pt-6"
+>
+  <Button
+    onClick={() => navigate('/create')}
+    size="lg"
+    className={cn(
+      "relative overflow-hidden rounded-full px-8 py-6 text-base font-medium",
+      "bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500",
+      "text-white shadow-lg hover:shadow-xl",
+      "transition-all duration-300 group",
+      "hover:opacity-90 hover:scale-105"
+    )}
+  >
+    <span className="flex items-center gap-2">
+      <span className="text-xl hover:animate-spin">✨</span>
+      <span className="hidden sm:inline">Share Your Greeting</span>
+      <span className="sm:hidden">Share</span>
+    </span>
 
-          {/* Button shine effect */}
-  <span className="absolute top-0 left-1/2 w-20 h-full bg-white/30 -skew-x-12 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 group-hover:animate-shine transition-opacity duration-700"></span>
-  
+    {/* Shine Effect */}
+    <span
+      className="absolute top-0 left-1/2 h-full w-20 -translate-x-1/2 -skew-x-12 bg-white/30
+                 opacity-0 group-hover:opacity-100 group-hover:animate-shine transition-opacity duration-700"
+    ></span>
+  </Button>
+</motion.div>
 
-        </Button>
-      </motion.div>
+
     </div>
   );
 };
