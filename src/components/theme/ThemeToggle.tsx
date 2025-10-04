@@ -41,27 +41,53 @@ const ThemeToggle: React.FC = () => {
       className="fixed top-4 right-4 z-50"
     >
       <div
-        className={cn(
-          "flex items-center gap-3 px-4 py-2 rounded-full backdrop-blur-lg border-2 transition-all duration-300 shadow-lg",
-          isDark
-            ? "bg-slate-900/80 border-slate-700 shadow-slate-900/50"
-            : "bg-white/80 border-slate-200 shadow-slate-200/50"
-        )}
-      >
+  className={cn(
+    "flex items-center gap-3 px-4 py-2 rounded-full backdrop-blur-lg border-2 transition-all duration-[1250ms] ease-[cubic-bezier(0.19,1,0.22,1)] shadow-lg outline outline-1 outline-white/50 outline-offset-0 hover:border-white hover:shadow-[inset_0_0_20px_rgba(255,255,255,0.5),0_0_20px_rgba(255,255,255,0.2)] hover:outline-transparent hover:outline-offset-8 hover:[text-shadow:1px_1px_2px_#427388]",
+    isDark
+      ? "bg-slate-900/80 border-slate-700 shadow-slate-900/50"
+      : "bg-white/80 border-slate-200 shadow-slate-200/50"
+  )}
+>
+
+  {/* Hover expanding colorful border effect */}
+<span className="absolute inset-0 rounded-full border-2 border-transparent opacity-0 group-hover:opacity-100 group-hover:animate-ripple pointer-events-none bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500"></span>
+
         {/* Sun Icon */}
-        <AnimatePresence mode="wait">
-          {!isDark && (
-            <motion.div
-              key="sun"
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              exit={{ scale: 0, rotate: 180 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Sun className="w-5 h-5 text-orange-500" />
-            </motion.div>
-          )}
-        </AnimatePresence>
+<AnimatePresence mode="wait">
+  {!isDark && (
+    <motion.div
+      key="sun"
+      initial={{ scale: 0, rotate: -180 }}
+      animate={{ scale: 1, rotate: 0 }}
+      exit={{ scale: 0, rotate: 180 }}
+      transition={{ duration: 0.3 }}
+      className="group"
+    >
+      <Sun
+        className="w-5 h-5 text-orange-500 fill-transparent transition-colors duration-300 group-hover:fill-orange-500 hover:animate-spin"
+      />
+    </motion.div>
+  )}
+</AnimatePresence>
+
+{/* Moon Icon */}
+<AnimatePresence mode="wait">
+  {isDark && (
+    <motion.div
+      key="moon"
+      initial={{ scale: 0, rotate: 180 }}
+      animate={{ scale: 1, rotate: 0 }}
+      exit={{ scale: 0, rotate: -180 }}
+      transition={{ duration: 0.3 }}
+      className="group"
+    >
+      <Moon
+        className="w-5 h-5 text-primary fill-transparent transition-colors duration-300 group-hover:fill-primary hover:animate-spin"
+      />
+    </motion.div>
+  )}
+</AnimatePresence>
+
 
         {/* Switch */}
         <div className="relative">
@@ -91,21 +117,6 @@ const ThemeToggle: React.FC = () => {
             )}
           />
         </div>
-
-        {/* Moon Icon */}
-        <AnimatePresence mode="wait">
-          {isDark && (
-            <motion.div
-              key="moon"
-              initial={{ scale: 0, rotate: 180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              exit={{ scale: 0, rotate: -180 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Moon className="w-5 h-5 text-primary" />
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Theme Label */}
         <motion.span
@@ -150,6 +161,34 @@ const ThemeToggle: React.FC = () => {
           </>
         )}
       </AnimatePresence>
+
+      {!isDark && (
+    <>
+      {[...Array(5)].map((_, i) => (
+        <motion.div
+          key={`light-${i}`}
+          initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+          animate={{
+            opacity: [0, 1, 0],
+            scale: [0, 1.2, 0],
+            x: Math.random() * 100 - 50,
+            y: Math.random() * 100 - 50,
+          }}
+          exit={{ opacity: 0 }}
+          transition={{
+            duration: 1,
+            delay: i * 0.1,
+          }}
+          className="absolute inset-0 w-1 h-1 rounded-full bg-orange-400"
+          style={{
+            left: '50%',
+            top: '50%',
+          }}
+        />
+      ))}
+    </>
+  )}
+  
     </motion.div>
   );
 };

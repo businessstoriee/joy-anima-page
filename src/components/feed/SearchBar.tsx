@@ -84,8 +84,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ onFiltersChange, resultsCount }) 
           className={cn(
             "relative flex items-center gap-2 p-2 rounded-2xl border-2 transition-all duration-300",
             isFocused
-              ? "border-primary shadow-lg shadow-primary/20 bg-card"
-              : "border-border/50 bg-card/50 backdrop-blur-sm"
+              ? "border-primary shadow-xl shadow-primary/20 bg-card"
+              : "border border-gray-400 bg-card/50 backdrop-blur-sm"
           )}
         >
           {/* Search Icon */}

@@ -648,7 +648,9 @@ const EnhancedMediaGallery: React.FC<Props> = ({
           <div className="relative max-w-4xl max-h-[90vh] w-full flex items-center justify-center">
             <button
               onClick={() => setLightboxIndex(null)}
-              className="absolute top-2 right-2 z-10 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
+              className="absolute top-2 right-2 z-10 bg-white/40 hover:bg-white/60 
+                        hover:shadow-lg hover:shadow-cyan-300 
+                        rounded-full p-2 transition-all duration-300"
             >
               <XIcon className="w-6 h-6 text-white" />
             </button>
@@ -660,7 +662,7 @@ const EnhancedMediaGallery: React.FC<Props> = ({
                     e.stopPropagation();
                     setLightboxIndex((i) => (i === null ? null : (i - 1 + media.length) % media.length));
                   }}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/50 hover:shadow-lg hover:shadow-cyan-300 rounded-full p-2 transition-colors"
                 >
                   <ChevronLeft className="w-6 h-6 text-white" />
                 </button>
@@ -669,7 +671,7 @@ const EnhancedMediaGallery: React.FC<Props> = ({
                     e.stopPropagation();
                     setLightboxIndex((i) => (i === null ? null : (i + 1) % media.length));
                   }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/50 hover:shadow-lg hover:shadow-cyan-300 rounded-full p-2 transition-colors"
                 >
                   <ChevronRight className="w-6 h-6 text-white" />
                 </button>

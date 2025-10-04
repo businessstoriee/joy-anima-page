@@ -93,7 +93,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden">
         <DialogHeader className="space-y-2">
           <DialogTitle className="flex items-center gap-3 text-2xl font-bold">
             <motion.div
@@ -114,7 +114,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5 py-4 overflow-y-auto max-h-[calc(85vh-180px)] pr-2 custom-scrollbar">
+        <div className="space-y-5 py-4 overflow-y-auto max-h-[calc(85vh-180px)] px-4 custom-scrollbar">
           {/* Event Name Filter */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -136,37 +136,43 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
                 </motion.div>
               )}
             </Label>
-            <div className="flex flex-wrap gap-2 max-h-[140px] overflow-y-auto pr-2 custom-scrollbar">
-              <AnimatePresence mode="popLayout">
-                {dynamicEventTypes.map((event, idx) => (
-                  <motion.div
-                    key={event}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ delay: idx * 0.02 }}
-                  >
-                    <Button
-                      variant={localFilters.eventName === event ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() =>
-                        setLocalFilters({
-                          ...localFilters,
-                          eventName: localFilters.eventName === event ? '' : event,
-                        })
-                      }
-                      className={cn(
-                        "rounded-full transition-all duration-300 hover:scale-105",
-                        localFilters.eventName === event && 
-                        "shadow-lg shadow-primary/40 bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500"
-                      )}
-                    >
-                      {event}
-                    </Button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
+   <div className="flex flex-wrap gap-2 max-h-[140px] overflow-y-auto pr-2 custom-scrollbar">
+  <AnimatePresence mode="popLayout">
+    {dynamicEventTypes.map((event, idx) => (
+      <motion.div
+        key={event}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ delay: idx * 0.02 }}
+      >
+        <Button
+          variant={localFilters.eventName === event ? 'default' : 'outline'}
+          size="sm"
+          onClick={() =>
+            setLocalFilters({
+              ...localFilters,
+              eventName: localFilters.eventName === event ? '' : event,
+            })
+          }
+          className={cn(
+            "relative overflow-hidden rounded-full border text-sm font-medium transition-all duration-300 group",
+            localFilters.eventName === event &&
+              "shadow-lg shadow-primary/40 bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500 text-white"
+          )}
+        >
+          {/* Expanding fill background */}
+          <span className="absolute inset-0 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 ease-out bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500 rounded-full"></span>
+
+          {/* Button text (kept above bg) */}
+          <span className="relative z-10 group-hover:text-white">{event}</span>
+        </Button>
+      </motion.div>
+    ))}
+  </AnimatePresence>
+</div>
+
+            
           </motion.div>
 
           {/* Sender & Receiver Names - Single Row */}
@@ -348,7 +354,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
 
         {/* Action Buttons */}
         <motion.div 
-          className="flex gap-3 pt-4 border-t"
+          className="flex gap-3 pt-4 px-4 border-t"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}

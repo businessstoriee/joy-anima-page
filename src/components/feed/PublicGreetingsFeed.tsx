@@ -401,12 +401,17 @@ const PublicGreetingsFeed: React.FC = () => {
         <Button 
           onClick={() => navigate('/create')}
           size="lg"
-          className="bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500 border hover:opacity-90 text-white px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all group"
+          className="bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500 border hover:opacity-90 text-white px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all group hover:animate-bounce hover:bg-gradient-to-l"
         >
           <span className="flex items-center gap-2 text-base">
             <span className="text-xl transition-transform hover:animate-spin">✨</span>
             Share Your Greeting
           </span>
+
+          {/* Button shine effect */}
+  <span className="absolute top-0 left-1/2 w-20 h-full bg-white/30 -skew-x-12 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 group-hover:animate-shine transition-opacity duration-700"></span>
+  
+
         </Button>
       </motion.div>
     </div>

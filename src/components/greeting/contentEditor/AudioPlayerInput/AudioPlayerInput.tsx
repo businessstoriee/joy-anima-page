@@ -75,21 +75,49 @@ export default function AudioPlayerInput({ value, onChange, autoPlay = false, cl
       return false;
     }
   };
+  
 
-  const extractYouTubeVideoId = (urlStr: string): string | null => {
-    try {
-      const url = new URL(urlStr);
-      if (url.hostname.includes("youtu.be")) {
-        return url.pathname.replace("/", "").split("?")[0] || null;
-      }
-      if (url.hostname.includes("youtube.com") || url.hostname.includes("music.youtube.com")) {
-        return url.searchParams.get("v");
-      }
-      return null;
-    } catch {
+const extractYouTubeVideoId = (urlStr: string): string | null => {
+  if (!urlStr) return null;
+  // quick regexp fallback (matches typical 11-character YT id)
+  const idRegex = /(?:v=|\/embed\/|\.be\/|\/shorts\/)([A-Za-z0-9_-]{11})/;
+
+  try {
+    const url = new URL(urlStr);
+
+    // youtu.be short link -> pathname is /<id>
+    if (url.hostname.includes("youtu.be")) {
+      const id = url.pathname.replace(/^\/+/, "").split(/[?#]/)[0];
+      return id && id.length >= 6 ? id : null; // tolerate some variance but prefer length
+    }
+
+    // youtube.com or music.youtube.com
+    if (url.hostname.includes("youtube.com") || url.hostname.includes("music.youtube.com")) {
+      // common case: ?v=VIDEOID
+      const v = url.searchParams.get("v");
+      if (v) return v;
+
+      // /embed/VIDEOID or /shorts/VIDEOID or other path-based forms
+      const pathMatch = url.pathname.match(/\/(embed|shorts)\/([A-Za-z0-9_-]{6,})/);
+      if (pathMatch && pathMatch[2]) return pathMatch[2];
+
+      // fallback: try regex on entire url string
+      const fallback = urlStr.match(idRegex);
+      if (fallback && fallback[1]) return fallback[1];
+
       return null;
     }
-  };
+
+    // fallback: regex against whole string (covers some odd cases)
+    const fallback2 = urlStr.match(idRegex);
+    return fallback2 ? fallback2[1] : null;
+  } catch (err) {
+    // if URL parsing fails (user pasted only ID or malformed string), try regex directly
+    const m = urlStr.match(idRegex);
+    return m ? m[1] : null;
+  }
+};
+
 
   const isLikelyDirectAudio = (u?: string) => {
     if (!u) return false;
