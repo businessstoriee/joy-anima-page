@@ -11,6 +11,7 @@ import BeautifulGreetingsText from './BeautifulGreetingsText'
 // import your existing engine wrapper (the file you posted)
 import { initTspEngine } from "@/components/greeting/customization/BackgroundCustomizer/engines/tspEngine";
 import PublicGreetingsFeed from '@/components/feed/PublicGreetingsFeed';
+import ThemeToggle from '@/components/theme/ThemeToggle';
 
 const LandingPage: React.FC = () => {
      const navigate = useNavigate();
@@ -104,6 +105,9 @@ const LandingPage: React.FC = () => {
     eventType="greeting"
     isPreview={false}
   />
+
+  {/* Theme Toggle */}
+  <ThemeToggle />
 
  {/* 🌌 Particle Background */}
 {/* Particles root (engine will append a child div inside this element) */}

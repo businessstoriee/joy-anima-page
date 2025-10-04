@@ -1,12 +1,13 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useFirebaseGreetings, SavedGreeting } from '@/hooks/useFirebaseGreetings';
 import { Button } from '@/components/ui/button';
-import { Eye, User, ChevronLeft, ChevronRight, Heart, MessageCircle } from 'lucide-react';
+import { Eye, User, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { normalizeViews, formatTimeAgo, getEventGradient } from '@/utils/greetingHelpers';
 import { cn } from '@/lib/utils';
+import SearchBar, { SearchFilters } from './SearchBar';
 
 interface GreetingCardProps {
   greeting: SavedGreeting;
@@ -205,19 +206,84 @@ const GreetingCard: React.FC<GreetingCardProps> = ({ greeting, index, onClick })
 const PublicGreetingsFeed: React.FC = () => {
   const [publicGreetings, setPublicGreetings] = useState<SavedGreeting[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState<SearchFilters>({
+    searchQuery: '',
+    eventName: '',
+    senderName: '',
+    receiverName: '',
+    dateRange: { from: null, to: null },
+    sortBy: 'newest',
+  });
   const { getPublicGreetings } = useFirebaseGreetings();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPublicGreetings = async () => {
       setLoading(true);
-      const greetings = await getPublicGreetings(24); // Fetch more for better grid
+      const greetings = await getPublicGreetings(50); // Fetch more for filtering
       setPublicGreetings(greetings);
       setLoading(false);
     };
 
     fetchPublicGreetings();
   }, [getPublicGreetings]);
+
+  // Filter and sort greetings
+  const filteredGreetings = useMemo(() => {
+    let result = [...publicGreetings];
+
+    // Search query filter
+    if (filters.searchQuery) {
+      const query = filters.searchQuery.toLowerCase();
+      result = result.filter((g) =>
+        g.senderName?.toLowerCase().includes(query) ||
+        g.receiverName?.toLowerCase().includes(query) ||
+        g.eventName?.toLowerCase().includes(query) ||
+        g.firstText?.toLowerCase().includes(query)
+      );
+    }
+
+    // Event name filter
+    if (filters.eventName) {
+      result = result.filter((g) => g.eventName === filters.eventName);
+    }
+
+    // Sender name filter
+    if (filters.senderName) {
+      const query = filters.senderName.toLowerCase();
+      result = result.filter((g) => g.senderName?.toLowerCase().includes(query));
+    }
+
+    // Receiver name filter
+    if (filters.receiverName) {
+      const query = filters.receiverName.toLowerCase();
+      result = result.filter((g) => g.receiverName?.toLowerCase().includes(query));
+    }
+
+    // Date range filter
+    if (filters.dateRange.from || filters.dateRange.to) {
+      result = result.filter((g) => {
+        const greetingDate = new Date(g.createdAt);
+        const fromMatch = filters.dateRange.from ? greetingDate >= filters.dateRange.from : true;
+        const toMatch = filters.dateRange.to ? greetingDate <= filters.dateRange.to : true;
+        return fromMatch && toMatch;
+      });
+    }
+
+    // Sort
+    result.sort((a, b) => {
+      if (filters.sortBy === 'newest') {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      } else if (filters.sortBy === 'oldest') {
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      } else {
+        // most-viewed
+        return normalizeViews(b.viewCount) - normalizeViews(a.viewCount);
+      }
+    });
+
+    return result;
+  }, [publicGreetings, filters]);
 
   const handleGreetingClick = useCallback((slug: string) => {
     navigate(`/${slug}`);
@@ -243,7 +309,7 @@ const PublicGreetingsFeed: React.FC = () => {
     );
   }
 
-  if (publicGreetings.length === 0) {
+  if (!loading && publicGreetings.length === 0) {
     return (
       <div className="text-center py-16 px-4">
         <motion.div
@@ -290,9 +356,31 @@ const PublicGreetingsFeed: React.FC = () => {
         </p>
       </motion.div>
 
+      {/* Search Bar */}
+      <SearchBar
+        onFiltersChange={setFilters}
+        resultsCount={filteredGreetings.length}
+      />
+
+      {/* No Results Message */}
+      {!loading && filteredGreetings.length === 0 && publicGreetings.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center py-12"
+        >
+          <div className="text-6xl mb-4">🔍</div>
+          <h3 className="text-xl font-semibold mb-2">No greetings found</h3>
+          <p className="text-muted-foreground">
+            Try adjusting your filters or search terms
+          </p>
+        </motion.div>
+      )}
+
       {/* Instagram Explore Grid */}
-      <div className=" grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4">
-        {publicGreetings.map((greeting, index) => (
+      {filteredGreetings.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4">
+          {filteredGreetings.map((greeting, index) => (
           <GreetingCard
             key={greeting.id}
             greeting={greeting}
@@ -300,7 +388,8 @@ const PublicGreetingsFeed: React.FC = () => {
             onClick={() => handleGreetingClick(greeting.slug)}
           />
         ))}
-      </div>
+        </div>
+      )}
 
       {/* CTA Button */}
       <motion.div
