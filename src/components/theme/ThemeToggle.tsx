@@ -51,11 +51,11 @@ const ThemeToggle: React.FC = () => {
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="fixed top-4 right-4 z-50"
+      className="absolute top-4 right-4 z-50"
     >
       <div
   className={cn(
-    "flex items-center gap-3 px-4 py-2 rounded-full backdrop-blur-lg border-2 transition-all duration-[1250ms] ease-[cubic-bezier(0.19,1,0.22,1)] shadow-lg outline outline-1 outline-white/50 outline-offset-0 hover:border-white hover:shadow-[inset_0_0_20px_rgba(255,255,255,0.5),0_0_20px_rgba(255,255,255,0.2)] hover:outline-transparent hover:outline-offset-8 hover:[text-shadow:1px_1px_2px_#427388]",
+    "flex items-center gap-2 sm:gap-3 px-2 py-1 sm:px-4 sm:py-2 rounded-full backdrop-blur-lg border-2 transition-all duration-[1250ms] ease-[cubic-bezier(0.19,1,0.22,1)] shadow-lg outline outline-1 outline-white/50 outline-offset-0 hover:border-white hover:shadow-[inset_0_0_20px_rgba(255,255,255,0.5),0_0_20px_rgba(255,255,255,0.2)] hover:outline-transparent hover:outline-offset-8 hover:[text-shadow:1px_1px_2px_#427388]",
     isDark
       ? "bg-slate-900/80 border-slate-700 shadow-slate-900/50"
       : "bg-white/80 border-slate-200 shadow-slate-200/50"

@@ -34,15 +34,15 @@ const SEOManager = ({
 
     // --- Build Title ---
     let finalTitle = title 
-      || `${eventEmoji} Sending you ${eventDisplay} Greetings from ${senderName}`;
+      || `${eventEmoji} ${eventDisplay} Greetings from ${senderName} to ${greetingData?.receiverName || 'You'}`;
 
     // --- Build Description ---
     let finalDescription = description 
       || (firstText 
-          ? firstText.length > 160 
-            ? `${firstText.substring(0, 157)}...`
+          ? firstText.length > 155 
+            ? `${firstText.substring(0, 152)}...`
             : firstText
-          : `Create beautiful ${eventDisplay} greetings with animations, music & custom messages.`);
+          : `${senderName} sent you a beautiful ${eventDisplay} greeting with ${greetingData?.media?.length || 0} ${greetingData?.media?.length === 1 ? 'photo' : 'photos'}, animations, and heartfelt wishes.`);
 
     const seoEventType = eventType === 'custom' && customEventName 
       ? customEventName.toLowerCase().replace(/\s+/g, '-')
@@ -55,13 +55,38 @@ const SEOManager = ({
     seoData.title = finalTitle;
     seoData.description = finalDescription;
 
-    // Open Graph / Twitter cards
+    // Open Graph / Twitter cards - Enhanced with all greeting details
     seoData.ogTitle = finalTitle;
     seoData.ogDescription = finalDescription;
+    
+    // Use first image from media for social preview
     if (firstImage) {
       seoData.ogImage = firstImage;
       seoData.twitterImage = firstImage;
     }
+    
+    // Add structured data for rich social previews
+    seoData.structuredData = {
+      "@context": "https://schema.org",
+      "@type": "Message",
+      "name": finalTitle,
+      "description": finalDescription,
+      "sender": {
+        "@type": "Person",
+        "name": senderName
+      },
+      "recipient": {
+        "@type": "Person",
+        "name": greetingData?.receiverName || "You"
+      },
+      "about": eventDisplay,
+      ...(firstImage && {
+        "image": firstImage
+      }),
+      "datePublished": new Date().toISOString(),
+      "text": firstText || "",
+      "keywords": [eventDisplay, "greeting card", "personalized message", senderName].join(", ")
+    };
 
     // Add event-specific keywords
     if (customEventName) {

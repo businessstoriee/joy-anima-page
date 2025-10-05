@@ -457,7 +457,7 @@ const extractYouTubeVideoId = (urlStr: string): string | null => {
   };
 
   return (
-    <div className={cn("flex flex-col gap-3 bg-gradient-to-br from-muted/20 to-muted/10 rounded-lg border", className)}>
+    <div className={cn("flex flex-col gap-3 bg-gradient-to-br from-muted/20 to-muted/10 rounded-lg", className)}>
       {/* Hidden elements */}
       <audio ref={audioRef} className="hidden" />
       <input

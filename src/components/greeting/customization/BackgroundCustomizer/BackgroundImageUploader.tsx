@@ -1,14 +1,15 @@
 // src/components/background/BackgroundImageUploader.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
-import { Link, Image as ImageIcon, X, Download, Palette, Sparkles } from "lucide-react";
+import { Link, Image as ImageIcon, X, Download, Palette, Sparkles, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { uploadMediaToFirebase } from "@/utils/firebase/uploadMedia";
 
 interface BackgroundImageUploaderProps {
   currentImageUrl?: string | null;
@@ -27,6 +28,8 @@ const BackgroundImageUploader: React.FC<BackgroundImageUploaderProps> = ({
 }) => {
   const [imageUrl, setImageUrl] = useState<string>(currentImageUrl || "");
   const [isLoading, setIsLoading] = useState(false);
+  const [inputMode, setInputMode] = useState<'url' | 'file'>('url');
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -86,6 +89,55 @@ const BackgroundImageUploader: React.FC<BackgroundImageUploaderProps> = ({
     onOpacityChange(value[0]);
   };
 
+  // Handle file upload
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select an image file.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    toast({
+      title: "Uploading...",
+      description: "Uploading background image to cloud storage..."
+    });
+
+    try {
+      const result = await uploadMediaToFirebase(file, 'image');
+
+      if (result.success && result.url) {
+        setImageUrl(result.url);
+        onImageChange(result.url);
+        toast({
+          title: "Upload successful!",
+          description: "Background image has been uploaded."
+        });
+      } else {
+        toast({
+          title: "Upload failed",
+          description: result.error || "Failed to upload background image.",
+          variant: "destructive"
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Upload error",
+        description: error.message || "An error occurred during upload.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+      event.target.value = '';
+    }
+  };
+
   return (
     <div className={`w-full ${className}`}>
 
@@ -138,19 +190,78 @@ const BackgroundImageUploader: React.FC<BackgroundImageUploaderProps> = ({
           </div>
         )}
 
-        {/* URL Input */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">Enter Image URL</Label>
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input type="url" placeholder="https://example.com/image.jpg" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="pl-10" />
-            </div>
-            <Button onClick={() => handleUrlApply(imageUrl)} disabled={!imageUrl.trim()} size="sm">
-              Apply
-            </Button>
-          </div>
+        {/* Mode Toggle */}
+        <div className="flex gap-2 mb-2">
+          <Button
+            size="sm"
+            variant={inputMode === 'url' ? 'default' : 'outline'}
+            onClick={() => setInputMode('url')}
+            className="flex-1 gap-2 h-8"
+          >
+            <Link className="h-3.5 w-3.5" />
+            <span className="text-xs">URL</span>
+          </Button>
+          <Button
+            size="sm"
+            variant={inputMode === 'file' ? 'default' : 'outline'}
+            onClick={() => setInputMode('file')}
+            className="flex-1 gap-2 h-8"
+          >
+            <Upload className="h-3.5 w-3.5" />
+            <span className="text-xs">Upload</span>
+          </Button>
         </div>
+
+        {/* URL Input Mode */}
+        {inputMode === 'url' && (
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Enter Image URL</Label>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input type="url" placeholder="https://example.com/image.jpg" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="pl-10" />
+              </div>
+              <Button onClick={() => handleUrlApply(imageUrl)} disabled={!imageUrl.trim() || isLoading} size="sm">
+                Apply
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* File Upload Mode */}
+        {inputMode === 'file' && (
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Upload Background Image</Label>
+            <div className="relative">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                disabled={isLoading}
+              />
+              <div className={`flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg transition-all ${
+                imageUrl 
+                  ? 'border-primary bg-primary/5' 
+                  : 'border-muted-foreground/25 bg-muted/20 hover:border-primary/50 hover:bg-primary/5'
+              } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                <Upload className="h-5 w-5 text-muted-foreground" />
+                <div className="text-center">
+                  <p className="text-sm text-muted-foreground">
+                    {isLoading ? 'Uploading...' : imageUrl 
+                      ? 'Background uploaded'
+                      : 'Drop image or click to browse'
+                    }
+                  </p>
+                  <p className="text-xs text-muted-foreground/70">
+                    All image formats supported
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Suggested Images */}
         <div className="space-y-3">

@@ -142,14 +142,14 @@ export class FormValidator {
   static validateImageFile(file: File): ValidationError[] {
     const errors: ValidationError[] = [];
     const maxSize = 10 * 1024 * 1024; // 10MB
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
     if (file.size > maxSize) {
       errors.push({ field: 'file', message: 'Image file size must be less than 10MB' });
     }
 
-    if (!allowedTypes.includes(file.type)) {
-      errors.push({ field: 'file', message: 'Only JPEG, PNG, GIF, and WebP images are allowed' });
+    // Accept all image types
+    if (!file.type.startsWith('image/')) {
+      errors.push({ field: 'file', message: 'Please select a valid image file' });
     }
 
     return errors;
@@ -158,14 +158,14 @@ export class FormValidator {
   static validateVideoFile(file: File): ValidationError[] {
     const errors: ValidationError[] = [];
     const maxSize = 50 * 1024 * 1024; // 50MB
-    const allowedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
 
     if (file.size > maxSize) {
       errors.push({ field: 'file', message: 'Video file size must be less than 50MB' });
     }
 
-    if (!allowedTypes.includes(file.type)) {
-      errors.push({ field: 'file', message: 'Only MP4, WebM, and OGG videos are allowed' });
+    // Accept all video types
+    if (!file.type.startsWith('video/')) {
+      errors.push({ field: 'file', message: 'Please select a valid video file' });
     }
 
     return errors;

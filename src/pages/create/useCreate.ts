@@ -138,6 +138,17 @@ export function useCreate() {
 
     setSelectedEvent(event || null);
 
+    // Update emoji when event changes
+    if (event && event.emoji) {
+      setFormData((prev) => ({
+        ...prev,
+        eventEmojiSettings: {
+          ...prev.eventEmojiSettings,
+          emoji: event.emoji,
+        },
+      }));
+    }
+
     const eventDefault = event?.defaultMessage || "";
     const currentFirstText = formData.texts?.[0]?.content;
 

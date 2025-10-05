@@ -12,6 +12,7 @@ import { MediaItem } from "@/types/greeting";
 import { frameStyles as globalFrameStyles } from "@/components/preview/MediaFrames";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { uploadMediaToFirebase } from "@/utils/firebase/uploadMedia";
 
 interface MediaItemCardProps {
   item: MediaItem;
@@ -87,10 +88,12 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
     };
   }, [lastBlobUrl]);
 
-  // handle file selection
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // handle file selection and upload to Firebase
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    console.log('📁 File selected:', { name: file.name, type: file.type, size: file.size });
 
     // validate file type
     const isValidImage = item.type === 'image' && file.type.startsWith('image/');
@@ -99,26 +102,60 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
     if (!isValidImage && !isValidVideo) {
       toast({
         title: "Invalid file type",
-        description: `Please select a ${item.type} file.`,
+        description: `Please select a ${item.type} file. Supported formats: ${item.type === 'image' ? 'JPG, PNG, GIF, WebP, HEIC, BMP' : 'MP4, WebM, MOV, AVI'}`,
         variant: "destructive"
       });
       return;
     }
 
+    // Show loading toast
+    toast({
+      title: "Uploading...",
+      description: `Uploading ${item.type} to cloud storage...`
+    });
+
     // cleanup previous blob URL
     if (lastBlobUrl) {
       URL.revokeObjectURL(lastBlobUrl);
+      setLastBlobUrl(null);
     }
 
-    // create new blob URL
-    const blobUrl = URL.createObjectURL(file);
-    setLastBlobUrl(blobUrl);
-    updateMedia(index, "url", blobUrl);
-    
-    toast({
-      title: `${item.type === 'image' ? 'Image' : 'Video'} uploaded`,
-      description: file.name
-    });
+    try {
+      // Determine upload type (treat GIF as image)
+      const uploadType = (item.type === 'gif' || item.type === 'image') ? 'image' : 'video';
+      console.log('🎯 Upload type determined:', uploadType);
+      
+      // Upload to Firebase Storage immediately - no blob URL
+      console.log('🚀 Starting Firebase upload...');
+      const result = await uploadMediaToFirebase(file, uploadType);
+      console.log('📊 Upload result:', result);
+
+      if (result.success && result.url) {
+        console.log('✅ Setting media URL:', result.url);
+        // Set permanent Firebase URL
+        updateMedia(index, "url", result.url);
+
+        toast({
+          title: "Upload successful!",
+          description: `${item.type === 'image' ? 'Image' : 'Video'} has been uploaded: ${file.name}`
+        });
+      } else {
+        console.error('❌ Upload failed:', result.error);
+        // Upload failed - show error and don't set any URL
+        toast({
+          title: "Upload failed",
+          description: result.error || "Failed to upload to cloud storage. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error: any) {
+      console.error('❌ Upload exception:', error);
+      toast({
+        title: "Upload error",
+        description: error.message || "An error occurred during upload. Please try again.",
+        variant: "destructive"
+      });
+    }
 
     // clear file input
     event.target.value = '';
@@ -309,7 +346,9 @@ const MediaItemCard: React.FC<MediaItemCardProps> = ({
                       }
                     </p>
                     <p className="text-xs text-muted-foreground/70">
-                      {item.type === 'image' ? 'JPG, PNG, GIF, WebP' : 'MP4, WebM, MOV'}
+                      {item.type === 'image' 
+                        ? 'All image formats supported' 
+                        : 'All video formats (max 30s)'}
                     </p>
                   </div>
                 </div>

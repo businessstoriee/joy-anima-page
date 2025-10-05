@@ -51,7 +51,7 @@ const AnimatedGradientText = ({ text = 'Beautiful Greetings' }) => {
   return (
     <div className="text-center group hover:animate-pulse">
       <motion.h1 
-        className="text-4xl sm:text-5xl md:text-6xl font-bold bg-clip-text text-transparent animate-bounce"
+        className="text-3xl sm:text-5xl md:text-6xl font-bold bg-clip-text text-transparent animate-bounce"
         style={{
           backgroundImage: `linear-gradient(90deg, ${colorPalettes[currentPalette].join(', ')})`,
           backgroundSize: '300% 100%',

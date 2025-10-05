@@ -1,7 +1,8 @@
 // hooks/useFirebaseGreetings.ts
 import { useState, useCallback, useEffect } from 'react';
 import { collection, doc, setDoc, getDoc, serverTimestamp, updateDoc, increment, query, where, getDocs, writeBatch } from 'firebase/firestore';
-import { db } from '@/utils/firebase/firebase';
+import { ref, deleteObject } from 'firebase/storage';
+import { db, storage } from '@/utils/firebase/firebase';
 import { GreetingFormData } from '@/types/greeting';
 
 export interface SavedGreeting {
@@ -26,7 +27,7 @@ export function useFirebaseGreetings() {
   const [isLoading, setIsLoading] = useState(false);
   const [savedGreetings, setSavedGreetings] = useState<SavedGreeting[]>([]);
 
-  // Cleanup old greetings (7+ days old)
+  // Cleanup old greetings (7+ days old) and their media files
   const cleanupOldGreetings = useCallback(async () => {
     try {
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -43,6 +44,46 @@ export function useFirebaseGreetings() {
         return;
       }
 
+      // Delete media files from Storage first
+      const mediaDeletePromises: Promise<void>[] = [];
+      querySnapshot.docs.forEach((docSnap) => {
+        const data = docSnap.data();
+        
+        // Delete media files
+        if (data.media && Array.isArray(data.media)) {
+          data.media.forEach((mediaItem: any) => {
+            if (mediaItem.url && mediaItem.url.includes('firebasestorage.googleapis.com')) {
+              const promise = deleteMediaFromUrl(mediaItem.url).catch(err => 
+                console.warn('⚠️ Failed to delete media file:', err)
+              );
+              mediaDeletePromises.push(promise);
+            }
+          });
+        }
+
+        // Delete background image if it's from Firebase Storage
+        if (data.backgroundSettings?.imageUrl && 
+            data.backgroundSettings.imageUrl.includes('firebasestorage.googleapis.com')) {
+          const promise = deleteMediaFromUrl(data.backgroundSettings.imageUrl).catch(err => 
+            console.warn('⚠️ Failed to delete background image:', err)
+          );
+          mediaDeletePromises.push(promise);
+        }
+
+        // Delete audio file if it's from Firebase Storage
+        if (data.audioUrl && data.audioUrl.includes('firebasestorage.googleapis.com')) {
+          const promise = deleteMediaFromUrl(data.audioUrl).catch(err => 
+            console.warn('⚠️ Failed to delete audio file:', err)
+          );
+          mediaDeletePromises.push(promise);
+        }
+      });
+
+      // Wait for all media deletions
+      await Promise.allSettled(mediaDeletePromises);
+      console.log(`🗑️ Deleted ${mediaDeletePromises.length} media files`);
+
+      // Delete Firestore documents
       const batch = writeBatch(db);
       querySnapshot.docs.forEach((doc) => {
         batch.delete(doc.ref);
@@ -54,6 +95,31 @@ export function useFirebaseGreetings() {
       console.warn('⚠️ Failed to cleanup old greetings:', error);
     }
   }, []);
+
+  // Helper function to delete media from Firebase Storage URL
+  const deleteMediaFromUrl = async (url: string): Promise<void> => {
+    try {
+      // Extract the file path from Firebase Storage URL
+      const decodedUrl = decodeURIComponent(url);
+      const pathMatch = decodedUrl.match(/\/o\/(.+?)\?/);
+      
+      if (!pathMatch || !pathMatch[1]) {
+        console.warn('⚠️ Could not extract file path from URL:', url);
+        return;
+      }
+
+      const filePath = pathMatch[1];
+      const fileRef = ref(storage, filePath);
+      
+      await deleteObject(fileRef);
+      console.log('✅ Deleted media file:', filePath);
+    } catch (error: any) {
+      // Ignore "object not found" errors as the file may already be deleted
+      if (error.code !== 'storage/object-not-found') {
+        throw error;
+      }
+    }
+  };
 
   // Run cleanup on hook initialization (once per session)
   useEffect(() => {

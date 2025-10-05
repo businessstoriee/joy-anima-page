@@ -24,24 +24,43 @@ const AudioAutoPlay: React.FC<AudioAutoPlayProps> = ({
 
     const audio = audioRef.current;
     
-    // Reset error state when URL changes
+    // Reset states
     setHasError(false);
+    setIsMuted(false);
+    audio.muted = false;
+
+    const attemptAutoPlay = async () => {
+      if (!autoPlay) return;
+      
+      try {
+        // Load and play immediately
+        await audio.play();
+        setIsPlaying(true);
+        console.log('✅ Audio auto-play successful');
+      } catch (error) {
+        console.log('⚠️ Auto-play prevented, trying with user interaction:', error);
+        
+        // If autoplay blocked, try on first user interaction
+        const playOnInteraction = async () => {
+          try {
+            await audio.play();
+            setIsPlaying(true);
+            console.log('✅ Audio started after user interaction');
+            // Remove listeners after successful play
+            document.removeEventListener('click', playOnInteraction);
+            document.removeEventListener('touchstart', playOnInteraction);
+          } catch (err) {
+            console.error('❌ Failed to play audio:', err);
+          }
+        };
+        
+        document.addEventListener('click', playOnInteraction, { once: true });
+        document.addEventListener('touchstart', playOnInteraction, { once: true });
+      }
+    };
 
     const handleCanPlay = () => {
-      if (autoPlay) {
-        // Try to play audio automatically
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              setIsPlaying(true);
-            })
-            .catch((error) => {
-              console.log('Auto-play prevented:', error);
-              // Auto-play was prevented, that's okay
-            });
-        }
-      }
+      attemptAutoPlay();
     };
 
     const handlePlay = () => setIsPlaying(true);
@@ -86,8 +105,14 @@ const AudioAutoPlay: React.FC<AudioAutoPlayProps> = ({
   const toggleMute = () => {
     if (!audioRef.current) return;
     
-    audioRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
+    const newMutedState = !isMuted;
+    audioRef.current.muted = newMutedState;
+    setIsMuted(newMutedState);
+    
+    // If unmuting and not playing, resume playback
+    if (!newMutedState && !isPlaying) {
+      audioRef.current.play().catch(err => console.error('Failed to resume:', err));
+    }
   };
 
   if (!audioUrl || hasError) return null;
@@ -99,7 +124,7 @@ const AudioAutoPlay: React.FC<AudioAutoPlayProps> = ({
         src={audioUrl}
         loop
         preload="auto"
-        muted={isMuted}
+        playsInline
       />
       
       <AnimatePresence>
