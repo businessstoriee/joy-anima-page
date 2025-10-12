@@ -12,7 +12,7 @@ export interface TextStyleSettings {
   lineHeight?: string;
 }
 
-// Font family options
+// Font family options with Google Fonts
 export const fontFamilyOptions = [
   { value: 'inherit', label: 'Default' },
   { value: 'Arial, sans-serif', label: 'Arial' },
@@ -26,6 +26,16 @@ export const fontFamilyOptions = [
   { value: 'Palatino, serif', label: 'Palatino' },
   { value: 'Garamond, serif', label: 'Garamond' },
   { value: 'Brush Script MT, cursive', label: 'Brush Script' },
+  { value: '"Playfair Display", serif', label: 'Playfair Display' },
+  { value: '"Montserrat", sans-serif', label: 'Montserrat' },
+  { value: '"Dancing Script", cursive', label: 'Dancing Script' },
+  { value: '"Pacifico", cursive', label: 'Pacifico' },
+  { value: '"Quicksand", sans-serif', label: 'Quicksand' },
+  { value: '"Satisfy", cursive', label: 'Satisfy' },
+  { value: '"Great Vibes", cursive', label: 'Great Vibes' },
+  { value: '"Lobster", cursive', label: 'Lobster' },
+  { value: '"Bebas Neue", sans-serif', label: 'Bebas Neue' },
+  { value: '"Caveat", cursive', label: 'Caveat' },
 ] as const;
 
 export interface TextSettings {

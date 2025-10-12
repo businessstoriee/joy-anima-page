@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { EventType, TextContent } from '@/types/greeting';
+import { EventType, TextContent, EventEmojiSettings } from '@/types/greeting';
 import { eventTypes } from '@/types/eventTypes';
-import { Plus, Calendar, Edit, Edit2, Edit3 } from 'lucide-react';
+import { Plus, Calendar, Edit, Search, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import EventNameCustomizer from './EventNameCustomizer';
 import EventEmojiCustomizer from '../eventName/EventEmojiCustomizer';
@@ -17,17 +17,26 @@ interface CustomEventSelectorProps {
   customEvent: EventType | null;
   onEventChange: (eventType: string) => void;
   onCustomEventCreate: (event: EventType) => void;
+  eventNameStyle?: TextContent;
+  eventEmojiSettings?: EventEmojiSettings;
+  onEventNameStyleChange?: (eventNameStyle: TextContent) => void;
+  onEventEmojiSettingsChange?: (settings: EventEmojiSettings) => void;
 }
 
 const CustomEventSelector = ({
   selectedEvent,
   customEvent,
   onEventChange,
-  onCustomEventCreate
+  onCustomEventCreate,
+  eventNameStyle,
+  eventEmojiSettings,
+  onEventNameStyleChange,
+  onEventEmojiSettingsChange,
 }: CustomEventSelectorProps) => {
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [showEventCustomizer, setShowEventCustomizer] = useState(false);
   const [showEmojiCustomizer, setShowEmojiCustomizer] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // keep only one open
   const toggleEventCustomizer = () => {
@@ -54,28 +63,21 @@ const CustomEventSelector = ({
     category: 'custom'
   });
 
-  const [eventNameStyle, setEventNameStyle] = useState<TextContent>({
-    id: 'event-name',
-    content: '',
-    style: {
-      fontSize: '16px',
-      fontWeight: '400',
-      color: '#000000',
-      textAlign: 'left',
-      fontFamily: 'inherit'
-    },
-    animation: '',
-    continuousAnimation: false
-  });
-
-  const [eventEmojiSettings, setEventEmojiSettings] = useState<any>({
-    size: 32,
-    animation: 'none',
-  });
-
   const allEvents = customEvent ? [...eventTypes, customEvent] : eventTypes;
+  
+  // Filter events based on search query
+  const filteredEvents = useMemo(() => {
+    if (!searchQuery.trim()) return allEvents;
+    
+    const query = searchQuery.toLowerCase();
+    return allEvents.filter(event => 
+      event.label.toLowerCase().includes(query) ||
+      event.emoji.includes(query) ||
+      event.category?.toLowerCase().includes(query)
+    );
+  }, [allEvents, searchQuery]);
 
-  const groupedEvents = allEvents.reduce((acc, event) => {
+  const groupedEvents = filteredEvents.reduce((acc, event) => {
     if (!acc[event.category]) acc[event.category] = [];
     acc[event.category].push(event);
     return acc;
@@ -148,29 +150,74 @@ const CustomEventSelector = ({
       </CardHeader>
 
       <CardContent className="space-y-4">
+        {/* Beautiful Search Box with Real-time Search */}
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative"
+        >
+          <Label className="text-xs font-medium mb-2 block">Search Events</Label>
+          <div className="relative group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by name, emoji, or category..."
+              className="pl-10 pr-10 h-10 bg-background/50 backdrop-blur-sm border-muted hover:border-primary/50 focus:border-primary transition-all duration-200 dark:bg-background/30"
+            />
+            {searchQuery && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0 hover:bg-destructive/10 hover:text-destructive"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+          {searchQuery && (
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-xs text-muted-foreground mt-1"
+            >
+              {filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''} found
+            </motion.p>
+          )}
+        </motion.div>
+
         {/* Event Selector */}
         <div className="space-y-2">
           <Label htmlFor="eventType">Select Event Type *</Label>
           <Select value={selectedEvent} onValueChange={onEventChange}>
-            <SelectTrigger>
+            <SelectTrigger className="bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-colors dark:bg-background/30">
               <SelectValue placeholder="Choose an event type" />
             </SelectTrigger>
-            <SelectContent className="max-h-80">
-              {Object.entries(groupedEvents).map(([category, events]) => (
-                <div key={category}>
-                  <div className="px-2 py-1 text-xs font-semibold text-muted-foreground border-b border-muted">
-                    {categoryLabels[category as keyof typeof categoryLabels]}
+            <SelectContent className="max-h-80 bg-background/95 backdrop-blur-md dark:bg-background/90">
+              {Object.entries(groupedEvents).length > 0 ? (
+                Object.entries(groupedEvents).map(([category, events]) => (
+                  <div key={category}>
+                    <div className="px-2 py-1 text-xs font-semibold text-muted-foreground border-b border-muted/50 bg-muted/20">
+                      {categoryLabels[category as keyof typeof categoryLabels]}
+                    </div>
+                    {events.map((event) => (
+                      <SelectItem key={event.value} value={event.value} className="hover:bg-primary/10 dark:hover:bg-primary/20">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{event.emoji}</span>
+                          <span>{event.label}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
                   </div>
-                  {events.map((event) => (
-                    <SelectItem key={event.value} value={event.value}>
-                      <div className="flex items-center gap-2">
-                        <span>{event.emoji}</span>
-                        <span>{event.label}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
+                ))
+              ) : (
+                <div className="px-4 py-8 text-center text-muted-foreground">
+                  <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">No events found</p>
+                  <p className="text-xs mt-1">Try a different search term</p>
                 </div>
-              ))}
+              )}
             </SelectContent>
           </Select>
         </div>
@@ -313,17 +360,34 @@ const CustomEventSelector = ({
 
               {/* Customizers */}
               <EventNameCustomizer
-                eventNameStyle={eventNameStyle}
+                eventNameStyle={eventNameStyle || {
+                  id: 'event-name',
+                  content: '',
+                  style: {
+                    fontSize: '28px',
+                    fontWeight: 'bold',
+                    color: 'hsl(var(--foreground))',
+                    textAlign: 'center',
+                    fontFamily: 'inherit'
+                  },
+                  animation: 'fadeIn'
+                }}
                 selectedEvent={selectedEventData}
-                onChange={setEventNameStyle}
+                onChange={onEventNameStyleChange || (() => {})}
                 expanded={showEventCustomizer}
                 onToggleExpanded={toggleEventCustomizer}
               />
 
               <EventEmojiCustomizer
-                eventEmojiSettings={eventEmojiSettings}
+                eventEmojiSettings={eventEmojiSettings || {
+                  emoji: selectedEventData?.emoji || '🎉',
+                  size: 48,
+                  animation: 'bounce',
+                  rotateSpeed: 0,
+                  position: { x: 50, y: 10 }
+                }}
                 selectedEvent={selectedEventData}
-                onChange={setEventEmojiSettings}
+                onChange={onEventEmojiSettingsChange || (() => {})}
                 expanded={showEmojiCustomizer}
                 onToggleExpanded={toggleEmojiCustomizer}
               />

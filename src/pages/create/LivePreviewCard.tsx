@@ -26,10 +26,10 @@ const LivePreviewCard: React.FC<LivePreviewCardProps> = ({
 
   return (
     <Card
-      className={` animate-zoom-in shadow-xl ${selectedEvent?.theme || ""} transition-all duration-300 hover:shadow-2xl hover:scale-[1.01]`}
+      className={`animate-zoom-in shadow-xl ${selectedEvent?.theme || ""} transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] dark:border-border/50`}
     >
       <CardHeader className="relative overflow-hidden group">
-        <div className="absolute inset-0 bg-gradient-to-r from-pink-200 to-violet-200 hover:bg-gradient-to-l text-white opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-200 to-violet-200 hover:bg-gradient-to-l text-white opacity-0 group-hover:opacity-100 transition-opacity duration-500 dark:from-pink-300/30 dark:to-violet-300/30" />
 
         {[...Array(5)].map((_, i) => (
           <div
@@ -45,7 +45,7 @@ const LivePreviewCard: React.FC<LivePreviewCardProps> = ({
           </div>
         ))}
 
-        <CardTitle onClick={onOpenPreview} className="cursor-pointer flex items-center gap-2 relative z-10">
+        <CardTitle onClick={onOpenPreview} className="cursor-pointer flex items-center gap-2 relative z-10 dark:text-foreground">
           <span className="inline-block group-hover:animate-bounce">👀 {translate('Live Preview')}  (Click to Expand)</span>
         </CardTitle>
       </CardHeader>

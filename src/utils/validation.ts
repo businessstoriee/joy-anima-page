@@ -28,6 +28,8 @@ export const validateGreetingForm = (data: GreetingFormData): ValidationError[] 
     });
   }
 
+  // Note: Sender and receiver names are now optional - removed validation
+
   // Validate text content
   data.texts.forEach((text, index) => {
     if (!text.content.trim()) {

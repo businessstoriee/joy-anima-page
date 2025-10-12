@@ -16,15 +16,15 @@ export default function PreviewModal({ isOpen, onClose, greetingData, selectedEv
  
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="relative max-w-6xl w-full max-h-[90vh] overflow-auto bg-white rounded-2xl shadow-2xl">
-        <div className="sticky top-0 bg-white/90 backdrop-blur-sm border-b p-4 rounded-t-2xl z-10">
+      <div className="relative max-w-6xl w-full max-h-[90vh] overflow-auto bg-background dark:bg-background rounded-2xl shadow-2xl">
+        <div className="sticky top-0 bg-background/90 dark:bg-background/90 backdrop-blur-sm border-b dark:border-border/50 p-4 rounded-t-2xl z-10">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Full Preview</h2>
+            <h2 className="text-xl font-semibold dark:text-foreground">Full Preview</h2>
             <Button
               onClick={onClose}
               variant="ghost"
               size="icon"
-              className="hover:bg-gray-100"
+              className="hover:bg-muted dark:hover:bg-muted/50"
             >
               ✕
             </Button>
@@ -35,7 +35,6 @@ export default function PreviewModal({ isOpen, onClose, greetingData, selectedEv
           <Preview 
             greetingData={greetingData} 
             selectedEvent={selectedEvent} 
-            // onDataChange={onDataChange}
           />
         </div>
       </div>

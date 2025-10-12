@@ -88,22 +88,26 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
         customEvent={customEvent}
         onEventChange={onEventChange}
         onCustomEventCreate={onCustomEventCreate}
+        eventNameStyle={eventNameStyle}
+        eventEmojiSettings={eventEmojiSettings}
+        onEventNameStyleChange={onEventNameStyleChange}
+        onEventEmojiSettingsChange={onEventEmojiSettingsChange}
       />
 
       <Separator />
 
       {/* Names Section */}
-      <div className="grid md:grid-cols-2 gap-4 p-6 border border-cyan-500 rounded-xl shadow-lg">
+      <div className="grid md:grid-cols-2 gap-4 p-6 border border-cyan-500 dark:border-cyan-400 rounded-xl shadow-lg">
         {/* Sender Name */}
         <div className="space-y-2">
           <div className="flex items-center justify-between min-h-[24px]">
-            <Label htmlFor="senderName">{translate('Your Name')}</Label>
+            <Label htmlFor="senderName" className="dark:text-foreground">{translate('Your Name')} <span className="text-xs text-muted-foreground">(Optional)</span></Label>
             {senderName.length > 0 && (
               <Button
                 onClick={toggleExpandSender}
                 size="sm"
                 variant="ghost"
-                className="text-[10px] h-6 px-2 py-0 border border-muted/20 hover:border-primary/40 hover:bg-primary/5 transition-all duration-200"
+                className="text-[10px] h-6 px-2 py-0 border border-muted/20 hover:border-primary/40 hover:bg-primary/5 transition-all duration-200 dark:hover:bg-primary/10"
               >
                 {isExpandedSender ? "Hide" : "Edit"}
               </Button>
@@ -113,7 +117,8 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
             id="senderName"
             value={senderName}
             onChange={(e) => onInputChange('senderName', e.target.value)}
-            placeholder={translate('Your name')}
+            placeholder={translate('Your name (optional)')}
+            className="dark:bg-background/50 dark:border-muted/50"
           />
 
            {/* Sender Name Customizer */}
@@ -130,13 +135,13 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
         {/* Receiver Name */}
         <div className="space-y-2">
           <div className="flex items-center justify-between min-h-[24px]">
-            <Label htmlFor="receiverName">{translate("Receiver's Name")}</Label>
+            <Label htmlFor="receiverName" className="dark:text-foreground">{translate("Receiver's Name")} <span className="text-xs text-muted-foreground">(Optional)</span></Label>
             {receiverName.length > 0 && (
               <Button
                 onClick={toggleExpandReceiver}
                 size="sm"
                 variant="ghost"
-                className="text-[10px] h-6 px-2 py-0 border border-muted/20 hover:border-primary/40 hover:bg-primary/5 transition-all duration-200"
+                className="text-[10px] h-6 px-2 py-0 border border-muted/20 hover:border-primary/40 hover:bg-primary/5 transition-all duration-200 dark:hover:bg-primary/10"
               >
                 {isExpandedReceiver ? "Hide" : "Edit"}
               </Button>
@@ -146,7 +151,8 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
             id="receiverName"
             value={receiverName}
             onChange={(e) => onInputChange('receiverName', e.target.value)}
-            placeholder={translate("Recipient's name")}
+            placeholder={translate("Recipient's name (optional)")}
+            className="dark:bg-background/50 dark:border-muted/50"
           />
 
 
@@ -162,10 +168,10 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
 
 
       {/* Background Music URL */}
-      <div className="space-y-2 p-6 border border-primary/20 rounded-xl shadow-lg bg-gradient-to-br from-background to-primary/5">
-        <Label htmlFor="audioUrl" className="flex items-center gap-2 text-sm font-medium">
+      <div className="space-y-2 p-6 border border-primary/20 dark:border-primary/40 rounded-xl shadow-lg bg-gradient-to-br from-background to-primary/5 dark:from-background dark:to-primary/10">
+        <Label htmlFor="audioUrl" className="flex items-center gap-2 text-sm font-medium dark:text-foreground">
           <Music className="h-4 w-4 text-primary" />
-          Background Music URL <span className="text-gray-500">(Optional)</span>
+          Background Music URL <span className="text-muted-foreground">(Optional)</span>
         </Label>
         <AudioPlayerInput 
           value={audioUrl}
