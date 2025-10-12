@@ -339,10 +339,10 @@ onClick={createNewGreeting}
 
   {/* Button Content */}
   <span className="relative z-10 flex items-center justify-center sm:justify-start">
-    <span className="mr-2 sm:mr-3 text-xl sm:text-2xl animate-bounce group-hover:animate-spin">✨</span>
+    <span className="mr-2 sm:mr-3 text-xl sm:text-2xl animate-bounce">✨</span>
     {/* 🌈 Spinning Gradient Text */}
   <span
-    className="text-lg font-bold bg-clip-text text-transparent animate-bounce"
+    className="text-lg font-bold bg-clip-text text-transparent hover:animate-bounce"
     style={{
       background: `
         conic-gradient(

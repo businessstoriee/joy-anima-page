@@ -6,6 +6,10 @@ export interface TextStyleSettings {
   color: string;
   textAlign: 'left' | 'center' | 'right';
   fontFamily?: string;
+  fontStyle?: 'normal' | 'italic' | 'oblique';
+  textTransform?: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
+  letterSpacing?: string;
+  lineHeight?: string;
 }
 
 export interface TextSettings {
@@ -72,6 +76,37 @@ export const textAlignOptions = [
   { value: 'right', label: 'Right' }
 ] as const;
 
+// Font style options
+export const fontStyleOptions = [
+  { value: 'normal', label: 'Normal' },
+  { value: 'italic', label: 'Italic' },
+  { value: 'oblique', label: 'Oblique' }
+] as const;
+
+// Text transform options
+export const textTransformOptions = [
+  { value: 'none', label: 'None' },
+  { value: 'uppercase', label: 'UPPERCASE' },
+  { value: 'lowercase', label: 'lowercase' },
+  { value: 'capitalize', label: 'Capitalize' }
+] as const;
+
+// Letter spacing options
+export const letterSpacingOptions = [
+  { value: 'normal', label: 'Normal' },
+  { value: '0.05em', label: 'Tight' },
+  { value: '0.1em', label: 'Wide' },
+  { value: '0.2em', label: 'Wider' }
+] as const;
+
+// Line height options
+export const lineHeightOptions = [
+  { value: 'normal', label: 'Normal' },
+  { value: '1', label: 'Tight (1)' },
+  { value: '1.5', label: 'Normal (1.5)' },
+  { value: '2', label: 'Loose (2)' }
+] as const;
+
 // Default text settings
 export const defaultTextSettings: TextSettings = {
   id: '',
@@ -81,7 +116,11 @@ export const defaultTextSettings: TextSettings = {
     fontWeight: 'normal',
     color: 'hsl(var(--foreground))',
     textAlign: 'center',
-    fontFamily: 'inherit'
+    fontFamily: 'inherit',
+    fontStyle: 'normal',
+    textTransform: 'none',
+    letterSpacing: 'normal',
+    lineHeight: 'normal'
   },
   animation: 'fadeIn'
 };

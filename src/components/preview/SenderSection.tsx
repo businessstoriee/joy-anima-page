@@ -12,6 +12,8 @@ const SenderSection: React.FC<Props> = ({ greetingData }) => {
   const { translate } = useLanguageTranslation();
   if (!greetingData.senderName) return null;
 
+  const senderStyle = greetingData.senderNameStyle;
+
   return (
     <HoverAnimations animation="float">
       <motion.div
@@ -21,7 +23,22 @@ const SenderSection: React.FC<Props> = ({ greetingData }) => {
         transition={{ delay: 0.5 }}
       >
         <p className="text-sm text-muted-foreground mb-1">{translate('With love from')}</p>
-        <p className="text-lg font-semibold text-primary">{greetingData.senderName}</p>
+        <p 
+          className="text-lg font-semibold text-primary"
+          style={senderStyle ? {
+            fontSize: senderStyle.style.fontSize,
+            fontWeight: senderStyle.style.fontWeight,
+            color: senderStyle.style.color,
+            textAlign: senderStyle.style.textAlign,
+            fontFamily: senderStyle.style.fontFamily,
+            fontStyle: senderStyle.style.fontStyle,
+            textTransform: senderStyle.style.textTransform,
+            letterSpacing: senderStyle.style.letterSpacing,
+            lineHeight: senderStyle.style.lineHeight
+          } : undefined}
+        >
+          {greetingData.senderName}
+        </p>
       </motion.div>
     </HoverAnimations>
   );

@@ -6,15 +6,19 @@ import BorderCustomizer from '../customization/BorderCustomizer/BorderCustomizer
 import LayoutSelector from '../customization/LayoutSelector';
 import EmojiSelector from '@/components/greeting/contentEditor/EmojiSelector/EmojiSelector';
 
+import { TextSettings } from '@/types/textSettings';
+
 interface CustomizationFormProps {
   backgroundSettings: any;
   borderSettings: BorderSettings;
-  layout: string;
+  layout: string; 
   animationStyle: string;
   emojis: { id: string; emoji: string; position: { x: number; y: number }; size: number; animation: string; }[];
   frameStyle: string;
   media?: any[];
   layoutGroupOrder?: string[];
+  senderNameStyle?: TextSettings;
+  receiverNameStyle?: TextSettings;
   onBackgroundChange: (settings: any) => void;
   onBorderChange: (settings: BorderSettings) => void;
   onLayoutChange: (layout: string) => void;
@@ -22,6 +26,8 @@ interface CustomizationFormProps {
   onEmojiChange: (emojis: any[]) => void;
   onFrameStyleChange: (frame: string) => void;
   onLayoutGroupOrderChange?: (order: string[]) => void;
+  onSenderNameStyleChange?: (style: TextSettings | undefined) => void;
+  onReceiverNameStyleChange?: (style: TextSettings | undefined) => void;
 }
 
 const CustomizationForm = ({
@@ -33,6 +39,8 @@ const CustomizationForm = ({
   frameStyle,
   media = [],
   layoutGroupOrder = [],
+  senderNameStyle,
+  receiverNameStyle,
   onBackgroundChange,
   onBorderChange,
   onLayoutChange,
@@ -40,10 +48,13 @@ const CustomizationForm = ({
   onEmojiChange,
   onFrameStyleChange,
   onLayoutGroupOrderChange,
+  onSenderNameStyleChange,
+  onReceiverNameStyleChange,
 }: CustomizationFormProps) => {
 
   return (
     <>
+     
 
      {/* Emoji Decorator */}
       <EmojiSelector

@@ -113,7 +113,20 @@ const EventHeader: React.FC<Props> = ({ greetingData, selectedEvent }) => {
       {/* Receiver Name */}
       {greetingData.receiverName && (
         <HoverAnimations animation="pulse">
-          <p className="text-xl md:text-2xl font-bold text-primary">
+          <p 
+            className="text-xl md:text-2xl font-bold text-primary"
+            style={greetingData.receiverNameStyle ? {
+              fontSize: greetingData.receiverNameStyle.style.fontSize,
+              fontWeight: greetingData.receiverNameStyle.style.fontWeight,
+              color: greetingData.receiverNameStyle.style.color,
+              textAlign: greetingData.receiverNameStyle.style.textAlign,
+              fontFamily: greetingData.receiverNameStyle.style.fontFamily,
+              fontStyle: greetingData.receiverNameStyle.style.fontStyle,
+              textTransform: greetingData.receiverNameStyle.style.textTransform,
+              letterSpacing: greetingData.receiverNameStyle.style.letterSpacing,
+              lineHeight: greetingData.receiverNameStyle.style.lineHeight
+            } : undefined}
+          >
             {greetingData.receiverName}
           </p>
         </HoverAnimations>

@@ -1,4 +1,5 @@
 import { BorderSettings } from '@/types/background';
+import { TextSettings } from '@/types/textSettings';
 
 export interface EventType {
   value: string;
@@ -86,6 +87,8 @@ export interface GreetingFormData {
   customEventText?:string;
   senderName: string;
   receiverName: string;
+  senderNameStyle?: TextSettings;
+  receiverNameStyle?: TextSettings;
   texts: TextContent[];
   media: MediaItem[];
   audioUrl?: string;

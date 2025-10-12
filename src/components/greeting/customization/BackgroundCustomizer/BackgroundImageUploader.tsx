@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link, Image as ImageIcon, X, Download, Palette, Sparkles, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
-import { uploadMediaToFirebase } from "@/utils/firebase/uploadMedia";
+import { uploadMediaToSupabase } from "@/utils/supabase/uploadMedia";
 
 interface BackgroundImageUploaderProps {
   currentImageUrl?: string | null;
@@ -110,7 +110,7 @@ const BackgroundImageUploader: React.FC<BackgroundImageUploaderProps> = ({
     });
 
     try {
-      const result = await uploadMediaToFirebase(file, 'image');
+      const result = await uploadMediaToSupabase(file, 'image');
 
       if (result.success && result.url) {
         setImageUrl(result.url);

@@ -40,7 +40,7 @@ export default function TextBlockItem({ text, index, isActive, onRemove, onMove,
             </Button>
             <Button onClick={onRemove} size="sm" variant="ghost" className="h-6 px-2 text-destructive hover:text-destructive">
               <Trash2 className="h-3 w-3" />
-            </Button>
+            </Button> 
           </div>
         </div>
       </CardHeader>

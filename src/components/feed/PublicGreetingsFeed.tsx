@@ -208,6 +208,7 @@ const GreetingCard: React.FC<GreetingCardProps> = ({ greeting, index, onClick })
 const PublicGreetingsFeed: React.FC = () => {
   const [publicGreetings, setPublicGreetings] = useState<SavedGreeting[]>([]);
   const [loading, setLoading] = useState(true);
+  const [displayCount, setDisplayCount] = useState(20);
   const [filters, setFilters] = useState<SearchFilters>({
     searchQuery: '',
     eventName: '',
@@ -290,6 +291,17 @@ const PublicGreetingsFeed: React.FC = () => {
   const handleGreetingClick = useCallback((slug: string) => {
     navigate(`/${slug}`);
   }, [navigate]);
+
+  const handleShowMore = useCallback(() => {
+    setDisplayCount(prev => prev + 10);
+  }, []);
+
+  const displayedGreetings = useMemo(() => 
+    filteredGreetings.slice(0, displayCount),
+    [filteredGreetings, displayCount]
+  );
+
+  const hasMoreGreetings = displayCount < filteredGreetings.length;
 
   if (loading) {
     return (
@@ -397,7 +409,7 @@ const PublicGreetingsFeed: React.FC = () => {
       {/* Instagram Explore Grid */}
       {filteredGreetings.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4">
-          {filteredGreetings.map((greeting, index) => (
+          {displayedGreetings.map((greeting, index) => (
           <GreetingCard
             key={greeting.id}
             greeting={greeting}
@@ -410,13 +422,41 @@ const PublicGreetingsFeed: React.FC = () => {
 
 
 
-      {/* CTA Button */}
+      {/* Action Buttons */}
 <motion.div
   initial={{ opacity: 0 }}
   animate={{ opacity: 1 }}
   transition={{ delay: 0.3 }}
-  className="flex justify-center pt-6"
+  className="flex justify-center items-center gap-4 pt-6 flex-wrap"
 >
+  {/* Show More Button */}
+  {hasMoreGreetings && (
+    <Button
+      onClick={handleShowMore}
+      size="lg"
+      className={cn(
+        "relative overflow-hidden rounded-full px-8 py-6 text-base font-medium",
+        "bg-gradient-to-r from-pink-500 via-violet-500 to-indigo-500",
+        "text-white shadow-lg hover:shadow-xl",
+        "transition-all duration-300 group",
+        "hover:opacity-90 hover:scale-105"
+      )}
+    >
+      <span className="flex items-center gap-2">
+        <span className="text-xl">📜</span>
+        <span className="hidden sm:inline">Show More Greetings</span>
+        <span className="sm:hidden">Show More</span>
+      </span>
+
+      {/* Shine Effect */}
+      <span
+        className="absolute top-0 left-1/2 h-full w-20 -translate-x-1/2 -skew-x-12 bg-white/30
+                   opacity-0 group-hover:opacity-100 group-hover:animate-shine transition-opacity duration-700"
+      ></span>
+    </Button>
+  )}
+
+  {/* Share Your Greeting Button */}
   <Button
     onClick={() => navigate('/create')}
     size="lg"

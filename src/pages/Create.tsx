@@ -95,6 +95,8 @@ const CreatePage: React.FC = () => {
             onEventNameStyleChange={(eventNameStyle) => setFormData((p: any) => ({ ...p, eventNameStyle }))}
             onEventEmojiSettingsChange={(eventEmojiSettings) => setFormData((p: any) => ({ ...p, eventEmojiSettings }))}
             onPublicToggle={(isPublic) => setFormData((p: any) => ({ ...p, isPublic }))}
+            onSenderNameStyleChange={(senderNameStyle) => setFormData((p: any) => ({ ...p, senderNameStyle }))}
+            onReceiverNameStyleChange={(receiverNameStyle) => setFormData((p: any) => ({ ...p, receiverNameStyle }))}
           />
 
           <div className={cn("space-y-6")}>
