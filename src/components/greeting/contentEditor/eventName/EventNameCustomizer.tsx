@@ -26,6 +26,20 @@ const EventNameCustomizer: React.FC<EventNameCustomizerProps> = ({
   onToggleExpanded
 }) => {
   const defaultText = selectedEvent ? `Happy ${selectedEvent.label}` : 'Happy Celebration';
+  
+  // Ensure eventNameStyle has proper structure
+  const safeEventNameStyle = eventNameStyle || {
+    id: 'event-name',
+    content: '',
+    style: {
+      fontSize: '28px',
+      fontWeight: 'bold',
+      color: 'hsl(var(--foreground))',
+      textAlign: 'center' as const,
+      fontFamily: 'inherit'
+    },
+    animation: 'fadeIn'
+  };
 
   return (
     <div>
@@ -44,9 +58,9 @@ const EventNameCustomizer: React.FC<EventNameCustomizerProps> = ({
                 <div className="flex-1 space-y-2">
                   <Label className="text-xs font-medium">Custom Event Name</Label>
                   <Input
-                    value={eventNameStyle.content}
+                    value={safeEventNameStyle.content}
                     onChange={(e) =>
-                      onChange({ ...eventNameStyle, content: e.target.value })
+                      onChange({ ...safeEventNameStyle, content: e.target.value })
                     }
                     placeholder={`Default: ${defaultText}`}
                     className="text-sm"
@@ -60,15 +74,15 @@ const EventNameCustomizer: React.FC<EventNameCustomizerProps> = ({
               <TextStyleControls
                 textSettings={createTextSettings({
                   id: 'event-name',
-                  content: eventNameStyle.content,
-                  style: eventNameStyle.style,
-                  animation: eventNameStyle.animation,
-                  continuousAnimation: eventNameStyle.continuousAnimation
+                  content: safeEventNameStyle.content,
+                  style: safeEventNameStyle.style,
+                  animation: safeEventNameStyle.animation,
+                  continuousAnimation: safeEventNameStyle.continuousAnimation
                 })}
                 onChange={(settings) =>
                   onChange({
-                    ...eventNameStyle,
-                    content: settings.content,
+                    ...safeEventNameStyle,
+                    content: settings.content || '',
                     style: settings.style,
                     animation: settings.animation,
                     continuousAnimation: settings.continuousAnimation

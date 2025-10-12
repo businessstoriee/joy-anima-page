@@ -113,8 +113,19 @@ const EventHeader: React.FC<Props> = ({ greetingData, selectedEvent }) => {
       {/* Receiver Name */}
       {greetingData.receiverName && (
         <HoverAnimations animation="pulse">
-          <p 
+          <motion.p 
             className="text-xl md:text-2xl font-bold text-primary"
+            initial="initial"
+            animate="animate"
+            variants={getAnimation(greetingData.receiverNameStyle?.animation || 'fadeIn', 'fadeIn')}
+            transition={{ 
+              duration: 0.6,
+              delay: 0.3,
+              ...(greetingData.receiverNameStyle?.continuousAnimation && {
+                repeat: Infinity,
+                repeatDelay: 1
+              })
+            }}
             style={greetingData.receiverNameStyle ? {
               fontSize: greetingData.receiverNameStyle.style.fontSize,
               fontWeight: greetingData.receiverNameStyle.style.fontWeight,
@@ -128,7 +139,7 @@ const EventHeader: React.FC<Props> = ({ greetingData, selectedEvent }) => {
             } : undefined}
           >
             {greetingData.receiverName}
-          </p>
+          </motion.p>
         </HoverAnimations>
       )}
     </div>

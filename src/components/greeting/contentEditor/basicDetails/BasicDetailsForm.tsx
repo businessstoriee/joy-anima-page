@@ -28,8 +28,7 @@ interface BasicDetailsFormProps {
   eventEmojiSettings?: EventEmojiSettings;
   onHeaderTextChange?: (headerText: TextContent) => void;
   onEventNameStyleChange?: (eventNameStyle: TextContent) => void;
-
-  // Added props for sender/receiver name customization
+  onEventEmojiSettingsChange?: (settings: EventEmojiSettings) => void;
   senderNameStyle?: TextSettings;
   receiverNameStyle?: TextSettings;
   onSenderNameStyleChange?: (settings: TextSettings | undefined) => void;
@@ -51,6 +50,7 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
   eventEmojiSettings,
   onHeaderTextChange,
   onEventNameStyleChange,
+  onEventEmojiSettingsChange,
   senderNameStyle,
   receiverNameStyle,
   onSenderNameStyleChange,
@@ -96,14 +96,14 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
       <div className="grid md:grid-cols-2 gap-4 p-6 border border-cyan-500 rounded-xl shadow-lg">
         {/* Sender Name */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between min-h-[24px]">
             <Label htmlFor="senderName">{translate('Your Name')}</Label>
             {senderName.length > 0 && (
               <Button
                 onClick={toggleExpandSender}
                 size="sm"
                 variant="ghost"
-                className="text-xs border border-muted/20 hover:border-purple-300 hover:bg-purple-100"
+                className="text-[10px] h-6 px-2 py-0 border border-muted/20 hover:border-primary/40 hover:bg-primary/5 transition-all duration-200"
               >
                 {isExpandedSender ? "Hide" : "Edit"}
               </Button>
@@ -129,14 +129,14 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
 
         {/* Receiver Name */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between min-h-[24px]">
             <Label htmlFor="receiverName">{translate("Receiver's Name")}</Label>
             {receiverName.length > 0 && (
               <Button
                 onClick={toggleExpandReceiver}
                 size="sm"
                 variant="ghost"
-                className="text-xs border border-muted/20 hover:border-purple-300 hover:bg-purple-100"
+                className="text-[10px] h-6 px-2 py-0 border border-muted/20 hover:border-primary/40 hover:bg-primary/5 transition-all duration-200"
               >
                 {isExpandedReceiver ? "Hide" : "Edit"}
               </Button>

@@ -12,6 +12,22 @@ export interface TextStyleSettings {
   lineHeight?: string;
 }
 
+// Font family options
+export const fontFamilyOptions = [
+  { value: 'inherit', label: 'Default' },
+  { value: 'Arial, sans-serif', label: 'Arial' },
+  { value: 'Georgia, serif', label: 'Georgia' },
+  { value: 'Times New Roman, serif', label: 'Times New Roman' },
+  { value: 'Courier New, monospace', label: 'Courier New' },
+  { value: 'Verdana, sans-serif', label: 'Verdana' },
+  { value: 'Comic Sans MS, cursive', label: 'Comic Sans' },
+  { value: 'Impact, sans-serif', label: 'Impact' },
+  { value: 'Trebuchet MS, sans-serif', label: 'Trebuchet' },
+  { value: 'Palatino, serif', label: 'Palatino' },
+  { value: 'Garamond, serif', label: 'Garamond' },
+  { value: 'Brush Script MT, cursive', label: 'Brush Script' },
+] as const;
+
 export interface TextSettings {
   id: string;
   content: string;

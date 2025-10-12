@@ -21,6 +21,7 @@ const GreetingTexts: React.FC<Props> = ({ greetingData }) => {
               variants={getAnimation(text.animation, 'fadeIn')}
               transition={{ 
                 delay: index * 0.1,
+                duration: 0.6,
                 ...(text.continuousAnimation && {
                   repeat: Infinity,
                   repeatDelay: 1
@@ -32,7 +33,11 @@ const GreetingTexts: React.FC<Props> = ({ greetingData }) => {
                 fontWeight: text.style.fontWeight,
                 color: text.style.color, 
                 textAlign: text.style.textAlign,
-                fontFamily: text.style.fontFamily || 'inherit'
+                fontFamily: text.style.fontFamily || 'inherit',
+                fontStyle: text.style.fontStyle,
+                textTransform: text.style.textTransform,
+                letterSpacing: text.style.letterSpacing,
+                lineHeight: text.style.lineHeight
               }}
             >
               {text.content}

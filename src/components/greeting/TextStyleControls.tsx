@@ -13,8 +13,9 @@ import {
   textTransformOptions,
   letterSpacingOptions,
   lineHeightOptions,
+  fontFamilyOptions,
 } from "@/types/textSettings";
-import { animationOptions } from '@/types/animations'; // ✅ Use consolidated animations
+import { animationOptions } from '@/types/animations';
 
 
 interface TextStyleControlsProps {
@@ -45,8 +46,8 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
   const toggleExpand = () => setIsExpanded((prev) => !prev);
 
   const updateStyle = (field: string, value: any) => {
-    onChange({
-      style: { ...textSettings.style, [field]: value },
+    onChange?.({
+      style: { ...textSettings?.style, [field]: value },
     });
   };
 
@@ -55,16 +56,16 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
       {/* Header and Input */}
       {showContent && (
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label className="text-xs font-medium flex items-center ">{label}</Label>
+          <div className="flex items-center justify-between min-h-[24px]">
+            <Label className="text-xs font-medium">{label}</Label>
 
             {/* Only show Edit/Hide if user has typed something */}
-            {textSettings.content && textSettings.content.length > 0 && (
+            {textSettings?.content && textSettings.content.length > 0 && (
               <Button
                 onClick={toggleExpand}
                 size="sm"
                 variant="ghost"
-                className="text-xs border border-muted/20 hover:border-purple-300 hover:bg-purple-100"
+                className="text-[10px] h-6 px-2 py-0 border border-muted/20 hover:border-primary/40 hover:bg-primary/5 transition-all duration-200"
               >
                 {isExpanded ? "Hide" : "Edit"}
               </Button>
@@ -72,8 +73,8 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
           </div>
 
           <Input
-            value={textSettings.content}
-            onChange={(e) => onChange({ content: e.target.value })}
+            value={textSettings?.content || ''}
+            onChange={(e) => onChange?.({ content: e.target.value })}
             placeholder={contentPlaceholder}
             className="text-sm"
           />
@@ -84,23 +85,20 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
       {isExpanded && (
         <>
           {/* Preview */}
-          {textSettings.content && (
+          {textSettings?.content && (
             <div className="pt-2 border-t">
               <Label className="text-xs text-muted-foreground mb-2 block">Preview:</Label>
               <div
                 style={{
-                  fontSize: textSettings.style.fontSize,
-                  fontWeight: textSettings.style.fontWeight,
-                  color: textSettings.style.color,
-                  textAlign: textSettings.style.textAlign,
-                  fontFamily: textSettings.style.fontFamily,
-                  fontStyle: textSettings.style.fontStyle,
-                  textTransform: textSettings.style.textTransform,
-                  letterSpacing: textSettings.style.letterSpacing,
-                  lineHeight: textSettings.style.lineHeight,
-                   animation: textSettings.animation
-      ? `${textSettings.animation} 1.5s ease-in-out infinite`
-      : undefined,
+                  fontSize: textSettings.style?.fontSize,
+                  fontWeight: textSettings.style?.fontWeight,
+                  color: textSettings.style?.color,
+                  textAlign: textSettings.style?.textAlign,
+                  fontFamily: textSettings.style?.fontFamily,
+                  fontStyle: textSettings.style?.fontStyle,
+                  textTransform: textSettings.style?.textTransform,
+                  letterSpacing: textSettings.style?.letterSpacing,
+                  lineHeight: textSettings.style?.lineHeight,
                 }}
                 className="p-2 border rounded bg-muted/20"
               >
@@ -113,7 +111,7 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
           <div className={`grid gap-3 ${compact ? "grid-cols-1" : "grid-cols-2"}`}>
             <div className="space-y-2">
               <Label className="text-xs">Font Size</Label>
-              <Select value={textSettings.style.fontSize} onValueChange={(v) => updateStyle("fontSize", v)}>
+              <Select value={textSettings?.style?.fontSize} onValueChange={(v) => updateStyle("fontSize", v)}>
                 <SelectTrigger className="text-xs">
                   <SelectValue />
                 </SelectTrigger>
@@ -129,7 +127,7 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
 
             <div className="space-y-2">
               <Label className="text-xs">Font Weight</Label>
-              <Select value={textSettings.style.fontWeight} onValueChange={(v) => updateStyle("fontWeight", v)}>
+              <Select value={textSettings?.style?.fontWeight} onValueChange={(v) => updateStyle("fontWeight", v)}>
                 <SelectTrigger className="text-xs">
                   <SelectValue />
                 </SelectTrigger>
@@ -146,7 +144,7 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
           {/* Text Align + Color */}
             <div className="space-y-2">
               <Label className="text-xs">Text Align</Label>
-              <Select value={textSettings.style.textAlign} onValueChange={(v) => updateStyle("textAlign", v)}>
+              <Select value={textSettings?.style?.textAlign} onValueChange={(v) => updateStyle("textAlign", v)}>
                 <SelectTrigger className="text-xs">
                   <SelectValue />
                 </SelectTrigger>
@@ -165,11 +163,11 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
               <div className="flex items-center gap-2">
                 <Input
                   type="color"
-                  value={textSettings.style.color.startsWith("hsl") ? "#333333" : textSettings.style.color}
+                  value={textSettings?.style?.color?.startsWith("hsl") ? "#333333" : textSettings?.style?.color}
                   onChange={(e) => updateStyle("color", e.target.value)}
                   className="w-10 h-9 p-1 cursor-pointer"
                 />
-                <Select value={textSettings.style.color} onValueChange={(v) => updateStyle("color", v)}>
+                <Select value={textSettings?.style?.color} onValueChange={(v) => updateStyle("color", v)}>
                   <SelectTrigger className="text-xs">
                     <SelectValue />
                   </SelectTrigger>
@@ -187,11 +185,31 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
               </div>
             </div>
 
+          {/* Font Family */}
+            <div className="space-y-2">
+              <Label className="text-xs">Font Family</Label>
+              <Select
+                value={textSettings?.style?.fontFamily || "inherit"}
+                onValueChange={(v) => updateStyle("fontFamily", v)}
+              >
+                <SelectTrigger className="text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {fontFamilyOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      <span style={{ fontFamily: option.value }}>{option.label}</span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
           {/* Font Style */}
             <div className="space-y-2">
               <Label className="text-xs">Font Style</Label>
               <Select
-                value={textSettings.style.fontStyle || "normal"}
+                value={textSettings?.style?.fontStyle || "normal"}
                 onValueChange={(v: "normal" | "italic" | "oblique") => updateStyle("fontStyle", v)}
               >
                 <SelectTrigger className="text-xs">
@@ -211,7 +229,7 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
           {showAnimation && (
             <div className="space-y-2">
               <Label className="text-xs">Animation</Label>
-              <Select value={textSettings.animation} onValueChange={(v) => onChange({ animation: v })}>
+              <Select value={textSettings?.animation} onValueChange={(v) => onChange?.({ animation: v })}>
                 <SelectTrigger className="text-xs">
                   <SelectValue />
                 </SelectTrigger>

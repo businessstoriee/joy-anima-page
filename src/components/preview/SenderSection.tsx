@@ -23,8 +23,24 @@ const SenderSection: React.FC<Props> = ({ greetingData }) => {
         transition={{ delay: 0.5 }}
       >
         <p className="text-sm text-muted-foreground mb-1">{translate('With love from')}</p>
-        <p 
+        <motion.p 
           className="text-lg font-semibold text-primary"
+          initial="initial"
+          animate="animate"
+          variants={{
+            initial: { opacity: 0, y: 10 },
+            animate: { 
+              opacity: 1, 
+              y: 0,
+              transition: { 
+                duration: 0.6,
+                ...(senderStyle?.continuousAnimation && {
+                  repeat: Infinity,
+                  repeatDelay: 1
+                })
+              }
+            }
+          }}
           style={senderStyle ? {
             fontSize: senderStyle.style.fontSize,
             fontWeight: senderStyle.style.fontWeight,
@@ -38,7 +54,7 @@ const SenderSection: React.FC<Props> = ({ greetingData }) => {
           } : undefined}
         >
           {greetingData.senderName}
-        </p>
+        </motion.p>
       </motion.div>
     </HoverAnimations>
   );

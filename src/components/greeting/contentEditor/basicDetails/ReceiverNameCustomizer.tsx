@@ -14,30 +14,28 @@ interface ReceiverNameCustomizerProps {
 const ReceiverNameCustomizer: React.FC<ReceiverNameCustomizerProps> = ({
   receiverNameStyle,
   onChange,
-  expanded, // ✅ use prop, not local state
+  expanded,
 }) => {
+  // Initialize with defaults if not present
+  const currentSettings = receiverNameStyle || createTextSettings({ id: 'receiver-name', content: '' });
 
   const handleSettingsChange = (updates: Partial<TextSettings>) => {
-    if (receiverNameStyle) {
-      onChange({ ...receiverNameStyle, ...updates });
-    } else {
-      onChange(createTextSettings({ id: 'receiver-name', content: '', ...updates }));
-    }
+    onChange({ ...currentSettings, ...updates });
   };
 
   return (
     <div>
       <AnimatePresence initial={false}>
-        {expanded && receiverNameStyle && (
+        {expanded && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <CardContent>
+            <CardContent className="pt-3">
               <TextStyleControls
-                textSettings={receiverNameStyle}
+                textSettings={currentSettings}
                 onChange={handleSettingsChange}
                 showContent={false}
                 showAnimation

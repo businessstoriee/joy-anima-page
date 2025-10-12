@@ -16,27 +16,26 @@ const SenderNameCustomizer: React.FC<SenderNameCustomizerProps> = ({
   onChange,
   expanded,
 }) => {
+  // Initialize with defaults if not present
+  const currentSettings = senderNameStyle || createTextSettings({ id: 'sender-name', content: '' });
+
   const handleSettingsChange = (updates: Partial<TextSettings>) => {
-    if (senderNameStyle) {
-      onChange({ ...senderNameStyle, ...updates });
-    } else {
-      onChange(createTextSettings({ id: 'sender-name', content: '', ...updates }));
-    }
+    onChange({ ...currentSettings, ...updates });
   };
 
   return (
     <div>
       <AnimatePresence initial={false}>
-        {expanded && senderNameStyle && (
+        {expanded && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <CardContent>
+            <CardContent className="pt-3">
               <TextStyleControls
-                textSettings={senderNameStyle}
+                textSettings={currentSettings}
                 onChange={handleSettingsChange}
                 showContent={false}
                 showAnimation
