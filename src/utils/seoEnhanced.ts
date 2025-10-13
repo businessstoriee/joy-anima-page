@@ -328,34 +328,79 @@ export const updateAdvancedPageSEO = (seoData: AdvancedSEOData) => {
   // Basic meta tags
   updateMeta('description', seoData.description);
   updateMeta('keywords', seoData.keywords.join(', '));
-  updateMeta('robots', seoData.robots || 'index, follow');
+  updateMeta('robots', seoData.robots || 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
   updateMeta('viewport', 'width=device-width, initial-scale=1');
   updateMeta('author', 'Greeting Cards Creator');
+  
+  // Google-specific meta tags for better indexing
+  updateMeta('googlebot', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
+  updateMeta('bingbot', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
+  
+  // Google Discover optimization
+  updateMeta('google', 'notranslate');
+  updateMeta('rating', 'general');
+  updateMeta('referrer', 'no-referrer-when-downgrade');
+  
+  // Content classification
+  updateMeta('content-language', seoData.lang);
+  updateMeta('distribution', 'global');
+  updateMeta('coverage', 'Worldwide');
+  updateMeta('target', 'all');
 
-  // Open Graph tags
-  updateMeta('og:type', seoData.ogType || 'website', true);
+  // Enhanced Open Graph tags
+  updateMeta('og:type', seoData.ogType || 'article', true);
   updateMeta('og:title', seoData.ogTitle, true);
   updateMeta('og:description', seoData.ogDescription, true);
   updateMeta('og:url', window.location.href, true);
   updateMeta('og:site_name', 'Beautiful Greeting Cards', true);
   updateMeta('og:locale', seoData.lang, true);
+  updateMeta('og:updated_time', new Date().toISOString(), true);
+  updateMeta('og:see_also', window.location.origin, true);
+  
+  // Add alternate locales for multi-language support
+  if (seoData.hrefLang) {
+    Object.keys(seoData.hrefLang).forEach(lang => {
+      if (lang !== 'x-default' && lang !== seoData.lang) {
+        const alternateLang = lang.replace('-', '_');
+        updateMeta(`og:locale:alternate`, alternateLang, true);
+      }
+    });
+  }
   
   if (seoData.ogImage) {
     updateMeta('og:image', seoData.ogImage, true);
+    updateMeta('og:image:secure_url', seoData.ogImage, true);
     updateMeta('og:image:alt', seoData.ogImageAlt || seoData.ogTitle, true);
     updateMeta('og:image:width', '1200', true);
     updateMeta('og:image:height', '630', true);
+    updateMeta('og:image:type', 'image/jpeg', true);
+  }
+  
+  // Article-specific OG tags for Google Discover
+  if (seoData.ogType === 'article') {
+    updateMeta('article:published_time', new Date().toISOString(), true);
+    updateMeta('article:modified_time', new Date().toISOString(), true);
+    updateMeta('article:author', 'Beautiful Greeting Cards', true);
+    updateMeta('article:section', 'Greetings', true);
+    updateMeta('article:tag', seoData.keywords.slice(0, 5).join(', '), true);
   }
 
-  // Twitter Card tags
+  // Enhanced Twitter Card tags
   updateMeta('twitter:card', seoData.twitterCard || 'summary_large_image');
   updateMeta('twitter:title', seoData.ogTitle);
   updateMeta('twitter:description', seoData.ogDescription);
+  updateMeta('twitter:site', '@greetingcards');
+  updateMeta('twitter:creator', '@greetingcards');
   const twitterImageSrc = seoData.twitterImage || seoData.ogImage;
   if (twitterImageSrc) {
     updateMeta('twitter:image', twitterImageSrc);
+    updateMeta('twitter:image:src', twitterImageSrc);
     updateMeta('twitter:image:alt', seoData.ogImageAlt || seoData.ogTitle);
   }
+  
+  // Additional Twitter-specific tags
+  updateMeta('twitter:domain', window.location.hostname);
+  updateMeta('twitter:url', window.location.href);
 
   // Language and direction
   document.documentElement.lang = seoData.lang;
@@ -406,4 +451,23 @@ export const updateAdvancedPageSEO = (seoData: AdvancedSEOData) => {
   updateMeta('mobile-web-app-capable', 'yes');
   updateMeta('apple-mobile-web-app-capable', 'yes');
   updateMeta('apple-mobile-web-app-status-bar-style', 'default');
+  updateMeta('apple-mobile-web-app-title', seoData.title);
+  
+  // PWA optimization
+  updateMeta('application-name', 'Beautiful Greeting Cards');
+  updateMeta('theme-color', '#ffffff');
+  updateMeta('msapplication-TileColor', '#ffffff');
+  
+  // Preconnect to improve performance
+  const addPreconnect = (href: string) => {
+    if (!document.querySelector(`link[rel="preconnect"][href="${href}"]`)) {
+      const link = document.createElement('link');
+      link.rel = 'preconnect';
+      link.href = href;
+      document.head.appendChild(link);
+    }
+  };
+  
+  addPreconnect('https://fonts.googleapis.com');
+  addPreconnect('https://fonts.gstatic.com');
 };
