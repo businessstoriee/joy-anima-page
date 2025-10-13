@@ -101,7 +101,7 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
         {/* Sender Name */}
         <div className="space-y-2">
           <div className="flex items-center justify-between min-h-[24px]">
-            <Label htmlFor="senderName" className="dark:text-foreground">{translate('Your Name')} <span className="text-xs text-muted-foreground">(Optional)</span></Label>
+            <Label htmlFor="senderName" className="dark:text-foreground">{translate('Your Name')}</Label>
             {senderName.length > 0 && (
               <Button
                 onClick={toggleExpandSender}
@@ -135,7 +135,7 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
         {/* Receiver Name */}
         <div className="space-y-2">
           <div className="flex items-center justify-between min-h-[24px]">
-            <Label htmlFor="receiverName" className="dark:text-foreground">{translate("Receiver's Name")} <span className="text-xs text-muted-foreground">(Optional)</span></Label>
+            <Label htmlFor="receiverName" className="dark:text-foreground">{translate("Receiver's Name")}</Label>
             {receiverName.length > 0 && (
               <Button
                 onClick={toggleExpandReceiver}
@@ -168,10 +168,13 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
 
 
       {/* Background Music URL */}
-      <div className="space-y-2 p-6 border border-primary/20 dark:border-primary/40 rounded-xl shadow-lg bg-gradient-to-br from-background to-primary/5 dark:from-background dark:to-primary/10">
+      <div className="space-y-2 p-6 border border-violet-500 dark:border-primary/40 rounded-xl shadow-lg bg-gradient-to-br from-background to-primary/5 dark:from-background dark:to-primary/10">
         <Label htmlFor="audioUrl" className="flex items-center gap-2 text-sm font-medium dark:text-foreground">
           <Music className="h-4 w-4 text-primary" />
-          Background Music URL <span className="text-muted-foreground">(Optional)</span>
+          Background Music URL
+           <span className="flex items-center px-2 py-1 justify-center rounded-full bg-primary/10 text-primary text-xs">
+              (Optional)
+          </span>
         </Label>
         <AudioPlayerInput 
           value={audioUrl}

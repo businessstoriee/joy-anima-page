@@ -97,15 +97,6 @@ const EventEmojiCustomizer: React.FC<EventEmojiCustomizerProps> = ({
             transition={{ duration: 0.3 }}
           >
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between pb-2">
-                <span className="text-xs text-muted-foreground">Edit Settings</span>
-
-                {/* Expand toggle — controlled via props or local state */}
-                <Switch
-                  checked={expanded}
-                  onCheckedChange={() => setExpanded()}
-                />
-              </div>
 
               <AnimatePresence initial={false}>
                 {expanded && (
@@ -222,10 +213,10 @@ const EventEmojiCustomizer: React.FC<EventEmojiCustomizerProps> = ({
                         </Label>
                         <Input
                           type="color"
-                          value={settings.effects?.glowColor || "#ffffff"}
+                          value={settings.effects?.glowColor || "#ecdc46ff"}
                           onChange={(e) => updateEffect("glowColor", e.target.value)}
                           disabled={!settings.effects?.glow}
-                          className="h-10 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="h-10 w-2/6 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                           title={!settings.effects?.glow ? "Enable glow effect to change color" : "Select glow color"}
                         />
                       </div>

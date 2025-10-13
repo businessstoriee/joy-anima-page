@@ -60,7 +60,7 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
             <Label className="text-xs font-medium">{label}</Label>
 
             {/* Only show Edit/Hide if user has typed something */}
-            {textSettings?.content && textSettings.content.length > 0 && (
+            {/* {textSettings?.content && textSettings.content.length > 0 && ( */}
               <Button
                 onClick={toggleExpand}
                 size="sm"
@@ -69,7 +69,7 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
               >
                 {isExpanded ? "Hide" : "Edit"}
               </Button>
-            )}
+            {/* )} */}
           </div>
 
           <Input
@@ -206,7 +206,7 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
             </div>
 
           {/* Font Style */}
-            <div className="space-y-2">
+         {/*    <div className="space-y-2">
               <Label className="text-xs">Font Style</Label>
               <Select
                 value={textSettings?.style?.fontStyle || "normal"}
@@ -223,7 +223,7 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </div> */}
 
           {/* Animation */}
           {showAnimation && (

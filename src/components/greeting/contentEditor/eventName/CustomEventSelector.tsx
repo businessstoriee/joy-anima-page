@@ -159,9 +159,9 @@ const CustomEventSelector = ({
             </SelectTrigger>
             <SelectContent className="max-h-80 bg-background/95 backdrop-blur-md dark:bg-background/90">
               {/* Search Box as First Element in Dropdown */}
-              <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md p-2 border-b border-muted/50">
+              <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md p-2 border-b border-muted/80">
                 <div className="relative group">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+                  <Search className="absolute z-20 left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground shadow-lg group-hover:text-primary transition-colors" />
                   <Input
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
