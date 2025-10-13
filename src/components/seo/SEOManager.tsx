@@ -29,12 +29,13 @@ const SEOManager = ({
     const firstImage = greetingData?.media?.find(item => item.type === 'image')?.url;
     const firstText = greetingData?.texts?.[0]?.content;
     const senderName = greetingData?.senderName || "Someone";
+    const receiverName = greetingData?.receiverName || "You";
     const eventEmoji = greetingData?.emojis || "🎉";
     const eventDisplay = customEventName || eventType;
 
     // --- Build Title ---
     let finalTitle = title 
-      || `${eventEmoji} ${eventDisplay} Greetings from ${senderName} to ${greetingData?.receiverName || 'You'}`;
+      || `${eventEmoji} ${eventDisplay} Greeting${senderName !== "Someone" ? ` from ${senderName}` : ''}${receiverName !== "You" ? ` to ${receiverName}` : ''}`;
 
     // --- Build Description ---
     let finalDescription = description 
@@ -42,7 +43,7 @@ const SEOManager = ({
           ? firstText.length > 155 
             ? `${firstText.substring(0, 152)}...`
             : firstText
-          : `${senderName} sent you a beautiful ${eventDisplay} greeting with ${greetingData?.media?.length || 0} ${greetingData?.media?.length === 1 ? 'photo' : 'photos'}, animations, and heartfelt wishes.`);
+          : `${senderName !== "Someone" ? senderName : 'Someone'} sent you a beautiful ${eventDisplay} greeting${greetingData?.media?.length ? ` with ${greetingData.media.length} ${greetingData.media.length === 1 ? 'photo' : 'photos'}` : ''}, animations, and heartfelt wishes.`);
 
     const seoEventType = eventType === 'custom' && customEventName 
       ? customEventName.toLowerCase().replace(/\s+/g, '-')
@@ -58,11 +59,14 @@ const SEOManager = ({
     // Open Graph / Twitter cards - Enhanced with all greeting details
     seoData.ogTitle = finalTitle;
     seoData.ogDescription = finalDescription;
+    seoData.ogType = 'article';
+    seoData.twitterCard = 'summary_large_image';
     
-    // Use first image from media for social preview
+    // Use first image from media for social preview (CRITICAL for WhatsApp, Facebook, Twitter)
     if (firstImage) {
       seoData.ogImage = firstImage;
       seoData.twitterImage = firstImage;
+      seoData.ogImageAlt = `${eventDisplay} greeting ${firstText ? 'with message' : ''}`;
     }
     
     // Add structured data for rich social previews

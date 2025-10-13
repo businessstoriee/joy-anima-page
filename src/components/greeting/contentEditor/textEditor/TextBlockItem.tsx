@@ -5,7 +5,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { ChevronUp, ChevronDown, Trash2 } from 'lucide-react';
 import { TextContent } from '@/types/greeting';
 import { cn } from '@/lib/utils';
-import TextBlockControls from './TextBlockControls';
+import TextStyleControls from '../../TextStyleControls';
+import { createTextSettings } from '@/types/textSettings';
 
 interface Props {
   text: TextContent;
@@ -54,12 +55,26 @@ export default function TextBlockItem({ text, index, isActive, onRemove, onMove,
           className="text-sm min-h-[80px] w-full resize-none overflow-auto break-words whitespace-pre-wrap [text-wrap:pretty] hyphens-auto"
         />
         {isActive && (
-          <TextBlockControls 
-            text={text} 
-            index={index}
-            onUpdate={onUpdate} 
-            onRemove={onRemove}
-            onMove={onMove}
+          <TextStyleControls
+            textSettings={createTextSettings({
+              id: text.id,
+              content: text.content,
+              style: text.style,
+              animation: text.animation,
+              continuousAnimation: text.continuousAnimation
+            })}
+            onChange={(settings) => {
+              const updates: Partial<TextContent> = {};
+              if (settings.content !== undefined) updates.content = settings.content;
+              if (settings.style) updates.style = settings.style;
+              if (settings.animation !== undefined) updates.animation = settings.animation;
+              if (settings.continuousAnimation !== undefined) updates.continuousAnimation = settings.continuousAnimation;
+              onUpdate(updates);
+            }}
+            showContent={false}
+            showAnimation={true}
+            compact={true}
+            label="Text Styling"
           />
         )}
       </CardContent>

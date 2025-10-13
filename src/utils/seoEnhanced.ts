@@ -5,6 +5,9 @@ export interface AdvancedSEOData {
   ogTitle: string;
   ogDescription: string;
   ogImage?: string;
+  ogImageAlt?: string;
+  ogType?: string;
+  twitterCard?: string;
   twitterImage?: string;
   canonical?: string;
   lang: string;
@@ -330,7 +333,7 @@ export const updateAdvancedPageSEO = (seoData: AdvancedSEOData) => {
   updateMeta('author', 'Greeting Cards Creator');
 
   // Open Graph tags
-  updateMeta('og:type', 'website', true);
+  updateMeta('og:type', seoData.ogType || 'website', true);
   updateMeta('og:title', seoData.ogTitle, true);
   updateMeta('og:description', seoData.ogDescription, true);
   updateMeta('og:url', window.location.href, true);
@@ -339,16 +342,19 @@ export const updateAdvancedPageSEO = (seoData: AdvancedSEOData) => {
   
   if (seoData.ogImage) {
     updateMeta('og:image', seoData.ogImage, true);
-    updateMeta('og:image:alt', seoData.ogTitle, true);
+    updateMeta('og:image:alt', seoData.ogImageAlt || seoData.ogTitle, true);
+    updateMeta('og:image:width', '1200', true);
+    updateMeta('og:image:height', '630', true);
   }
 
   // Twitter Card tags
-  updateMeta('twitter:card', 'summary_large_image');
+  updateMeta('twitter:card', seoData.twitterCard || 'summary_large_image');
   updateMeta('twitter:title', seoData.ogTitle);
   updateMeta('twitter:description', seoData.ogDescription);
   const twitterImageSrc = seoData.twitterImage || seoData.ogImage;
   if (twitterImageSrc) {
     updateMeta('twitter:image', twitterImageSrc);
+    updateMeta('twitter:image:alt', seoData.ogImageAlt || seoData.ogTitle);
   }
 
   // Language and direction
