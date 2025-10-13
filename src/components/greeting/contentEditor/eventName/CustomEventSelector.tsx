@@ -150,44 +150,7 @@ const CustomEventSelector = ({
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* Beautiful Search Box with Real-time Search */}
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative"
-        >
-          <Label className="text-xs font-medium mb-2 block">Search Events</Label>
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-            <Input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by name, emoji, or category..."
-              className="pl-10 pr-10 h-10 bg-background/50 backdrop-blur-sm border-muted hover:border-primary/50 focus:border-primary transition-all duration-200 dark:bg-background/30"
-            />
-            {searchQuery && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSearchQuery('')}
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0 hover:bg-destructive/10 hover:text-destructive"
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            )}
-          </div>
-          {searchQuery && (
-            <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-xs text-muted-foreground mt-1"
-            >
-              {filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''} found
-            </motion.p>
-          )}
-        </motion.div>
-
-        {/* Event Selector */}
+        {/* Event Selector with integrated search */}
         <div className="space-y-2">
           <Label htmlFor="eventType">Select Event Type *</Label>
           <Select value={selectedEvent} onValueChange={onEventChange}>
@@ -195,6 +158,44 @@ const CustomEventSelector = ({
               <SelectValue placeholder="Choose an event type" />
             </SelectTrigger>
             <SelectContent className="max-h-80 bg-background/95 backdrop-blur-md dark:bg-background/90">
+              {/* Search Box as First Element in Dropdown */}
+              <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-md p-2 border-b border-muted/50">
+                <div className="relative group">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search events..."
+                    className="pl-9 pr-8 h-8 text-sm bg-background/50 backdrop-blur-sm border-muted hover:border-primary/50 focus:border-primary transition-all duration-200 dark:bg-background/30"
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                  {searchQuery && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSearchQuery('');
+                      }}
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0 hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+                {searchQuery && (
+                  <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-[10px] text-muted-foreground mt-1"
+                  >
+                    {filteredEvents.length} result{filteredEvents.length !== 1 ? 's' : ''}
+                  </motion.p>
+                )}
+              </div>
+
+              {/* Event Options */}
               {Object.entries(groupedEvents).length > 0 ? (
                 Object.entries(groupedEvents).map(([category, events]) => (
                   <div key={category}>

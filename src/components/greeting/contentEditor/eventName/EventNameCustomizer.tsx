@@ -27,18 +27,23 @@ const EventNameCustomizer: React.FC<EventNameCustomizerProps> = ({
 }) => {
   const defaultText = selectedEvent ? `Happy ${selectedEvent.label}` : 'Happy Celebration';
   
-  // Ensure eventNameStyle has proper structure
-  const safeEventNameStyle = eventNameStyle || {
-    id: 'event-name',
-    content: '',
+  // Ensure eventNameStyle has proper structure with all required fields
+  const safeEventNameStyle: TextContent = {
+    id: eventNameStyle?.id || 'event-name',
+    content: eventNameStyle?.content || '',
     style: {
-      fontSize: '28px',
-      fontWeight: 'bold',
-      color: 'hsl(var(--foreground))',
-      textAlign: 'center' as const,
-      fontFamily: 'inherit'
+      fontSize: eventNameStyle?.style?.fontSize || '28px',
+      fontWeight: eventNameStyle?.style?.fontWeight || 'bold',
+      color: eventNameStyle?.style?.color || 'hsl(var(--foreground))',
+      textAlign: (eventNameStyle?.style?.textAlign as 'left' | 'center' | 'right') || 'center',
+      fontFamily: eventNameStyle?.style?.fontFamily || 'inherit',
+      fontStyle: eventNameStyle?.style?.fontStyle || 'normal',
+      textTransform: eventNameStyle?.style?.textTransform || 'none',
+      letterSpacing: eventNameStyle?.style?.letterSpacing || 'normal',
+      lineHeight: eventNameStyle?.style?.lineHeight || 'normal'
     },
-    animation: 'fadeIn'
+    animation: eventNameStyle?.animation || 'fadeIn',
+    continuousAnimation: eventNameStyle?.continuousAnimation || false
   };
 
   return (

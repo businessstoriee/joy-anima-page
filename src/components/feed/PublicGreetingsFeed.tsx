@@ -380,7 +380,7 @@ const PublicGreetingsFeed: React.FC = () => {
     </span>
   </p>
 <small className="text-gray-400 dark:text-gray-500">
-  Posts stay live for 7 days from the time they're created.
+  Posts stay live for 30 days from the time they're created.
 </small>
 </motion.div>
 

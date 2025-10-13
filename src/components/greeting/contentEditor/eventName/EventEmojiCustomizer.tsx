@@ -200,13 +200,34 @@ const EventEmojiCustomizer: React.FC<EventEmojiCustomizerProps> = ({
 
                       {/* Glow Effect */}
                       <div className="space-y-2">
-                        <Label className="text-xs">Glow Effect</Label>
+                        <Label className="text-xs flex items-center gap-1">
+                          Glow Effect
+                          <span className="text-[10px] text-muted-foreground">(Toggle to enable)</span>
+                        </Label>
                         <div>
                           <Switch
                             checked={!!settings.effects?.glow}
                             onCheckedChange={(checked) => updateEffect("glow", checked)}
                           />
                         </div>
+                      </div>
+
+                      {/* Glow Color - Only enabled when glow is active */}
+                      <div className="space-y-2">
+                        <Label className="text-xs flex items-center gap-1">
+                          Glow Color
+                          {!settings.effects?.glow && (
+                            <span className="text-[10px] text-muted-foreground">(Enable glow first)</span>
+                          )}
+                        </Label>
+                        <Input
+                          type="color"
+                          value={settings.effects?.glowColor || "#ffffff"}
+                          onChange={(e) => updateEffect("glowColor", e.target.value)}
+                          disabled={!settings.effects?.glow}
+                          className="h-10 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                          title={!settings.effects?.glow ? "Enable glow effect to change color" : "Select glow color"}
+                        />
                       </div>
                     </div>
                   </motion.div>

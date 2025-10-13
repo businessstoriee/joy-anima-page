@@ -79,6 +79,7 @@ export interface EventEmojiSettings {
   textAlign?: 'left' | 'center' | 'right';
   effects?: {
     glow?: boolean;
+    glowColor?: string;
     bounce?: boolean;
     rotate?: boolean;
   };

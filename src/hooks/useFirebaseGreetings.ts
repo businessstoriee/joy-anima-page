@@ -27,14 +27,14 @@ export function useFirebaseGreetings() {
   const [isLoading, setIsLoading] = useState(false);
   const [savedGreetings, setSavedGreetings] = useState<SavedGreeting[]>([]);
 
-  // Cleanup old greetings (7+ days old) and their media files
+  // Cleanup old greetings (30+ days old) and their media files
   const cleanupOldGreetings = useCallback(async () => {
     try {
-      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const greetingsRef = collection(db, 'greetings');
       const oldGreetingsQuery = query(
         greetingsRef,
-        where('createdAt', '<', sevenDaysAgo)
+        where('createdAt', '<', thirtyDaysAgo)
       );
       
       const querySnapshot = await getDocs(oldGreetingsQuery);

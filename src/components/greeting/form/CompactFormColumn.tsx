@@ -203,6 +203,10 @@ const CompactFormColumn: React.FC<CompactFormColumnProps> = ({
           onHeaderTextChange={onHeaderTextChange}
           onEventNameStyleChange={onEventNameStyleChange}
           onEventEmojiSettingsChange={onEventEmojiSettingsChange}
+          senderNameStyle={formData.senderNameStyle}
+          receiverNameStyle={formData.receiverNameStyle}
+          onSenderNameStyleChange={onSenderNameStyleChange}
+          onReceiverNameStyleChange={onReceiverNameStyleChange}
         />
 
         {/* Public/Private Toggle */}

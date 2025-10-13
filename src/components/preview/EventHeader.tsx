@@ -100,7 +100,7 @@ const EventHeader: React.FC<Props> = ({ greetingData, selectedEvent }) => {
           style={{
             fontSize: `${emojiSize}px`,
             filter: greetingData.eventEmojiSettings?.effects?.glow
-              ? 'drop-shadow(0 0 10px currentColor)'
+              ? `drop-shadow(0 0 15px ${greetingData.eventEmojiSettings?.effects?.glowColor || '#ffffff'})`
               : 'none',
             textAlign: greetingData.eventEmojiSettings?.textAlign || 'center',
             width: '100%'
