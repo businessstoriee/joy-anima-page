@@ -9,6 +9,7 @@ import GreetingTexts from './GreetingTexts';
 import EnhancedMediaGallery from './EnhancedMediaGallery';
 import SenderSection from './SenderSection';
 import AudioAutoPlay from './AudioAutoPlay';
+import { cn } from '@/lib/utils';
 
 interface PreviewProps {
   greetingData: GreetingFormData;
@@ -30,7 +31,7 @@ const Preview = ({
 
   // Default view mode
   return (
-    <BackgroundWrapper greetingData={greetingData} className={className}>
+    <BackgroundWrapper greetingData={greetingData} className={cn('preview-theme-static', className)}>
         <BorderContainer
           greetingData={greetingData}
           selectedEvent={selectedEvent}

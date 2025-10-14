@@ -78,11 +78,11 @@ const EventHeader: React.FC<Props> = ({ greetingData, selectedEvent }) => {
           })
         }}
         style={{
-          fontSize: greetingData.eventNameStyle?.style.fontSize || '28px',
-          fontWeight: greetingData.eventNameStyle?.style.fontWeight || 'bold',
-          color: greetingData.eventNameStyle?.style.color || 'hsl(var(--foreground))',
-          textAlign: greetingData.eventNameStyle?.style.textAlign || greetingData.eventEmojiSettings?.textAlign || 'center',
-          fontFamily: greetingData.eventNameStyle?.style.fontFamily || 'inherit'
+          fontSize: greetingData.eventNameStyle?.style?.fontSize || '28px',
+          fontWeight: greetingData.eventNameStyle?.style?.fontWeight || 'bold',
+          color: greetingData.eventNameStyle?.style?.color || 'hsl(var(--foreground))',
+          textAlign: greetingData.eventNameStyle?.style?.textAlign || greetingData.eventEmojiSettings?.textAlign || 'center',
+          fontFamily: greetingData.eventNameStyle?.style?.fontFamily || 'inherit'
         }}
         className="mb-4 hover:animate-pulse"
       >

@@ -73,7 +73,7 @@ export default function TextBlockItem({ text, index, isActive, onRemove, onMove,
             }}
             showContent={false}
             showAnimation={true}
-            compact={true}
+            compact={false}
             label="Text Styling"
           />
         )}
