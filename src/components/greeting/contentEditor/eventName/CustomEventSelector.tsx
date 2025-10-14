@@ -302,99 +302,119 @@ const CustomEventSelector = ({
         )}
 
         {/* Selected Event + Customizers */}
-        {selectedEvent && (
-          <AnimatePresence>
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
+ {selectedEvent && (
+  <AnimatePresence>
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div
+        className={`
+          p-4 rounded-xl transition-all duration-300 shadow-sm
+          border border-primary/20
+          bg-gradient-to-br from-purple-50 to-white
+          dark:from-zinc-900 dark:to-zinc-800 dark:border-purple-400/20
+        `}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Label className="text-xs text-muted-foreground whitespace-nowrap">
+            Selected Event:
+          </Label>
+
+          <div className="flex items-center gap-1">
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-xs border border-muted/20 hover:border-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 dark:text-purple-300"
+              onClick={toggleEventCustomizer}
             >
-              <div className="p-3 bg-muted/50 dark:bg-muted/20 rounded-lg">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <Label className="text-xs text-muted-foreground whitespace-nowrap">
-                    Selected Event:
-                  </Label>
+              <span className="hidden sm:inline">
+                {showEventCustomizer ? "Hide" : "Edit Event Name"}
+              </span>
+              <span className="sm:hidden">
+                {showEventCustomizer ? "❌" : "Edit Event"}
+              </span>
+            </Button>
 
-                  <div className="flex items-center gap-1">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-xs border border-muted/20 hover:border hover:border-purple-300 hover:bg-purple-100"
-                      onClick={toggleEventCustomizer}
-                    >
-                      <span className="hidden sm:inline">
-                        {showEventCustomizer ? 'Hide' : 'Edit Event Name'}
-                      </span>
-                      <span className="sm:hidden">{showEventCustomizer ? '❌' : 'Edit Event'}</span>
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-xs  border border-muted/20 hover:border hover:border-purple-300 hover:bg-purple-100"
-                      onClick={toggleEmojiCustomizer}
-                    >
-                      <span className="hidden sm:inline">
-                        {showEmojiCustomizer ? 'Hide' : 'Edit Emoji Style'}
-                      </span>
-                      <span className="sm:hidden">{showEmojiCustomizer ? '❌' : 'Edit '+selectedEventData.emoji}</span>
-                    </Button>
-                  </div>
-                </div>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-xs border border-muted/20 hover:border-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 dark:text-purple-300"
+              onClick={toggleEmojiCustomizer}
+            >
+              <span className="hidden sm:inline">
+                {showEmojiCustomizer ? "Hide" : "Edit Emoji Style"}
+              </span>
+              <span className="sm:hidden">
+                {showEmojiCustomizer ? "❌" : `Edit ${selectedEventData.emoji}`}
+              </span>
+            </Button>
+          </div>
+        </div>
 
-                <div className="flex items-center gap-2 mt-1">
-                  {selectedEventData ? (
-                    <>
-                      <span className="text-2xl">{selectedEventData.emoji}</span>
-                      <div>
-                        <p className="font-medium">{selectedEventData.label}</p>
-                        <p className="text-xs text-muted-foreground line-clamp-2">
-                          {selectedEventData.defaultMessage}
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No event selected</p>
-                  )}
-                </div>
+        {/* Selected Event Details */}
+        <div className="flex items-center gap-3 mt-2">
+          {selectedEventData ? (
+            <>
+              <span className="text-3xl">{selectedEventData.emoji}</span>
+              <div>
+                <p className="font-semibold text-foreground dark:text-purple-200">
+                  {selectedEventData.label}
+                </p>
+                <p className="text-xs text-muted-foreground line-clamp-2">
+                  {selectedEventData.defaultMessage}
+                </p>
               </div>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">No event selected</p>
+          )}
+        </div>
+      </div>
 
-              {/* Customizers */}
-              <EventNameCustomizer
-                eventNameStyle={eventNameStyle || {
-                  id: 'event-name',
-                  content: '',
-                  style: {
-                    fontSize: '28px',
-                    fontWeight: 'bold',
-                    color: 'hsl(var(--foreground))',
-                    textAlign: 'center',
-                    fontFamily: 'inherit'
-                  },
-                  animation: 'fadeIn'
-                }}
-                selectedEvent={selectedEventData}
-                onChange={onEventNameStyleChange || (() => {})}
-                expanded={showEventCustomizer}
-                onToggleExpanded={toggleEventCustomizer}
-              />
+      {/* Customizers */}
+      <EventNameCustomizer
+        eventNameStyle={
+          eventNameStyle || {
+            id: "event-name",
+            content: "",
+            style: {
+              fontSize: "28px",
+              fontWeight: "bold",
+              color: "hsl(var(--foreground))",
+              textAlign: "center",
+              fontFamily: "inherit",
+            },
+            animation: "fadeIn",
+          }
+        }
+        selectedEvent={selectedEventData}
+        onChange={onEventNameStyleChange || (() => {})}
+        expanded={showEventCustomizer}
+        onToggleExpanded={toggleEventCustomizer}
+      />
 
-              <EventEmojiCustomizer
-                eventEmojiSettings={eventEmojiSettings || {
-                  emoji: selectedEventData?.emoji || '🎉',
-                  size: 48,
-                  animation: 'bounce',
-                  rotateSpeed: 0,
-                  position: { x: 50, y: 10 }
-                }}
-                selectedEvent={selectedEventData}
-                onChange={onEventEmojiSettingsChange || (() => {})}
-                expanded={showEmojiCustomizer}
-                onToggleExpanded={toggleEmojiCustomizer}
-              />
-            </motion.div>
-          </AnimatePresence>
-        )}
+      <EventEmojiCustomizer
+        eventEmojiSettings={
+          eventEmojiSettings || {
+            emoji: selectedEventData?.emoji || "🎉",
+            size: 48,
+            animation: "bounce",
+            rotateSpeed: 0,
+            position: { x: 50, y: 10 },
+          }
+        }
+        selectedEvent={selectedEventData}
+        onChange={onEventEmojiSettingsChange || (() => {})}
+        expanded={showEmojiCustomizer}
+        onToggleExpanded={toggleEmojiCustomizer}
+      />
+    </motion.div>
+  </AnimatePresence>
+)}
+
       </CardContent>
     </Card>
   );
