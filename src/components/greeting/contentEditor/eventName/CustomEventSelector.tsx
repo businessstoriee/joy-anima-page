@@ -326,7 +326,7 @@ const CustomEventSelector = ({
                       <span className="hidden sm:inline">
                         {showEventCustomizer ? 'Hide' : 'Edit Event Name'}
                       </span>
-                      <span className="sm:hidden">{showEventCustomizer ? '❌' : <Edit></Edit>}</span>
+                      <span className="sm:hidden">{showEventCustomizer ? '❌' : 'Edit Event'}</span>
                     </Button>
                     <Button
                       size="sm"
@@ -337,7 +337,7 @@ const CustomEventSelector = ({
                       <span className="hidden sm:inline">
                         {showEmojiCustomizer ? 'Hide' : 'Edit Emoji Style'}
                       </span>
-                      <span className="sm:hidden">{showEmojiCustomizer ? '❌' : '😀'}</span>
+                      <span className="sm:hidden">{showEmojiCustomizer ? '❌' : 'Edit '+selectedEventData.emoji}</span>
                     </Button>
                   </div>
                 </div>

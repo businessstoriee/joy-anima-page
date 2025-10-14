@@ -5,6 +5,7 @@ import Preview from '@/components/preview/Preview';
 import FirebaseShareButton from '@/components/share/GenerateShareLink';
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 import AudioAutoPlay from '@/components/preview/AudioAutoPlay';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface LivePreviewCardProps {
   formData: GreetingFormData;
@@ -45,9 +46,32 @@ const LivePreviewCard: React.FC<LivePreviewCardProps> = ({
           </div>
         ))}
 
-        <CardTitle onClick={onOpenPreview} className="cursor-pointer flex items-center gap-2 relative z-10 dark:text-foreground">
-          <span className="inline-block group-hover:animate-bounce">👀 {translate('Live Preview')}  (Click to Expand)</span>
-        </CardTitle>
+
+        <CardTitle
+  onClick={onOpenPreview}
+  className="cursor-pointer flex items-center justify-center gap-2 relative z-10 dark:text-foreground hover:text-primary transition-colors duration-300 hover:animate-bounce"
+>
+  {/* 👀 Icon + Text */}
+  <span className="flex items-center gap-2 group">
+    <motion.span
+      whileHover={{ scale: 1.2, rotate: 10 }}
+      whileTap={{ scale: 0.9, rotate: -10 }}
+      transition={{ type: 'spring', stiffness: 300 }}
+      className="inline-block"
+    >
+      👀
+    </motion.span>
+    <span className="text-base md:text-2xl font-semibold">
+      {translate('Live Preview')}
+    </span>
+  </span>
+
+  {/* Optional Badge */}
+  <span className="flex items-center mt-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium ">
+    (Click to Expand)
+  </span>
+</CardTitle>
+
       </CardHeader>
 
       <CardContent>

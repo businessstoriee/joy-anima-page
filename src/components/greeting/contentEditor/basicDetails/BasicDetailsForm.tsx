@@ -168,7 +168,7 @@ const BasicDetailsForm: React.FC<BasicDetailsFormProps> = ({
 
 
       {/* Background Music URL */}
-      <div className="space-y-2 p-6 border border-violet-500 dark:border-primary/40 rounded-xl shadow-lg bg-gradient-to-br from-background to-primary/5 dark:from-background dark:to-primary/10">
+      <div className="space-y-2 p-6 border border-violet-500 dark:border-violet-400 rounded-xl shadow-lg bg-gradient-to-br from-background to-primary/5 dark:from-background dark:to-primary/10">
         <Label htmlFor="audioUrl" className="flex items-center gap-2 text-sm font-medium dark:text-foreground">
           <Music className="h-4 w-4 text-primary" />
           Background Music URL

@@ -10,6 +10,8 @@ import PreviewModal from "./create/PreviewModal";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useFirebaseGreetings } from "@/hooks/useFirebaseGreetings";
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
+import BeautifulGreetingsText from '../components/landingPage/BeautifulGreetingsText'
+import { motion, AnimatePresence } from 'framer-motion';
 
 const CreatePage: React.FC = () => {
   const {
@@ -67,12 +69,26 @@ const CreatePage: React.FC = () => {
 
       <div className="max-w-6xl mx-auto pt-16">
         <div className="text-center mb-8 animate-fade-in">
-          <h1 className="text-2xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-pink-500 to-violet-500 hover:bg-gradient-to-l bg-clip-text text-transparent animate-bounce">
-            ✨ {translate('Create Your Greeting')}
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground font-medium animate-typing overflow-hidden border-r-4 border-r-primary">
-            Design a beautiful, personalized greeting to share with someone special
-          </p>
+           <motion.div
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5, ease: "easeOut" }}
+  className="text-center mb-4 animate-fade-in animate-bounce"
+>
+      
+          <BeautifulGreetingsText text= {translate('Create Your Greeting')} />
+           </motion.div>
+
+      {/* Greeting Text */}
+      <motion.p
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: "spring", stiffness: 200 }}
+        className="text-muted-foreground text-lg md:text-xl font-semibold hover:text-primary transition-colors duration-300"
+      >
+       ✨ Design a beautiful, personalized greeting to share with someone special ✨
+      </motion.p>
+         
         </div>
  
         <div className="grid lg:grid-cols-2 gap-8">
