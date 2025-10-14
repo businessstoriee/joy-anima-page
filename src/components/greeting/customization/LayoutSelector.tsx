@@ -51,7 +51,7 @@ const LayoutSelector = ({
   };
 
   return (
-    <Card className="border border-blue-300 shadow-xl bg-gradient-to-br from-white to-gray-50/50 dark:from-slate-900 dark:to-slate-800 dark:border-slate-700 dark:shadow-slate-900/50 overflow-hidden">
+    <Card className="border border-blue-500 shadow-xl bg-gradient-to-br from-white to-gray-50/50 dark:from-slate-900 dark:to-slate-800 dark:border-slate-700 dark:shadow-slate-900/50 overflow-hidden">
       
       <CardContent className="p-5 space-y-4">
         {/* Layout Selection */}

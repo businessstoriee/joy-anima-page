@@ -111,7 +111,7 @@ const BackgroundCustomizer = ({ settings, onChange }: BackgroundCustomizerProps)
   };
 
   return (
-    <Card className="border border-orange-300 shadow-lg rounded-xl overflow-hidden">
+    <Card className="border border-orange-500 shadow-lg rounded-xl overflow-hidden">
       <CardHeader className="p-4 border-b">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm flex items-center gap-2">

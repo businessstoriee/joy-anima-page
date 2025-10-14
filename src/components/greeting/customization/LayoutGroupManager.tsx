@@ -56,7 +56,7 @@ const LayoutGroupManager: React.FC<LayoutGroupManagerProps> = ({
   }
 
   return (
-    <Card className="border border-purple-200 bg-gradient-to-br from-purple-50 to-white">
+    <Card className="border border-purple-500 bg-gradient-to-br from-purple-50 to-white">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-semibold text-purple-800 flex items-center gap-2">
           <Layout className="h-4 w-4" />

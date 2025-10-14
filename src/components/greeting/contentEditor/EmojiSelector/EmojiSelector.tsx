@@ -54,7 +54,7 @@ const EmojiSelector = ({ emojis, onChange }: EmojiSelectorProps) => {
   };
 
   return (
-    <Card className="border border-red-300 shadow-lg rounded-xl overflow-hidden">
+    <Card className="border border-red-500 shadow-lg rounded-xl overflow-hidden">
       <CardHeader className=" py-3">
        
        <CardTitle >

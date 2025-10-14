@@ -59,7 +59,7 @@ export default function AdvancedTextEditor({ texts, onChange }: Props) {
   };
 
   return (
-    <Card className="border border-yellow-300 shadow-lg">
+    <Card className="border border-yellow-500 shadow-lg">
       <CardHeader className="pb-0">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">

@@ -190,7 +190,7 @@ const AdvancedMediaUploader = ({ media, onChange, maxItems = MAX_ITEMS }: Advanc
   };
 
   return (
-    <Card className="border border-pink-300 shadow-lg">
+    <Card className="border border-pink-500 shadow-lg">
       <MediaHeader
         media={media}
         maxItems={maxItems}
