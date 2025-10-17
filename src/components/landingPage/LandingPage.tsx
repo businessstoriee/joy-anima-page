@@ -12,12 +12,16 @@ import BeautifulGreetingsText from './BeautifulGreetingsText'
 import { initTspEngine } from "@/components/greeting/customization/BackgroundCustomizer/engines/tspEngine";
 import PublicGreetingsFeed from '@/components/feed/PublicGreetingsFeed';
 import ThemeToggle from '@/components/theme/ThemeToggle';
+import AnimatedSidebar from '@/components/navigation/AnimatedSidebar';
+import HamburgerButton from '@/components/navigation/HamburgerButton';
 
 const LandingPage: React.FC = () => {
-     const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
   const createNewGreeting = () => {
     // TODO: Replace with your greeting creation logic
-     navigate('/create');
+    navigate('/create');
   };
   const { translate } = useLanguageTranslation();
     
@@ -99,12 +103,18 @@ const LandingPage: React.FC = () => {
   }, []);
 
 
- return (
+return (
    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/20 p-4 sm:p-6">
   <SEOManager 
     eventType="greeting"
     isPreview={false}
   />
+
+  {/* Hamburger Menu Button */}
+  <HamburgerButton onClick={() => setIsSidebarOpen(true)} />
+
+  {/* Animated Sidebar */}
+  <AnimatedSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
   {/* Theme Toggle */}
   <ThemeToggle />
