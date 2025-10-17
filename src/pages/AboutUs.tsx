@@ -12,31 +12,49 @@ const AboutUs = () => {
       icon: Heart,
       title: 'Made with Love',
       description: 'Every greeting card is crafted with care and attention to detail.',
+      gradient: 'from-rose-500/20 to-pink-500/20',
+      hoverGradient: 'group-hover:from-rose-500/30 group-hover:to-pink-500/30',
+      iconColor: 'text-rose-500',
     },
     {
       icon: Sparkles,
       title: 'Beautiful Animations',
       description: 'Stunning visual effects that make your greetings come alive.',
+      gradient: 'from-amber-500/20 to-yellow-500/20',
+      hoverGradient: 'group-hover:from-amber-500/30 group-hover:to-yellow-500/30',
+      iconColor: 'text-amber-500',
     },
     {
       icon: Users,
       title: 'For Everyone',
       description: 'Perfect for all occasions - birthdays, weddings, holidays, and more.',
+      gradient: 'from-blue-500/20 to-cyan-500/20',
+      hoverGradient: 'group-hover:from-blue-500/30 group-hover:to-cyan-500/30',
+      iconColor: 'text-blue-500',
     },
     {
       icon: Target,
       title: 'Easy to Use',
       description: 'Create professional-looking cards in minutes, no design skills needed.',
+      gradient: 'from-purple-500/20 to-violet-500/20',
+      hoverGradient: 'group-hover:from-purple-500/30 group-hover:to-violet-500/30',
+      iconColor: 'text-purple-500',
     },
     {
       icon: Zap,
       title: 'Lightning Fast',
       description: 'Share your greetings instantly with friends and family worldwide.',
+      gradient: 'from-orange-500/20 to-red-500/20',
+      hoverGradient: 'group-hover:from-orange-500/30 group-hover:to-red-500/30',
+      iconColor: 'text-orange-500',
     },
     {
       icon: Globe,
       title: 'Global Reach',
       description: 'Send your love across borders with our international platform.',
+      gradient: 'from-emerald-500/20 to-teal-500/20',
+      hoverGradient: 'group-hover:from-emerald-500/30 group-hover:to-teal-500/30',
+      iconColor: 'text-emerald-500',
     },
   ];
 
@@ -69,7 +87,7 @@ const AboutUs = () => {
           >
             🎉
           </motion.div>
-          <h1 className="text-4xl sm:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
             About Beautiful Greetings
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
@@ -85,7 +103,7 @@ const AboutUs = () => {
           transition={{ delay: 0.2 }}
           className="mb-16"
         >
-          <Card className="overflow-hidden border-2 border-primary/20 shadow-2xl">
+          <Card className="overflow-hidden border-2 border-primary/30 shadow-2xl hover:shadow-3xl hover:border-primary/50 transition-all duration-300 bg-gradient-to-br from-primary/5 to-secondary/5">
             <CardContent className="p-8 sm:p-12">
               <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
                 <motion.span
@@ -133,16 +151,17 @@ const AboutUs = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 + index * 0.1 }}
-                  whileHover={{ scale: 1.05, rotate: 1 }}
+                  whileHover={{ scale: 1.05, y: -8 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <Card className="h-full border-2 border-transparent hover:border-primary/30 transition-all duration-300 group">
+                  <Card className={`h-full border-2 border-transparent hover:border-primary/50 transition-all duration-300 group bg-gradient-to-br ${feature.gradient} ${feature.hoverGradient} shadow-lg hover:shadow-2xl`}>
                     <CardContent className="p-6">
                       <motion.div
-                        whileHover={{ rotate: 360 }}
+                        whileHover={{ rotate: 360, scale: 1.1 }}
                         transition={{ duration: 0.6 }}
-                        className="w-12 h-12 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:shadow-primary/20"
+                        className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center mb-4 group-hover:shadow-xl transition-shadow`}
                       >
-                        <Icon className="w-6 h-6 text-primary" />
+                        <Icon className={`w-8 h-8 ${feature.iconColor}`} />
                       </motion.div>
                       <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
                         {feature.title}
@@ -163,17 +182,19 @@ const AboutUs = () => {
           transition={{ delay: 0.8 }}
           className="text-center"
         >
-          <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-secondary/5">
+          <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/10 to-secondary/10 hover:shadow-2xl transition-all duration-300">
             <CardContent className="p-12">
               <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
               <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                 Join thousands of users who are already creating beautiful greetings for their loved ones.
               </p>
               <Link to="/create">
-                <Button size="lg" className="group">
-                  <span className="mr-2 group-hover:animate-bounce">🚀</span>
-                  Create Your First Greeting
-                </Button>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button size="lg" className="group">
+                    <span className="mr-2 group-hover:animate-bounce">🚀</span>
+                    Create Your First Greeting
+                  </Button>
+                </motion.div>
               </Link>
             </CardContent>
           </Card>

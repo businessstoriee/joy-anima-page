@@ -14,50 +14,62 @@ const FAQ = () => {
     {
       question: 'How do I create a greeting card?',
       answer: 'Simply click the "Create Your Greeting" button on the homepage, choose your event type, customize the design with text, images, and animations, then share it with your loved ones via a unique link.',
+      gradient: 'from-blue-500/10 to-cyan-500/10',
     },
     {
       question: 'Is Beautiful Greetings free to use?',
       answer: 'Yes! Beautiful Greetings is completely free to use. You can create unlimited greeting cards, customize them with various features, and share them with anyone.',
+      gradient: 'from-purple-500/10 to-pink-500/10',
     },
     {
       question: 'Can I add my own photos and videos?',
       answer: 'Absolutely! You can upload your own photos and videos to make your greeting cards more personal. We support most common image formats (JPG, PNG, GIF) and video formats.',
+      gradient: 'from-green-500/10 to-emerald-500/10',
     },
     {
       question: 'How do I share my greeting card?',
       answer: 'After creating your card, you\'ll receive a unique shareable link. You can copy this link and send it via email, text message, social media, or any messaging platform. Recipients can view it instantly without creating an account.',
+      gradient: 'from-orange-500/10 to-red-500/10',
     },
     {
       question: 'Can I edit my greeting after sharing it?',
       answer: 'Yes! You can edit your greeting cards anytime. Changes will be reflected immediately when someone views your shared link. This is perfect for fixing typos or updating information.',
+      gradient: 'from-amber-500/10 to-yellow-500/10',
     },
     {
       question: 'Are my greeting cards private?',
       answer: 'You have full control over privacy. When creating a card, you can choose to make it public (visible in the community feed) or private (only accessible via the unique link you share).',
+      gradient: 'from-rose-500/10 to-pink-500/10',
     },
     {
       question: 'What occasions can I create greetings for?',
       answer: 'We support 20+ event types including birthdays, weddings, anniversaries, graduations, holidays, thank you notes, and more. You can also create custom events for any special occasion.',
+      gradient: 'from-indigo-500/10 to-purple-500/10',
     },
     {
       question: 'Can I add background music to my card?',
       answer: 'Yes! You can add background music to make your greeting card more engaging. Upload your own audio file or choose from our selection of music tracks.',
+      gradient: 'from-teal-500/10 to-cyan-500/10',
     },
     {
       question: 'Is there a limit to how many cards I can create?',
       answer: 'No limits! Create as many greeting cards as you want. All features are unlimited and free to use.',
+      gradient: 'from-violet-500/10 to-fuchsia-500/10',
     },
     {
       question: 'Do recipients need to create an account to view my card?',
       answer: 'No account needed! Recipients can view your beautiful greeting cards instantly by clicking the link you share. It\'s that simple.',
+      gradient: 'from-lime-500/10 to-green-500/10',
     },
     {
       question: 'Can I use Beautiful Greetings on mobile devices?',
       answer: 'Yes! Our platform is fully responsive and works perfectly on smartphones, tablets, and desktop computers. Create and view greeting cards on any device.',
+      gradient: 'from-sky-500/10 to-blue-500/10',
     },
     {
       question: 'How long do greeting cards stay active?',
       answer: 'Your greeting cards remain active indefinitely. As long as you don\'t delete them, they\'ll be accessible via the shared link forever.',
+      gradient: 'from-emerald-500/10 to-teal-500/10',
     },
   ];
 
@@ -93,7 +105,7 @@ const FAQ = () => {
           >
             ❓
           </motion.div>
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
             Frequently Asked Questions
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -111,12 +123,14 @@ const FAQ = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
+                whileHover={{ scale: 1.01 }}
               >
                 <Card
                   className={cn(
-                    'border-2 transition-all duration-300 cursor-pointer',
+                    'border-2 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl',
+                    `bg-gradient-to-br ${faq.gradient}`,
                     isOpen
-                      ? 'border-primary/50 shadow-lg shadow-primary/10'
+                      ? 'border-primary/50 shadow-primary/20'
                       : 'border-transparent hover:border-primary/30'
                   )}
                 >
@@ -147,7 +161,12 @@ const FAQ = () => {
                           {faq.question}
                         </h3>
                       </div>
-                      <HelpCircle className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-1" />
+                      <motion.div
+                        whileHover={{ rotate: 360 }}
+                        transition={{ duration: 0.6 }}
+                      >
+                        <HelpCircle className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-1" />
+                      </motion.div>
                     </button>
 
                     <AnimatePresence>
@@ -185,17 +204,19 @@ const FAQ = () => {
           transition={{ delay: 0.6 }}
           className="mt-12"
         >
-          <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-secondary/5">
+          <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/10 to-secondary/10 hover:shadow-2xl transition-all duration-300">
             <CardContent className="p-8 text-center">
               <h2 className="text-2xl font-bold mb-4">Still Have Questions?</h2>
               <p className="text-lg text-muted-foreground mb-6">
                 Can't find what you're looking for? Our support team is here to help!
               </p>
               <Link to="/support">
-                <Button size="lg" className="group">
-                  <span className="mr-2 group-hover:animate-bounce">💬</span>
-                  Contact Support
-                </Button>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button size="lg" className="group">
+                    <span className="mr-2 group-hover:animate-bounce">💬</span>
+                    Contact Support
+                  </Button>
+                </motion.div>
               </Link>
             </CardContent>
           </Card>

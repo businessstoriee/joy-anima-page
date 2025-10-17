@@ -17,6 +17,9 @@ const PrivacyPolicy = () => {
         'Usage data to improve our service and user experience',
         'Device and browser information for optimization purposes',
       ],
+      gradient: 'from-blue-500/20 to-cyan-500/20',
+      hoverGradient: 'group-hover:from-blue-500/30 group-hover:to-cyan-500/30',
+      iconColor: 'text-blue-500',
     },
     {
       icon: Lock,
@@ -27,6 +30,9 @@ const PrivacyPolicy = () => {
         'Strict access controls and authentication measures',
         'Regular security audits and updates',
       ],
+      gradient: 'from-emerald-500/20 to-teal-500/20',
+      hoverGradient: 'group-hover:from-emerald-500/30 group-hover:to-teal-500/30',
+      iconColor: 'text-emerald-500',
     },
     {
       icon: Eye,
@@ -37,6 +43,9 @@ const PrivacyPolicy = () => {
         'To send important service updates and notifications',
         'To analyze usage patterns and enhance performance',
       ],
+      gradient: 'from-purple-500/20 to-pink-500/20',
+      hoverGradient: 'group-hover:from-purple-500/30 group-hover:to-pink-500/30',
+      iconColor: 'text-purple-500',
     },
     {
       icon: Share2,
@@ -47,6 +56,9 @@ const PrivacyPolicy = () => {
         'We never share your personal information with third parties',
         'Shared links are unique and can be managed by you',
       ],
+      gradient: 'from-orange-500/20 to-red-500/20',
+      hoverGradient: 'group-hover:from-orange-500/30 group-hover:to-red-500/30',
+      iconColor: 'text-orange-500',
     },
     {
       icon: FileText,
@@ -57,6 +69,9 @@ const PrivacyPolicy = () => {
         'Opt-out of non-essential communications',
         'Request a complete copy of your data',
       ],
+      gradient: 'from-amber-500/20 to-yellow-500/20',
+      hoverGradient: 'group-hover:from-amber-500/30 group-hover:to-yellow-500/30',
+      iconColor: 'text-amber-500',
     },
   ];
 
@@ -92,7 +107,7 @@ const PrivacyPolicy = () => {
           >
             🔒
           </motion.div>
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
             Privacy Policy
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -110,7 +125,7 @@ const PrivacyPolicy = () => {
           transition={{ delay: 0.2 }}
           className="mb-12"
         >
-          <Card className="border-2 border-primary/20">
+          <Card className="border-2 border-primary/30 hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-primary/5 to-secondary/5">
             <CardContent className="p-8">
               <p className="text-lg text-muted-foreground leading-relaxed">
                 At Beautiful Greetings, we are committed to protecting your privacy and ensuring the security
@@ -131,22 +146,23 @@ const PrivacyPolicy = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 + index * 0.1 }}
+                whileHover={{ scale: 1.02, x: 5 }}
               >
-                <Card className="border-2 border-transparent hover:border-primary/30 transition-all duration-300 group">
+                <Card className={`border-2 border-transparent hover:border-primary/50 transition-all duration-300 group bg-gradient-to-br ${section.gradient} ${section.hoverGradient} shadow-lg hover:shadow-2xl`}>
                   <CardContent className="p-6 sm:p-8">
                     <div className="flex items-start gap-4 mb-4">
                       <motion.div
                         whileHover={{ rotate: 360, scale: 1.1 }}
                         transition={{ duration: 0.6 }}
-                        className="w-12 h-12 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:shadow-lg group-hover:shadow-primary/20"
+                        className={`w-14 h-14 bg-gradient-to-br ${section.gradient} rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:shadow-xl transition-shadow`}
                       >
-                        <Icon className="w-6 h-6 text-primary" />
+                        <Icon className={`w-7 h-7 ${section.iconColor}`} />
                       </motion.div>
                       <h2 className="text-2xl font-bold group-hover:text-primary transition-colors">
                         {section.title}
                       </h2>
                     </div>
-                    <ul className="space-y-3 ml-16">
+                    <ul className="space-y-3 ml-18">
                       {section.content.map((item, i) => (
                         <motion.li
                           key={i}
@@ -155,8 +171,8 @@ const PrivacyPolicy = () => {
                           transition={{ delay: 0.4 + index * 0.1 + i * 0.05 }}
                           className="flex items-start gap-3 text-muted-foreground"
                         >
-                          <span className="text-primary mt-1 flex-shrink-0">✓</span>
-                          <span>{item}</span>
+                          <span className="text-primary mt-1 flex-shrink-0 text-xl">✓</span>
+                          <span className="text-base">{item}</span>
                         </motion.li>
                       ))}
                     </ul>
@@ -173,17 +189,19 @@ const PrivacyPolicy = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
-          <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-secondary/5">
+          <Card className="border-2 border-primary/30 bg-gradient-to-br from-primary/10 to-secondary/10 hover:shadow-2xl transition-all duration-300">
             <CardContent className="p-8 text-center">
               <h2 className="text-2xl font-bold mb-4">Questions About Your Privacy?</h2>
               <p className="text-lg text-muted-foreground mb-6">
                 If you have any questions or concerns about our privacy practices, please don't hesitate to contact us.
               </p>
               <Link to="/support">
-                <Button size="lg" variant="outline" className="group">
-                  <span className="mr-2 group-hover:animate-bounce">📧</span>
-                  Contact Support
-                </Button>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button size="lg" variant="outline" className="group">
+                    <span className="mr-2 group-hover:animate-bounce">📧</span>
+                    Contact Support
+                  </Button>
+                </motion.div>
               </Link>
             </CardContent>
           </Card>
