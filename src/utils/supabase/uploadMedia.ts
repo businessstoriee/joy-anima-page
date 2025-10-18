@@ -1,5 +1,6 @@
 // uploadMedia.ts
 import { supabase } from "@/integrations/supabase/client";
+import { uploadMediaToFirebase } from "@/utils/firebase/uploadMedia";
 
 export interface UploadResult {
   success: boolean;
@@ -57,43 +58,60 @@ export async function uploadMediaToSupabase(
       }
     }
 
-    // Create a unique filename
-    const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 9);
-    const fileExtension = file.name.split('.').pop();
-    const fileName = `${type}s/${timestamp}_${randomString}.${fileExtension}`;
+    // Try Supabase first, fallback to Firebase if Supabase is not available
+    try {
+      // Check if Supabase client is initialized
+      if (!supabase || !supabase.storage) {
+        console.log('⚠️ Supabase not available, using Firebase instead');
+        throw new Error('Supabase not initialized');
+      }
 
-    console.log(`📤 Uploading ${type} to Supabase Storage:`, fileName);
-    
-    // Upload file to Supabase Storage
-    const { data, error } = await supabase.storage
-      .from('media')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
+      // Create a unique filename
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 9);
+      const fileExtension = file.name.split('.').pop();
+      const fileName = `${type}s/${timestamp}_${randomString}.${fileExtension}`;
 
-    if (error) {
-      console.error(`❌ Error uploading ${type}:`, error);
+      console.log(`📤 Uploading ${type} to Supabase Storage:`, fileName);
+      
+      // Upload file to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('media')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        console.error(`❌ Error uploading ${type} to Supabase:`, error);
+        console.log('⚠️ Falling back to Firebase');
+        throw error;
+      }
+
+      console.log('📸 Upload completed:', data.path);
+      
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('media')
+        .getPublicUrl(data.path);
+
+      console.log(`✅ ${type} uploaded successfully to Supabase:`, publicUrl);
+
       return {
-        success: false,
-        error: error.message || 'Failed to upload file'
+        success: true,
+        url: publicUrl
       };
+    } catch (supabaseError) {
+      // Fallback to Firebase
+      console.log('📤 Using Firebase for upload');
+      const firebaseResult = await uploadMediaToFirebase(file, type);
+      
+      if (firebaseResult.success) {
+        console.log(`✅ ${type} uploaded successfully to Firebase:`, firebaseResult.url);
+      }
+      
+      return firebaseResult;
     }
-
-    console.log('📸 Upload completed:', data.path);
-    
-    // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('media')
-      .getPublicUrl(data.path);
-
-    console.log(`✅ ${type} uploaded successfully:`, publicUrl);
-
-    return {
-      success: true,
-      url: publicUrl
-    };
   } catch (error: any) {
     console.error(`❌ Error uploading ${type}:`, error);
     console.error('❌ Error details:', {

@@ -40,7 +40,7 @@ const HeaderTextCustomizer: React.FC<HeaderTextCustomizerProps> = ({ headerText,
             <TextStyleControls
               textSettings={headerText as any as TextSettings}
               onChange={(updates) => updateHeaderText(updates as Partial<TextContent>)}
-              showContent={true} // Always show input field
+              showContent={true}
               contentPlaceholder="Enter header text (optional)"
               showAnimation={true}
               compact={false}

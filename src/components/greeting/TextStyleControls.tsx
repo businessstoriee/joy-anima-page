@@ -77,6 +77,8 @@ const TextStyleControls: React.FC<TextStyleControlsProps> = ({
             onChange={(e) => onChange?.({ content: e.target.value })}
             placeholder={contentPlaceholder}
             className="text-sm"
+            showClearButton={true}
+            onClear={() => onChange?.({ content: '' })}
           />
         </div>
       )}

@@ -219,7 +219,15 @@ const BackgroundImageUploader: React.FC<BackgroundImageUploaderProps> = ({
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input type="url" placeholder="https://example.com/image.jpg" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="pl-10" />
+                <Input 
+                  type="url" 
+                  placeholder="https://example.com/image.jpg" 
+                  value={imageUrl} 
+                  onChange={(e) => setImageUrl(e.target.value)} 
+                  className="pl-10" 
+                  showClearButton={true}
+                  onClear={handleRemoveImage}
+                />
               </div>
               <Button onClick={() => handleUrlApply(imageUrl)} disabled={!imageUrl.trim() || isLoading} size="sm">
                 Apply

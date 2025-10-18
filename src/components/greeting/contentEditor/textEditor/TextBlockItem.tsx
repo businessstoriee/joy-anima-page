@@ -46,7 +46,7 @@ export default function TextBlockItem({ text, index, isActive, onRemove, onMove,
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3 pb-3">
+      <CardContent className="space-y-3 pb-3 relative">
         <Textarea
           value={text.content}
           onChange={(e) => onUpdate({ content: e.target.value })}
@@ -54,6 +54,30 @@ export default function TextBlockItem({ text, index, isActive, onRemove, onMove,
           rows={2}
           className="text-sm min-h-[80px] w-full resize-none overflow-auto break-words whitespace-pre-wrap [text-wrap:pretty] hyphens-auto"
         />
+        {text.content && (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => onUpdate({ content: '' })}
+            className="absolute top-1 right-1 h-6 w-6 p-0 hover:bg-muted"
+          >
+            <span className="sr-only">Clear</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </Button>
+        )}
         {isActive && (
           <TextStyleControls
             textSettings={createTextSettings({

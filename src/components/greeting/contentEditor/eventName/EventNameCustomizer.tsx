@@ -26,25 +26,6 @@ const EventNameCustomizer: React.FC<EventNameCustomizerProps> = ({
   onToggleExpanded
 }) => {
   const defaultText = selectedEvent ? `Happy ${selectedEvent.label}` : 'Happy Celebration';
-  
-  // Ensure eventNameStyle has proper structure with all required fields
-  const safeEventNameStyle: TextContent = {
-    id: eventNameStyle?.id || 'event-name',
-    content: eventNameStyle?.content || '',
-    style: {
-      fontSize: eventNameStyle?.style?.fontSize || '28px',
-      fontWeight: eventNameStyle?.style?.fontWeight || 'bold',
-      color: eventNameStyle?.style?.color || 'hsl(var(--foreground))',
-      textAlign: (eventNameStyle?.style?.textAlign as 'left' | 'center' | 'right') || 'center',
-      fontFamily: eventNameStyle?.style?.fontFamily || 'inherit',
-      fontStyle: eventNameStyle?.style?.fontStyle || 'normal',
-      textTransform: eventNameStyle?.style?.textTransform || 'none',
-      letterSpacing: eventNameStyle?.style?.letterSpacing || 'normal',
-      lineHeight: eventNameStyle?.style?.lineHeight || 'normal'
-    },
-    animation: eventNameStyle?.animation || 'fadeIn',
-    continuousAnimation: eventNameStyle?.continuousAnimation || false
-  };
 
   return (
     <div>
@@ -63,12 +44,14 @@ const EventNameCustomizer: React.FC<EventNameCustomizerProps> = ({
                 <div className="flex-1 space-y-2">
                   <Label className="text-xs font-medium">Custom Event Name</Label>
                   <Input
-                    value={safeEventNameStyle.content}
+                    value={eventNameStyle.content || ''}
                     onChange={(e) =>
-                      onChange({ ...safeEventNameStyle, content: e.target.value })
+                      onChange({ ...eventNameStyle, content: e.target.value })
                     }
                     placeholder={`Default: ${defaultText}`}
                     className="text-sm"
+                    showClearButton={true}
+                    onClear={() => onChange({ ...eventNameStyle, content: '' })}
                   />
                   <p className="text-xs text-muted-foreground">
                     Leave empty to use default: "{defaultText}"
@@ -79,20 +62,28 @@ const EventNameCustomizer: React.FC<EventNameCustomizerProps> = ({
               <TextStyleControls
                 textSettings={createTextSettings({
                   id: 'event-name',
-                  content: safeEventNameStyle.content,
-                  style: safeEventNameStyle.style,
-                  animation: safeEventNameStyle.animation,
-                  continuousAnimation: safeEventNameStyle.continuousAnimation
+                  content: eventNameStyle.content || '',
+                  style: eventNameStyle.style || {
+                    fontSize: '28px',
+                    fontWeight: 'bold',
+                    color: 'hsl(var(--foreground))',
+                    textAlign: 'center',
+                    fontFamily: 'inherit',
+                    fontStyle: 'normal',
+                    textTransform: 'none',
+                    letterSpacing: 'normal',
+                    lineHeight: 'normal'
+                  },
+                  animation: eventNameStyle.animation,
+                  continuousAnimation: eventNameStyle.continuousAnimation
                 })}
-                onChange={(settings) =>
-                  onChange({
-                    ...safeEventNameStyle,
-                    content: settings.content || '',
-                    style: settings.style,
-                    animation: settings.animation,
-                    continuousAnimation: settings.continuousAnimation
-                  })
-                }
+                onChange={(settings) => {
+                  const updates: Partial<TextContent> = {};
+                  if (settings.style) updates.style = settings.style;
+                  if (settings.animation !== undefined) updates.animation = settings.animation;
+                  if (settings.continuousAnimation !== undefined) updates.continuousAnimation = settings.continuousAnimation;
+                  onChange({ ...eventNameStyle, ...updates });
+                }}
                 showContent={false}
                 showAnimation={true}
               />
