@@ -9,7 +9,7 @@ export default function LanguageSelector() {
       value={currentLanguage.code}
       onValueChange={changeLanguage}
     >
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-[180px] bg-white hover:border-primary">
         <SelectValue placeholder="Select language" />
       </SelectTrigger>
       <SelectContent>

@@ -61,13 +61,13 @@ const AnimatedSidebar: React.FC<AnimatedSidebarProps> = ({ isOpen, onClose }) =>
               >
                 <div className="flex items-center gap-3">
                   <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                    className="text-3xl"
+                    //animate={{ rotate: 360 }}
+                    //transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                    className="text-3xl animate-bounce"
                   >
-                    🎉
+                    💖
                   </motion.div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  <h2 className="text-2xl font-bold bg-primary bg-clip-text text-transparent">
                     Menu
                   </h2>
                 </div>

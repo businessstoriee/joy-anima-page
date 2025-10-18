@@ -14,7 +14,7 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ onClick }) => {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="fixed top-4 left-4 z-50 flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-full backdrop-blur-lg border-2 border-primary/30 bg-background/80 shadow-lg hover:shadow-primary/20 hover:border-primary/50 transition-all duration-300 group"
+      className=" bg-white top-4 left-4 z-50 flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-full backdrop-blur-lg border-2 border-primary/30 bg-background/80 shadow-lg hover:shadow-primary/20 hover:border-primary/50 transition-all duration-300 group"
     >
       {/* Animated gradient background */}
       <motion.div

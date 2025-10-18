@@ -12,6 +12,8 @@ import { useFirebaseGreetings } from "@/hooks/useFirebaseGreetings";
 import { useLanguageTranslation } from '@/components/language/useLanguageTranslation';
 import BeautifulGreetingsText from '../components/landingPage/BeautifulGreetingsText'
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const CreatePage: React.FC = () => {
   const {
@@ -59,10 +61,15 @@ const CreatePage: React.FC = () => {
 
   return (
     <div className="bg-gradient-to-br from-primary/10 via-background to-secondary/20 py-2">
-      <div className="flex justify-between items-center w-full mt-4 px-4">
-        <BackButton to="/" className="bg-background/80 backdrop-blur">
-          Back to Home
-        </BackButton>
+      <div className="flex justify-between items-center max-w-6xl mx-auto mt-4">
+
+                {/* Back Button */}
+                        <Link to="/">
+                          <Button variant="outline" className=" bg-white group hover:border-primary">
+                            <span className="mr-2 group-hover:animate-bounce">←</span>
+                            Back to Home
+                          </Button>
+                        </Link>
 
         <LanguageSelector />
       </div>

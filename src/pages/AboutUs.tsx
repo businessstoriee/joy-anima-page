@@ -65,10 +65,10 @@ const AboutUs = () => {
         description="Learn about our mission to spread joy and love through beautiful, personalized greeting cards for every occasion."
       />
 
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         {/* Back Button */}
         <Link to="/">
-          <Button variant="ghost" className="mb-6 group">
+          <Button variant="outline" className="mb-6 hover:border-primary bg-white group">
             <span className="mr-2 group-hover:animate-bounce">←</span>
             Back to Home
           </Button>
@@ -87,7 +87,7 @@ const AboutUs = () => {
           >
             🎉
           </motion.div>
-          <h1 className="text-4xl sm:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-6xl font-bold mb-6 bg-primary bg-clip-text text-transparent">
             About Beautiful Greetings
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">

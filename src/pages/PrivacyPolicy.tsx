@@ -82,10 +82,10 @@ const PrivacyPolicy = () => {
         description="Learn how we protect your data and respect your privacy. Transparent policies for a secure greeting card creation experience."
       />
 
-      <div className="max-w-5xl mx-auto">
+      <div className=" relative max-w-5xl mx-auto">
         {/* Back Button */}
         <Link to="/">
-          <Button variant="ghost" className="mb-6 group">
+          <Button variant="outline" className=" bg-white mb-6 group hover:border-primary">
             <span className="mr-2 group-hover:animate-bounce">←</span>
             Back to Home
           </Button>
@@ -107,7 +107,7 @@ const PrivacyPolicy = () => {
           >
             🔒
           </motion.div>
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-primary  bg-clip-text text-transparent">
             Privacy Policy
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -195,14 +195,14 @@ const PrivacyPolicy = () => {
               <p className="text-lg text-muted-foreground mb-6">
                 If you have any questions or concerns about our privacy practices, please don't hesitate to contact us.
               </p>
-              <Link to="/support">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button size="lg" variant="outline" className="group">
-                    <span className="mr-2 group-hover:animate-bounce">📧</span>
-                    Contact Support
-                  </Button>
-                </motion.div>
-              </Link>
+               <Link to="/support">
+                              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                <Button size="lg" className="group">
+                                  <span className="mr-2 group-hover:animate-bounce">💬</span>
+                                  Contact Support
+                                </Button>
+                              </motion.div>
+                            </Link> 
             </CardContent>
           </Card>
         </motion.div>

@@ -80,10 +80,10 @@ const FAQ = () => {
         description="Find answers to common questions about creating and sharing beautiful greeting cards. Learn how to use all features effectively."
       />
 
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         {/* Back Button */}
         <Link to="/">
-          <Button variant="ghost" className="mb-6 group">
+          <Button variant="outline" className="bg-white mb-6 group hover:border-primary">
             <span className="mr-2 group-hover:animate-bounce">←</span>
             Back to Home
           </Button>
@@ -105,7 +105,7 @@ const FAQ = () => {
           >
             ❓
           </motion.div>
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-primary bg-clip-text text-transparent">
             Frequently Asked Questions
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
