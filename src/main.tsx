@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/theme/ThemeProvider";
 
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary>
-    <ThemeProvider defaultTheme="light" storageKey="greeting-theme">
+    <ThemeProvider defaultTheme="system" storageKey="greeting-theme">
       <LanguageProvider>
         <App />
       </LanguageProvider>
